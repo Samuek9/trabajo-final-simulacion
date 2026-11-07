@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=8
+statsmodels>=0.14
+pymupdf>=1.24

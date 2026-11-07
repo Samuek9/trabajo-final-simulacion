@@ -1,0 +1,11 @@
+[theme]
+base = "light"
+primaryColor = "#1F4E78"
+font = "sans serif"
+
+[server]
+headless = true
+maxUploadSize = 50
+
+[browser]
+gatherUsageStats = false

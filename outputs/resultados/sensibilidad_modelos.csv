@@ -1,0 +1,21 @@
+modelo,estrategia,ref_p_meta,alt_p_meta,ref_W,alt_W
+ETF: Jones-Faddy sin estados (en vez de t por estado),E1,0.135,0.13,818526370.8426939,816184562.1819805
+ETF: Jones-Faddy sin estados (en vez de t por estado),E2,0.355,0.3575,943231687.8260968,941736842.4296985
+ETF: Jones-Faddy sin estados (en vez de t por estado),E3,0.4125,0.4025,950564548.5855494,953039265.5082204
+ETF: Jones-Faddy sin estados (en vez de t por estado),E4,0.3575,0.37,925549232.2672154,927139668.5147724
+Valorización: AR(1) del IPVU (en vez de normal por estado),E1,0.135,0.135,818526370.8426939,818526370.8426939
+Valorización: AR(1) del IPVU (en vez de normal por estado),E2,0.355,0.2175,943231687.8260968,859986058.0103388
+Valorización: AR(1) del IPVU (en vez de normal por estado),E3,0.4125,0.2275,950564548.5855494,851509133.1482098
+Valorización: AR(1) del IPVU (en vez de normal por estado),E4,0.3575,0.2325,925549232.2672154,854638016.3269628
+CDT: margen por fase (en vez de M5),E1,0.135,0.145,818526370.8426939,817242642.8479855
+CDT: margen por fase (en vez de M5),E2,0.355,0.3575,943231687.8260968,939669792.6657085
+CDT: margen por fase (en vez de M5),E3,0.4125,0.4075,950564548.5855494,952204947.3108209
+CDT: margen por fase (en vez de M5),E4,0.3575,0.3575,925549232.2672154,929634435.9483739
+Canon: sube todo el IPC (en vez del modelo DANE),E1,0.135,0.135,818526370.8426939,818526370.8426939
+Canon: sube todo el IPC (en vez del modelo DANE),E2,0.355,0.38,943231687.8260968,952624525.9917166
+Canon: sube todo el IPC (en vez del modelo DANE),E3,0.4125,0.43,950564548.5855494,962998463.3929822
+Canon: sube todo el IPC (en vez del modelo DANE),E4,0.3575,0.37,925549232.2672154,934823994.3518388
+Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.135,0.6125,818526370.8426939,1070860263.1478488
+Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.355,0.6225,943231687.8260968,1065215260.9641392
+Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.4125,0.53,950564548.5855494,1012915428.1488767
+Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.3575,0.55,925549232.2672154,1033371847.7817981
