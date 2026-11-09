@@ -1,0 +1,13 @@
+tabla,grupo,proporcion_arrendada_90d
+tamano,Menos de 45 m2,0.86
+tamano,45-60 m2,0.86
+tamano,60-80 m2,0.79
+tamano,80-110 m2,0.74
+tamano,Mas de 110 m2,0.64
+canon,Menos de $2M,0.91
+canon,$2M a $3.5M,0.80
+canon,$3.5M a $6M,0.67
+canon,Mas de $6M,0.53
+canon_y_tamano_menos_60m2,Menos de $2M,0.90
+canon_y_tamano_menos_60m2,$2M a $3.5M,0.78
+canon_y_tamano_menos_60m2,$3.5M a $6M,0.57

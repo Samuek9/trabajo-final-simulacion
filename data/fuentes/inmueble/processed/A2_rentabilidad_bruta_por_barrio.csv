@@ -1,0 +1,9 @@
+nivel,nombre,precio_mediano_millones,precio_m2_millones,precio_50m2_millones,clave,n,canon_m2,rent_bruta_anual
+barrio,Ciudad del Río,645,11.4,570.0,ciudad del rio,1,58333.333333333336,0.06140350877192982
+barrio,Los Colores,440,7.5,375.0,los colores,21,50000.0,0.08
+barrio,San Diego,400,7.3,365.0,san diego,19,44000.0,0.07232876712328767
+barrio,Calasanz,340,6.5,325.0,calasanz,85,41666.666666666664,0.07692307692307693
+barrio,Rodeo Alto,330,6.1,305.0,rodeo alto,25,40000.0,0.07868852459016394
+barrio,Buenos Aires,320,5.3,265.0,buenos aires,18,32363.636363636364,0.07327615780445969
+barrio,Robledo,255,4.9,245.00000000000003,robledo,81,33333.333333333336,0.08163265306122448
+barrio,San Antonio de Prado,240,4.9,245.00000000000003,san antonio de prado,22,31388.88888888889,0.07687074829931974

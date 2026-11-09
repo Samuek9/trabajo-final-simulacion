@@ -1,0 +1,26 @@
+{
+  "ticker": "ICOLCAP.CL",
+  "source_url": "https://finance.yahoo.com/quote/ICOLCAP.CL/history/",
+  "source_method": "yfinance.Ticker.history(period='max', interval='1d', auto_adjust=False, actions=True, repair=False, keepna=True)",
+  "retrieved_at_utc": "2026-10-29T14:48:22.093011+00:00",
+  "first_observation": "2013-05-02",
+  "last_observation": "2026-10-29",
+  "daily_rows": 3521,
+  "columns": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Adj Close",
+    "Volume",
+    "Dividends",
+    "Stock Splits"
+  ],
+  "adjusted_close_available": true,
+  "distributions_rows": 126,
+  "limitations": [
+    "yfinance es un cliente de terceros y Yahoo puede cambiar acceso o estructura de datos",
+    "el CSV contiene los campos devueltos por yfinance; no es una copia byte-a-byte de una respuesta del servidor",
+    "la columna Adj Close debe contrastarse con distribuciones y con documentación de BlackRock"
+  ]
+}

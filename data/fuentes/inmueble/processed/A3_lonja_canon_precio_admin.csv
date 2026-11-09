@@ -1,0 +1,19 @@
+municipio,zona,barrio,banda_m2,precio_venta_m2,canon_m2,admin_ph_m2,nota,canon_sobre_precio_mensual
+Bello,Bello,Amazonía,30-50,5052083.0,44074,3438.0,,0.00872392634879514
+Bello,Bello,Amazonía,50-70,4621985.0,30192,3537.0,,0.006532258326238619
+Bello,Bello,Santa Ana,50-70,4772727.0,31860,3939.0,,0.006675428952881654
+Medellín,Belén,Fátima,30-50,8500000.0,36664,3438.0,,0.0043134117647058825
+Medellín,Belén,Fátima,50-70,,32635,,,
+Medellín,Belén,La Mota,50-70,6000000.0,37941,7250.0,,0.0063235
+Medellín,Belén,La Palma,30-50,,38370,,,
+Medellín,Belén,La Palma,50-70,5500000.0,32227,2400.0,,0.005859454545454545
+Medellín,Belén,Loma de los Bernal,30-50,7576529.0,46921,6742.0,,0.0061929413851646315
+Medellín,Belén,Loma de los Bernal,50-70,6950718.0,40494,5289.0,,0.00582587295298126
+Medellín,Belén,Malibú,50-70,6481481.0,38095,3333.0,,0.005877514722329665
+Medellín,Guayabal,Santa Fe,50-70,,50000,,,
+Medellín,La América,La América,30-50,5943478.0,36073,1902.0,,0.006069341890388086
+Medellín,La América,La América,50-70,5081266.0,33757,2594.0,,0.006643423115420448
+Medellín,La América,Calasanz,30-50,7121212.0,44353,5030.0,,0.006228293723034787
+Medellín,La América,Calasanz,50-70,6004653.0,35461,4355.0,,0.005905586884038095
+Medellín,La América,La Floresta,30-50,,38374,,,
+Medellín,La América,La Floresta,50-70,6562893.0,34665,4388.0,,0.0052819693997753735

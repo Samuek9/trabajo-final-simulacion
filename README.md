@@ -31,6 +31,8 @@ python tools/correr_experimentos.py 8      # corrida completa del informe con 8 
 | `app/` | Interfaz en Streamlit con nueve páginas |
 | `data/master_datos.xlsx` | Parámetros, fuentes, diccionario y datos procesados |
 | `data/raw/` | Series que alimentan las estimaciones (IPC, TPM, CDT semanal, PIB, ETF, IPVU, decisiones de la Junta) |
+| `data/fuentes/etf/` | Descargas originales y series procesadas del análisis de ICOLCAP (BanRep, FRED, Yahoo, BlackRock, OCDE); `metadata_fuentes.csv` dice de dónde sale cada una |
+| `data/fuentes/inmueble/` | Datos del análisis inmobiliario (avisos de arriendo, Lonja, predial, IPVU, tiempos hasta arrendar); `raw/fuentes_y_fechas_de_consulta.csv` tiene la fecha de cada consulta |
 | `outputs/resultados/` | Resultados de la corrida del informe: 1.068 réplicas por estrategia y escenario |
 | `tests/` | 58 pruebas: eventos, cálculos financieros, generadores, estrategias, reproducibilidad |
 | `docs/` | Informe, registro de decisiones y diagramas del equipo |
