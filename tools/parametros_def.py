@@ -75,7 +75,7 @@ FILAS = [
     ("P061", "imp.retencion", "Costos", "Retención en la fuente sobre intereses del CDT", 0.04, X, X, "fracción", "Verificado", "4 % para CDT y CDAT (Decreto 572 de 2025, DUR 1625 de 2016 art. 1.2.4.2.83)", "5.2"),
     ("P066", "imp.retencion_cuenta", "Costos", "Retención en la fuente sobre intereses de la cuenta de ahorros", 0.07, X, X, "fracción", "Verificado", "7 %, tarifa general de rendimientos financieros (DUR 1625 de 2016 art. 1.2.4.2.5); se cobra sobre todo el interés porque el del día supera la base mínima (art. 1.2.4.2.87)", "5.2"),
     ("P062", "imp.gmf", "Costos", "Gravamen a los movimientos financieros (4x1000)", 0.004, X, X, "fracción", "Verificado", "Estatuto Tributario, art. 871", "5.1"),
-    ("P063", "imp.gmf_exencion", "Costos", "Retiros mensuales exentos del 4x1000 (350 UVT)", 350 * 52_374, X, X, "COP por mes", "Verificado", "E.T. art. 879; UVT 2026 = $52.374 (por confirmar)", "5.1"),
+    ("P063", "imp.gmf_exencion", "Costos", "Retiros mensuales exentos del 4x1000 (350 UVT)", 350 * 52_374, X, X, "COP por mes", "Verificado", "E.T. art. 879; UVT 2026 = $52.374 (Resolución DIAN 000238 del 15 de diciembre de 2025)", "5.1"),
 
     # ---------------- CDT (7.4) ----------------
     ("P070", "cdt.plazo", "CDT", "Plazo del CDT", 12, X, X, "meses", "Configurable", "Equipo", "5.2"),

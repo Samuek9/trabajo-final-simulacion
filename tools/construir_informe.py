@@ -415,7 +415,9 @@ def seccion_10(w: Informe):
         "Los originales en PDF están en docs/diagramas del repositorio y en la página Metodología de la aplicación. Sobre el "
         "diagrama original hicimos dos agregados que no cambian su lógica: los eventos 16 y 17 de la crisis forzada del escenario "
         "de estrés, y que la cobertura de liquidez (12) se ejecute en el mismo instante del evento que la necesita, en vez de "
-        "programarse en la lista.")
+        "programarse en la lista. Cuando corregimos los modelos después de la auditoría, actualizamos el texto de las cajas que "
+        "cambiaron (Junta, margen del CDT, cuenta, ETF, valorización, reajuste del canon, tiempo de venta del inmueble y "
+        "reparación) para que el diagrama diga lo mismo que el código; la estructura y las flechas son las del original.")
     if (DIAG / "diagrama_eventos.png").exists():
         w.figura(DIAG / "diagrama_eventos.png", "10", "Diagrama de eventos del equipo. La imagen tiene resolución para ampliarla en el PDF; "
                                                       "el original vectorial está en docs/diagramas/diagrama_eventos.pdf.")

@@ -1,6 +1,6 @@
 # Registro de decisiones
 
-Cada entrada dice qué se decidió, por qué y qué queda abierto. Las marcadas **Equipo** necesitan visto bueno del grupo antes de la entrega.
+Cada entrada dice qué se decidió, por qué y qué queda abierto. Las decisiones que necesitaban visto bueno del grupo quedaron aprobadas el 9 de noviembre de 2026.
 
 ## Modelos que se reconciliaron
 
@@ -17,7 +17,7 @@ El Word de los puntos 1 a 7 y el diagrama de flujo del equipo no siempre usaban 
 
 Efecto de cambiar cada uno por su alternativa (400 réplicas, puntos de probabilidad de meta, E1 / E2 / E3 / E4): CDT por fase +1,0 / +0,3 / −0,5 / 0,0; canon con todo el IPC 0,0 / +2,5 / +1,8 / +1,3; Jones-Faddy −0,5 / +0,3 / −1,0 / +1,3; AR(1) del IPVU 0,0 / −13,7 / −18,5 / −12,5; tabla de la Junta +47,8 / +26,8 / +11,8 / +19,3. Las dos últimas cambian la conclusión y van en la discusión del informe.
 
-## Junta del Banco de la República (Equipo)
+## Junta del Banco de la República
 
 Con la tabla de 7.2 (46 reuniones), la TPM se va al tope de 15 % en buena parte de las réplicas y la P(meta) de E1 pasa de 0,04 a 0,56. Eso no pasa en la historia: el máximo desde 2001 fue 13,25 %. Por eso la referencia es un logit ordenado con la tendencia de la inflación y la brecha de Taylor, TPM − (1 + π + 0,5(π − 3)), estimado con 202 decisiones de 2001 a 2026 fechadas por su vigencia (ver Correcciones de la auditoría).
 
@@ -26,14 +26,14 @@ Con el logit corregido la TPM mediana al año 10 queda en 7,25 % y 0,8 % de las 
 ## Supuestos del equipo que quedaron como parámetros
 
 - Necesidades de liquidez: una cada 24 meses en expansión y normal, una cada 12 en crisis; monto lognormal con mediana de 20 millones en pesos de hoy y σ = 0,8. Es el factor que más mueve el resultado después de la inflación y la valorización.
-- Vacancia: no renovar con probabilidad 5 / 10 / 30 % según el estado; duración gamma con forma 1,1 y media 1 / 1,5 / 6 meses. La validación da 3 % del tiempo desocupado contra 0,6 % de Ciencuadras 2026. Lo dejé así a propósito, más conservador. **Equipo**: confirmar.
-- Estrés: los recortes de la TPM durante la crisis forzada (0,5 / 1 / 1,5 / 2 puntos) no salen de datos. **Equipo**.
+- Vacancia: no renovar con probabilidad 5 / 10 / 30 % según el estado; duración gamma con forma 1,1 y media 1 / 1,5 / 6 meses. La validación da 3 % del tiempo desocupado contra 0,6 % de Ciencuadras 2026. Lo dejamos así a propósito, más conservador (aprobado).
+- Estrés: los recortes de la TPM durante la crisis forzada (0,5 / 1 / 1,5 / 2 puntos) no salen de datos; es un supuesto declarado (aprobado).
 
 ## Decisiones de implementación
 
 - La inflación de diciembre se sortea al inicio de cada año (t = 0, 12, 24...) y entre diciembres la ruta es lineal. Así la Junta y la cuenta conocen la inflación del mes sin mirar el futuro.
 - El arriendo del mes en que cambia el contrato se paga con el canon viejo.
-- 4x1000: se cobra sobre los retiros de la cuenta que pasan la exención mensual de 350 UVT y sobre lo que se recibe al vender ETF. UVT 2026 = 52.374. **Pendiente** confirmar el valor oficial.
+- 4x1000: se cobra sobre los retiros de la cuenta que pasan la exención mensual de 350 UVT y sobre lo que se recibe al vender ETF. UVT 2026 = 52.374 (Resolución DIAN 000238 del 15 de diciembre de 2025).
 - Si ni la venta urgente del inmueble alcanza, lo que falta queda como deuda y cuenta como episodio de iliquidez. La deuda se paga con el primer ingreso que llegue a la cuenta.
 - Pintura, administración y monto de las necesidades se indexan con el índice de precios simulado.
 - Patrimonio: el inmueble va a valor de mercado cada mes y, al final, neto de los costos de venta (4,84 %).
