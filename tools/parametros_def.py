@@ -105,7 +105,7 @@ FILAS = [
 
     # ---------------- Inmueble (5.4, 7.6) ----------------
     ("P110", "inm.costo_compra", "Inmueble", "Costos de compra", 0.025, X, X, "fracción del valor", "Verificado", "Tarifas notariales y de registro 2026", "5.4"),
-    ("P111", "inm.canon_inicial", "Inmueble", "Canon de un contrato nuevo", 0.006, X, X, "fracción mensual del valor", "Calibrado", "Anuncios de Medellín (hoja INM); sensibilidad 0,5 % a 0,7 %", "5.4"),
+    ("P111", "inm.canon_inicial", "Inmueble", "Canon de un contrato nuevo", 0.006, X, X, "fracción mensual del valor", "Calibrado", "Lonja de Propiedad Raíz de Medellín, edición 275: canon ÷ precio de venta por m² en 11 barrios y tamaños de Medellín (30 a 70 m²), mediana 0,59 %, rango 0,43 % a 0,66 %; sensibilidad 0,5 % a 0,7 %", "5.4"),
     ("P112", "inm.comision_inmobiliaria", "Inmueble", "Comisión de la inmobiliaria (10 % + IVA)", 0.119, X, X, "fracción del canon", "Verificado", "Tarifas publicadas", "5.4"),
     ("P113", "inm.ph", "Inmueble", "Administración del edificio (pesos de hoy)", 185_000, X, X, "COP por mes", "Verificado", "Lonja de Medellín; sensibilidad 165.000 a 245.000", "5.4"),
     ("P114", "inm.predial", "Inmueble", "Predial", 0.006, X, X, "fracción anual del valor", "Verificado", "Acuerdo municipal + avalúo", "5.4"),

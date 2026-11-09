@@ -48,6 +48,8 @@ Con el logit la TPM mediana al año 10 queda en 8,5 % y solo 0,4 % de las répli
 - ETF (M2): la media sale de la misma muestra que las volatilidades por estado (179 meses, ago-2011 a jun-2026).
 - Cuenta (M8): α = 0,8978 con 4 cuentas. Ualá se excluye porque es un depósito de bajo monto con tope cercano a $10 M.
 - Vacancia (M7) y necesidades de liquidez (A1): siguen como supuestos sin datos; la sensibilidad de modelos incluye la corrida sin necesidades.
+- Canon (M6): se deja de usar Aptología (avisos de un agregador sin respaldo institucional, descarga truncada). El canon de 0,60 % del valor se apoya en la Lonja de Medellín (edición 275): mediana de canon ÷ precio de 0,59 % en 11 barrios y tamaños de Medellín.
+- Umbral de crisis (A3): PIB < 1 % en todo el libro y en los datos. Con 0 % solo quedarían 4 trimestres de crisis desde 2006 y la de 2009 no contaría.
 - Impuestos (M5): no se modelan el impuesto de renta sobre intereses y arriendos ni la ganancia ocasional en la venta del inmueble; la retención se trata como costo definitivo aunque es un anticipo.
 
 ## Pendientes
