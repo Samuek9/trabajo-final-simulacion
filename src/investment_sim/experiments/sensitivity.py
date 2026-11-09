@@ -69,6 +69,8 @@ def modelos_alternativos() -> list[dict]:
         {"factor": "CDT: margen por fase (en vez de M5)", "cambios": {"cdt.modelo": "fase"}},
         {"factor": "Canon: sube todo el IPC (en vez del modelo DANE)", "cambios": {"inm.reajuste_modelo": "ipc"}},
         {"factor": "Junta: tabla por tendencia de 7.2 (en vez del logit)", "cambios": {"junta.modelo": "tendencia"}},
+        {"factor": "Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar)",
+         "cambios": {"vac.media_N": 4.0}},
         {"factor": "Sin necesidades extraordinarias de liquidez (no tienen fuente)",
          "cambios": {"liq.tasa_E": 0.0, "liq.tasa_N": 0.0, "liq.tasa_C": 0.0}},
     ]

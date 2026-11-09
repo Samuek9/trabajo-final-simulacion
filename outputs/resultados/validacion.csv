@@ -15,6 +15,6 @@ Estados,Proporción del tiempo en Expansión,0.30535,0.366,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Normal,0.5381,0.488,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Crisis,0.15655,0.146,DANE PIB 2006-2026,
 Estados,Duración media de una crisis (trimestres),3.6076923076923078,4.0,DANE PIB 2006-2026,Las rachas que tocan el final del horizonte quedan truncadas.
-Valorización,Valorización nominal media (ln anual),0.07563778726362712,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
-Valorización,Desviación anual,0.030917888744899525,0.0336,IPVU 2001-2025,
-Vacancia,Fracción del tiempo desocupado,0.03056746616642103,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.
+Valorización,Valorización nominal media (ln anual),0.07562479092081123,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
+Valorización,Desviación anual,0.030926643248008527,0.0336,IPVU 2001-2025,
+Vacancia,Fracción del tiempo desocupado,0.030563370846730997,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.

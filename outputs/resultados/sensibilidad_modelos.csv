@@ -19,6 +19,10 @@ Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.0475,0.56,743505395.23
 Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.145,0.4175,820996014.6108403,962422570.4071248
 Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.1725,0.315,822408579.5745738,896413804.4061861
 Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.165,0.375,816705838.6235504,931785453.5266676
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E1,0.0475,0.0475,743505395.2338068,743505395.2338068
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E2,0.145,0.145,820996014.6108403,814828254.9625022
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E3,0.1725,0.165,822408579.5745738,819738298.8345672
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E4,0.165,0.165,816705838.6235504,808870549.6605624
 Sin necesidades extraordinarias de liquidez (no tienen fuente),E1,0.0475,0.2225,743505395.2338068,905371699.2485834
 Sin necesidades extraordinarias de liquidez (no tienen fuente),E2,0.145,0.455,820996014.6108403,982903364.4182904
 Sin necesidades extraordinarias de liquidez (no tienen fuente),E3,0.1725,0.465,822408579.5745738,980705562.0872853

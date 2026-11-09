@@ -113,8 +113,8 @@ FILAS = [
     ("P116", "inm.pintura", "Inmueble", "Pintura al cambiar de inquilino (pesos de hoy)", 1_800_000, X, X, "COP", "Calibrado", "Tarifas por m²", "5.4"),
     ("P117", "inm.costo_venta", "Inmueble", "Costos de venta (3 % + IVA, notaría 0,27 %, retención 1 %)", 0.0484, X, X, "fracción del precio", "Verificado", "Tarifas y norma", "5.4"),
     ("P118", "inm.descuento_urgente", "Inmueble", "Descuento por venta urgente", 0.10, X, X, "fracción", "Supuesto", "Sin dato público del precio de cierre frente al pedido. Representa lo que se cede para vender rápido, incluida la comisión más alta que se le da a la inmobiliaria; se paga además de los costos de venta normales. Sensibilidad 5 % a 20 %", "5.4"),
-    ("P119", "inm.venta_min", "Inmueble", "Tiempo de venta urgente: mínimo", 3, X, X, "meses", "Supuesto", "Más corto que una venta normal (4 a 7 meses, Valora Analitik con datos de Fincaraíz) porque el descuento compra velocidad", "Punto 12"),
-    ("P120", "inm.venta_max", "Inmueble", "Tiempo de venta urgente: máximo", 6, X, X, "meses", "Supuesto", "Más corto que una venta normal (4 a 7 meses, Valora Analitik con datos de Fincaraíz) porque el descuento compra velocidad", "Punto 12"),
+    ("P119", "inm.venta_min", "Inmueble", "Tiempo de venta urgente: mínimo", 4, X, X, "meses", "Calibrado", "Lonja de Medellín, edición 275 (agosto de 2025): vender una vivienda usada tarda 225 días (7,5 meses). La venta urgente cede el descuento para no pasar de ahí: de 4 a 7 meses", "Punto 12"),
+    ("P120", "inm.venta_max", "Inmueble", "Tiempo de venta urgente: máximo", 7, X, X, "meses", "Calibrado", "Lonja de Medellín, edición 275 (agosto de 2025): vender una vivienda usada tarda 225 días (7,5 meses). La venta urgente cede el descuento para no pasar de ahí: de 4 a 7 meses", "Punto 12"),
     ("P121", "inm.tope_canon", "Inmueble", "Tope del canon", 0.01, X, X, "fracción mensual del valor", "Verificado", "Ley 820 de 2003, art. 18", "5.4"),
     ("P122", "inm.reajuste_modelo", "Inmueble", "Reajuste del canon: dane (a + b·IPC previo + ε) o ipc (todo el IPC)", "dane", X, X, "texto", "Estimado", "IPC de arriendo del DANE 2010-2025", "5.4.3"),
     ("P123", "inm.reajuste_a", "Inmueble", "Reajuste DANE: constante a", 1.6784667368428081, X, X, "puntos", "Estimado", "DANE, 16 años", "INM_Arriendo"),
@@ -137,7 +137,7 @@ FILAS = [
     ("P142", "vac.p_C", "Vacancia", "Probabilidad de no renovar en crisis", 0.30, 0.45, 0.30, "probabilidad", "Supuesto", "Sin datos; escenario de crisis a sensibilidad; adverso × 1,5", "7.7"),
     ("P143", "vac.forma", "Vacancia", "Forma de la gamma de la duración", 1.10, X, X, "forma", "Estimado", "Curva de tiempo en oferta de apartamentos, Medellín (Palomma, ago-2025 a ago-2026; publicada en un artículo sobre oficinas)", "7.7"),
     ("P144", "vac.media_E", "Vacancia", "Duración media en expansión", 1.0, 1.5, X, "meses", "Supuesto", "Sin datos por estado; escenario a sensibilidad; adverso × 1,5", "7.7"),
-    ("P145", "vac.media_N", "Vacancia", "Duración media en normal", 1.5, 2.25, X, "meses", "Calibrado", "Palomma; adverso × 1,5", "7.7"),
+    ("P145", "vac.media_N", "Vacancia", "Duración media en normal", 1.5, 2.25, X, "meses", "Calibrado", "Palomma: 25.084 apartamentos de Medellín, ago-2025 a ago-2026; 46 días en promedio para 45 a 60 m². La Lonja (edición 275) reporta 121 días en oferta antes de arrendar (promedio, estratos 4 a 6): va a la sensibilidad con 4 meses. Adverso × 1,5", "7.7"),
     ("P146", "vac.media_C", "Vacancia", "Duración media en crisis", 6.0, 9.0, 9.0, "meses", "Supuesto", "Sin datos por estado; escenario de crisis a sensibilidad", "7.7"),
 
     # ---------------- Liquidez extraordinaria (punto 12) ----------------
