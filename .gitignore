@@ -5,3 +5,6 @@ __pycache__/
 outputs/corrida.log
 outputs/example_results/
 ~$*
+
+# Microdatos del DANE: no se pueden redistribuir (Ley 79 de 1993); solo se publica el resumen.
+data/fuentes/liquidez/iefic_microdatos/

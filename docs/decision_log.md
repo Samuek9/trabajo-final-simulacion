@@ -47,7 +47,8 @@ Con el logit la TPM mediana al año 10 queda en 8,5 % y solo 0,4 % de las répli
 - Interés del CDT (B10): K·((1 + r)^(plazo/12) − 1); antes era simple y solo era correcto con plazo de 12 meses.
 - ETF (M2): la media sale de la misma muestra que las volatilidades por estado (179 meses, ago-2011 a jun-2026).
 - Cuenta (M8): α = 0,8978 con 4 cuentas. Ualá se excluye porque es un depósito de bajo monto con tope cercano a $10 M.
-- Vacancia (M7) y necesidades de liquidez (A1): siguen como supuestos sin datos; la sensibilidad de modelos incluye la corrida sin necesidades.
+- Necesidades de liquidez (A1): la frecuencia se apoya en la IEFIC 2017-2018 del DANE (Medellín, 10 % de hogares con más ingreso): un mes con déficit cubierto con ahorros o venta de activos cada 16 a 23 meses, cota alta porque incluye déficits pequeños; se mantiene 1 cada 24. El monto y el doble en crisis siguen sin datos; la sensibilidad incluye la corrida sin necesidades. Los microdatos no se publican (Ley 79 de 1993), solo data/fuentes/liquidez/iefic_resumen_medellin.csv.
+- Vacancia (M7): la duración se apoya en Palomma; la probabilidad de no renovar y la vacancia en crisis siguen como supuestos.
 - Canon (M6): se deja de usar Aptología (avisos de un agregador sin respaldo institucional, descarga truncada). El canon de 0,60 % del valor se apoya en la Lonja de Medellín (edición 275): mediana de canon ÷ precio de 0,59 % en 11 barrios y tamaños de Medellín.
 - Umbral de crisis (A3): PIB < 1 % en todo el libro y en los datos. Con 0 % solo quedarían 4 trimestres de crisis desde 2006 y la de 2009 no contaría.
 - Impuestos (M5): no se modelan el impuesto de renta sobre intereses y arriendos ni la ganancia ocasional en la venta del inmueble; la retención se trata como costo definitivo aunque es un anticipo.

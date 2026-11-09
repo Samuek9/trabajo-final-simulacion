@@ -141,9 +141,9 @@ FILAS = [
     ("P146", "vac.media_C", "Vacancia", "Duración media en crisis", 6.0, 9.0, 9.0, "meses", "Supuesto", "Sin datos por estado; escenario de crisis a sensibilidad", "7.7"),
 
     # ---------------- Liquidez extraordinaria (punto 12) ----------------
-    ("P150", "liq.tasa_E", "Liquidez", "Necesidades por mes en expansión", 1 / 24, 1.5 / 24, X, "eventos por mes", "Supuesto", "Sin fuente: los resultados se reportan con y sin necesidades; adverso × 1,5", "Punto 12"),
-    ("P151", "liq.tasa_N", "Liquidez", "Necesidades por mes en normal", 1 / 24, 1.5 / 24, X, "eventos por mes", "Supuesto", "Sin fuente: los resultados se reportan con y sin necesidades; adverso × 1,5", "Punto 12"),
-    ("P152", "liq.tasa_C", "Liquidez", "Necesidades por mes en crisis", 1 / 12, 1.5 / 12, 1 / 12, "eventos por mes", "Supuesto", "Sin fuente: los resultados se reportan con y sin necesidades; adverso × 1,5", "Punto 12"),
+    ("P150", "liq.tasa_E", "Liquidez", "Necesidades por mes en expansión", 1 / 24, 1.5 / 24, X, "eventos por mes", "Calibrado", "IEFIC 2017-2018 (DANE), Medellín, hogares del 10 % de ingreso más alto: un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos cada 16 a 23 meses. Es una cota alta (cuenta déficits de cualquier tamaño); se usa 1 cada 24. Adverso × 1,5 (tools/iefic_liquidez.py)", "Punto 12"),
+    ("P151", "liq.tasa_N", "Liquidez", "Necesidades por mes en normal", 1 / 24, 1.5 / 24, X, "eventos por mes", "Calibrado", "IEFIC 2017-2018 (DANE), Medellín, hogares del 10 % de ingreso más alto: un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos cada 16 a 23 meses. Es una cota alta (cuenta déficits de cualquier tamaño); se usa 1 cada 24. Adverso × 1,5 (tools/iefic_liquidez.py)", "Punto 12"),
+    ("P152", "liq.tasa_C", "Liquidez", "Necesidades por mes en crisis", 1 / 12, 1.5 / 12, 1 / 12, "eventos por mes", "Supuesto", "Sin datos por estado (la IEFIC es de 2017-2018, sin crisis): el doble en crisis es supuesto; adverso × 1,5", "Punto 12"),
     ("P153", "liq.mediana", "Liquidez", "Mediana del monto (pesos de hoy)", 20_000_000, X, X, "COP", "Supuesto", "Sin fuente: los resultados se reportan con y sin necesidades", "Punto 12"),
     ("P154", "liq.sigma", "Liquidez", "σ del logaritmo del monto", 0.8, X, X, "ln", "Supuesto", "Equipo (percentil 90 ≈ $56 M)", "Punto 12"),
     ("P155", "liq.mult_monto", "Liquidez", "Multiplicador del monto", 1.0, X, 2.0, "veces", "Supuesto", "Estrés: monto × 2", "Punto 13"),
