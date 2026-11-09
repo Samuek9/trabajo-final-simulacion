@@ -2,8 +2,9 @@ proceso,medida,simulado,observado,referencia,lectura
 Inflación,Mediana de la inflación de diciembre (%),4.65513823396014,5.09988,DANE 2001-2025,
 Inflación,Percentil 5 y 95 (%),2.01 y 10.82,1.95 y 8.96,DANE 2001-2025,
 Inflación,Autocorrelación de ln(π) de un año al siguiente,0.19143703732706915,0.41687311180064096,DANE 2001-2025,Con 10 datos por réplica la autocorrelación muestral sale sesgada hacia abajo.
-TPM,TPM mediana en el año 10 (%),7.5,6.0,BanRep 2001-2026,
-TPM,Tasa real media: TPM − inflación (puntos),3.680674148236354,1.2125905594059405,BanRep y DANE 2001-2026,"El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio."
+TPM,TPM mediana en el año 10 (%),7.25,6.0,BanRep 2001-2026,
+TPM,Tasa real media: TPM − inflación (puntos),3.443124148236354,1.2299172920792079,BanRep y DANE 2001-2026,"El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio."
+TPM,Tasa real media en los años 6 a 10 (puntos),2.7033382150882583,1.2299172920792079,BanRep y DANE 2001-2026,"Sin el arranque la brecha se reduce. Con la inflación simulada de esos años (4,6 %), la regla de Taylor del modelo pide 1,8 puntos; la tasa todavía va bajando hacia ahí."
 TPM,Réplicas con la TPM en el tope de 15 % al año 10,0.008,0.0,"Máximo histórico desde 2001: 13,25 %",
 ETF,Rendimiento log mensual medio,0.0038015057983817203,0.0036327192628493733,BlackRock NAV 2011-2026,
 ETF,Desviación mensual (todos los estados),0.054576807640489576,0.053819480299156314,BlackRock NAV 2011-2026,
@@ -15,6 +16,6 @@ Estados,Proporción del tiempo en Expansión,0.30535,0.366,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Normal,0.5381,0.488,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Crisis,0.15655,0.146,DANE PIB 2006-2026,
 Estados,Duración media de una crisis (trimestres),3.6076923076923078,4.0,DANE PIB 2006-2026,Las rachas que tocan el final del horizonte quedan truncadas.
-Valorización,Valorización nominal media (ln anual),0.07562479092081123,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
-Valorización,Desviación anual,0.030926643248008527,0.0336,IPVU 2001-2025,
-Vacancia,Fracción del tiempo desocupado,0.030563370846730997,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.
+Valorización,Valorización nominal media (ln anual),0.07563165220915176,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
+Valorización,Desviación anual,0.030934398603137462,0.0336,IPVU 2001-2025,
+Vacancia,Fracción del tiempo desocupado,0.03058334590183165,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.

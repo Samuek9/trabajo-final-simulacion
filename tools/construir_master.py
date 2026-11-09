@@ -254,6 +254,12 @@ def decisiones(ws) -> None:
         ["D10", "Inflación", "Diciembre se sortea al inicio del año y la ruta mensual es lineal", "Evita que la Junta mire el futuro", "Cerrada"],
         ["D11", "Liquidez", "Lo que no se cubre queda como deuda y cuenta como iliquidez", "El enunciado no dice qué pasa si nada alcanza", "Cerrada"],
         ["D12", "Arriendo", "En el mes en que cambia el contrato se cobra el canon viejo", "Regla de desempate", "Cerrada"],
+        ["D13", "Estados económicos", "Se usa la cadena de Markov de la hoja MARKOV (umbral de crisis 1 %, expansión 4 %) sin cambios",
+         "Limitaciones: 81 transiciones, así que los intervalos son amplios (IC 90 % bootstrap: C→C 0,25 a 0,89; N→C 0,024 a 0,167; "
+         "estacionaria de crisis 0,03 a 0,37). Parte de la persistencia es mecánica: el crecimiento interanual de un trimestre comparte "
+         "tres trimestres con el anterior (autocorrelación 0,69). Las tres crisis observadas duraron 4 trimestres; la cadena genera "
+         "crisis más largas (racha máxima mediana 6, p95 14). La matriz no cambia entre 2006-2015 y 2016-2026 (G = 4,29, p = 0,37). "
+         "Impacto bajo: la probabilidad de crisis × 0,5 / × 2 mueve la P(meta) de E2 en 0,005", "Limitación declarada"],
     ]
     f = titulo(ws, "Decisiones", "Detalle completo en docs/decision_log.md del repositorio.")
     tabla(ws, f, ["ID", "Tema", "Decisión", "Por qué", "Estado"], filas, [6, 14, 60, 60, 30])

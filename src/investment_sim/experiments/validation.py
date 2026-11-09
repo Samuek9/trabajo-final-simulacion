@@ -59,6 +59,12 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
     fila("TPM", "TPM mediana en el año 10 (%)", np.median(tpm[:, -1]), np.median(hist.tpm), "BanRep 2001-2026")
     fila("TPM", "Tasa real media: TPM − inflación (puntos)", real.mean(), real_obs.mean(), "BanRep y DANE 2001-2026",
          "El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio.")
+    tardia = (tpm - tr["inflacion"])[:, 61:]
+    pi_tardia = float(np.median(tr["inflacion"][:, 61:]))
+    fila("TPM", "Tasa real media en los años 6 a 10 (puntos)", tardia.mean(), real_obs.mean(), "BanRep y DANE 2001-2026",
+         "Sin el arranque la brecha se reduce. Con la inflación simulada de esos años ("
+         + f"{pi_tardia:.1f} %), la regla de Taylor del modelo pide {1 + 0.5 * (pi_tardia - 3):.1f} puntos; "
+         .replace(".", ",") + "la tasa todavía va bajando hacia ahí.")
     fila("TPM", "Réplicas con la TPM en el tope de 15 % al año 10", float((tpm[:, -1] >= p.f("tpm.max") - 1e-9).mean()), 0.0,
          "Máximo histórico desde 2001: 13,25 %")
 

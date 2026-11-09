@@ -24,7 +24,8 @@ def factores(p: Params) -> list[dict]:
     phi = p.f("inf.phi")
     nivel = lambda x: (1 - phi) * np.log(x)  # noqa: E731  constante para un nivel de inflación
     vol = ["etf.vol_E", "etf.vol_N", "etf.vol_C"]
-    vmu = ["val.mu_E", "val.mu_N", "val.mu_C"]
+    mu_v, phi_v, sig_v = p.lista("val.ar1")
+    ar1 = lambda mu: f"{mu};{phi_v};{sig_v}"  # noqa: E731  AR(1) del IPVU con otra media
     vp = ["vac.p_E", "vac.p_N", "vac.p_C"]
     vd = ["vac.media_E", "vac.media_N", "vac.media_C"]
     lt = ["liq.tasa_E", "liq.tasa_N", "liq.tasa_C"]
@@ -44,7 +45,7 @@ def factores(p: Params) -> list[dict]:
         {"factor": "Margen del CDT (a − 0,5 / + 0,5 puntos)", "fuente": "Tasas de interés",
          "bajo": {"cdt.a": p.f("cdt.a") - 0.5}, "alto": {"cdt.a": p.f("cdt.a") + 0.5}},
         {"factor": "Valorización (−2 / +2 puntos por año)", "fuente": "Valorización",
-         "bajo": {k: p.f(k) - 0.02 for k in vmu}, "alto": {k: p.f(k) + 0.02 for k in vmu}},
+         "bajo": {"val.ar1": ar1(mu_v - 0.02)}, "alto": {"val.ar1": ar1(mu_v + 0.02)}},
         {"factor": "Canon inicial (0,50 % / 0,70 % del valor)", "fuente": "Valorización",
          "bajo": {"inm.canon_inicial": 0.005}, "alto": {"inm.canon_inicial": 0.007}},
         {"factor": "Probabilidad de no renovar (× 0,5 / × 2)", "fuente": "Vacancia",
@@ -69,6 +70,10 @@ def modelos_alternativos() -> list[dict]:
         {"factor": "CDT: margen por fase (en vez de M5)", "cambios": {"cdt.modelo": "fase"}},
         {"factor": "Canon: sube todo el IPC (en vez del modelo DANE)", "cambios": {"inm.reajuste_modelo": "ipc"}},
         {"factor": "Junta: tabla por tendencia de 7.2 (en vez del logit)", "cambios": {"junta.modelo": "tendencia"}},
+        {"factor": "Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual)",
+         "cambios": {"junta.logit": "1.908741;-0.264993;-1.349915;2.167739",
+                     "junta.subidas_logit": "0.25;0.5;0.75;1;1.5", "junta.p_subidas_logit": "0.222222;0.111111;0.111111;0.444444;0.111111",
+                     "junta.bajadas_logit": "0.25;0.5;0.75", "junta.p_bajadas_logit": "0.458333;0.458333;0.083333"}},
         {"factor": "Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar)",
          "cambios": {"vac.media_N": 4.0}},
         {"factor": "Sin necesidades extraordinarias de liquidez (no tienen fuente)",
