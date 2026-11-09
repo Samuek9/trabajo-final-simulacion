@@ -133,7 +133,7 @@ def tornado(t):
         ax.barh(range(len(d)), (d.bajo_p_meta - d.ref_p_meta) * 100, color="#9DB9D5", label="Valor bajo")
         ax.barh(range(len(d)), (d.alto_p_meta - d.ref_p_meta) * 100, color="#1F4E78", alpha=0.85, label="Valor alto")
         ax.axvline(0, color="black", lw=0.8)
-        ax.set_title(f"{NOM[e]}: referencia {d.ref_p_meta.iloc[0] * 100:.1f} %")
+        ax.set_title(f"{NOM[e]}: referencia {f"{d.ref_p_meta.iloc[0] * 100:.1f}".replace(".", ",")} %")
         ax.set_xlabel("Cambio en la probabilidad de meta (puntos)")
     ejes[0].set_yticks(range(len(orden)), [o.split(" (")[0] for o in orden], fontsize=8)
     ejes[0].legend(frameon=False, fontsize=8, loc="lower left")

@@ -10,6 +10,7 @@ actualiza la tabla de contenido y exporta el PDF con Word.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,6 +28,7 @@ sys.path.insert(0, str(RAIZ / "src"))
 sys.path.insert(0, str(Path(__file__).parent))
 from investment_sim.config.parameters import cargar  # noqa: E402
 from investment_sim.models import inflation, markov  # noqa: E402
+from informe_1_a_7 import actualizar  # noqa: E402
 from parametros_def import FILAS  # noqa: E402
 
 ORIGEN = RAIZ.parent / "insumos_equipo" / "07_consolidado_puntos_1_a_7" / "Trabajo_Final_Simulacion_puntos_1_a_7.docx"
@@ -96,6 +98,14 @@ def sm(modelo_inicio, e):
 def rango_sm(modelo_inicio, ests=("E2", "E3", "E4")):
     v = [abs(sm(modelo_inicio, e)) for e in ests]
     return f"{c(min(v))} y {c(max(v))}"
+
+
+def alt(modelo_inicio, e):
+    return float(SM[SM.modelo.str.startswith(modelo_inicio) & (SM.estrategia == e)].alt_p_meta.iloc[0])
+
+
+def tor(factor_inicio, e):
+    return float(TOR[TOR.factor.str.startswith(factor_inicio) & (TOR.estrategia == e)].rango_p_meta.iloc[0])
 
 
 def pm(esc, e, capital, meta=1e9):
@@ -233,34 +243,37 @@ def portada_y_resumen(doc):
           "Este documento cubre los puntos 1 a 19 del enunciado. Las secciones 1 a 7 plantean el problema y estudian cada proceso "
           "aleatorio con datos; las secciones 8 a 15 describen el modelo de eventos discretos, las estrategias, los escenarios y el "
           "diseño del experimento; las secciones 16 a 18 muestran la verificación, la validación, la sensibilidad y los resultados. "
-          "Todo número que aparece aquí sale de los datos citados o de la corrida del simulador; nada se estimó a ojo.")
+          "Los cálculos están en el Excel maestro (data/master_datos.xlsx) y cada sección dice en qué hoja.")
 
     ancla = buscar(doc, "1. Contexto", True)
     e_mejor = mejor("base", "p_meta")
+    v = par("base", "E4", "E2", "W_real")
+    sin_liq = [alt("Sin necesidades", e) for e in ("E2", "E3", "E4")]
     textos = [
-        ["Simulamos diez años de un inversionista de Medellín con 700 millones de pesos que quiere terminar con al menos 1.000 "
-         "millones en pesos de hoy. El modelo es de eventos discretos: un reloj que salta de evento en evento (reuniones de la "
-         "Junta, vencimientos de CDT, arriendos, vacancias, gastos imprevistos, cambios del ciclo económico) y un estado que cada "
-         f"evento actualiza. Corrimos {c(N)} réplicas de cada una de las cuatro estrategias en tres escenarios, con la misma economía "
-         "para las cuatro estrategias dentro de cada réplica."],
-        [f"En el escenario base ninguna estrategia vuelve probable la meta. {NOM[e_mejor]} la alcanza en {pc(r('base', e_mejor, 'p_meta'))} "
-         f"de las réplicas; E2 en {pc(r('base', 'E2', 'p_meta'))}, E4 en {pc(r('base', 'E4', 'p_meta'))} y E1 en "
-         f"{pc(r('base', 'E1', 'p_meta'))}. El obstáculo es la inflación, no la rentabilidad nominal: medida en pesos corrientes, "
-         f"E2 pasa de 1.000 millones en {pc(NR.loc[('base', 'E2'), 'p_meta_nominal'], 0)} de las réplicas. La inflación acumulada "
-         f"mediana de los diez años es {pc(NR.loc[('base', 'E2'), 'inflacion_acumulada_p50'], 0)}."],
-        [f"Más patrimonio esperado viene con menos liquidez. E3 tiene el patrimonio real mediano más alto ({mm(r('base', 'E3', 'W_real_p50'))}), "
-         f"pero en el escenario adverso {pc(r('adverso', 'E3', 'p_iliquidez'), 0)} de sus réplicas tienen al menos un episodio de "
-         f"iliquidez y {pc(r('adverso', 'E3', 'p_venta_urgente'), 0)} terminan vendiendo el apartamento de urgencia. E1 casi nunca se "
-         f"queda sin efectivo, pero en {pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas pierde poder adquisitivo."],
-        [f"La estrategia dinámica E4 no mejora a E2, de la que parte: termina en promedio {mm(-par('base', 'E4', 'E2', 'W_real').diferencia)} "
-         "por debajo en el escenario base, y la diferencia en la probabilidad de meta no es distinta de cero. En el modelo el estado "
-         "de la economía cambia la volatilidad del ETF pero no su rendimiento medio, así que moverse a CDT en crisis reduce el riesgo "
-         "sin ganar rentabilidad, y cada ajuste cuesta comisión y 4x1000."],
-        [f"Con 700 millones la meta es una apuesta. Para tener 80 % de probabilidad de llegar a 1.000 millones reales hacen falta cerca de "
-         f"{mm(cap('base', 'E2', 1e9))} con E2 o E3 en el escenario base. Las variables que más mueven el resultado son el nivel de la "
-         "inflación, la valorización del inmueble, el rendimiento medio del ETF y el monto y la frecuencia de los gastos imprevistos. "
-         "Dos elecciones de modelo también cambian la conclusión (la regla de la Junta y el modelo de valorización) y se discuten en "
-         "la sección de limitaciones."],
+        ["Simulamos diez años de un inversionista de Medellín con 700 millones de pesos que quiere llegar a 1.000 millones en "
+         "pesos de hoy. El modelo es de eventos discretos: un reloj que salta de evento en evento (reuniones de la Junta, "
+         "vencimientos de CDT, arriendos, vacancias, gastos imprevistos, cambios del ciclo económico) y un estado que cada evento "
+         f"actualiza. Corrimos {c(N)} réplicas de cuatro estrategias en tres escenarios, y dentro de cada réplica las cuatro "
+         "estrategias viven la misma economía."],
+        [f"En el escenario base la meta es difícil para todas. {NOM[e_mejor]} la alcanza en {pc(r('base', e_mejor, 'p_meta'))} de las "
+         f"réplicas; E2 en {pc(r('base', 'E2', 'p_meta'))}, E4 en {pc(r('base', 'E4', 'p_meta'))} y E1 en {pc(r('base', 'E1', 'p_meta'))}. "
+         f"Lo que más la frena es la inflación: en pesos corrientes E2 pasa de 1.000 millones en "
+         f"{pc(NR.loc[('base', 'E2'), 'p_meta_nominal'], 0)} de las réplicas, y la inflación acumulada mediana de los diez años es "
+         f"{pc(NR.loc[('base', 'E2'), 'inflacion_acumulada_p50'], 0)}."],
+        [f"Más patrimonio esperado viene con menos liquidez. E3 tiene la probabilidad de meta más alta, pero en el escenario adverso "
+         f"{pc(r('adverso', 'E3', 'p_iliquidez'), 0)} de sus réplicas tienen al menos un episodio de iliquidez y "
+         f"{pc(r('adverso', 'E3', 'p_venta_urgente'), 0)} terminan vendiendo el apartamento de urgencia. E1 casi nunca se queda sin "
+         "efectivo y es la que mejor aguanta los escenarios adverso y de estrés, pero en el base pierde poder adquisitivo en "
+         f"{pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas."],
+        [f"La estrategia dinámica E4 no mejora a E2, de la que parte: termina en promedio {mm(-v.diferencia)} por debajo en el "
+         "escenario base y su probabilidad de meta no es distinta. El estado de la economía cambia la volatilidad del ETF pero no "
+         "su rendimiento medio, así que salir del ETF en una crisis baja el riesgo sin ganar rentabilidad, y cada ajuste cuesta "
+         "comisión y 4x1000."],
+        [f"Con 700 millones la meta es poco probable: para tener 80 % de probabilidad de llegar a 1.000 millones reales hacen falta "
+         f"unos {mm(cap('base', 'E2', 1e9))} con E2. Lo que más mueve el resultado es la valorización del inmueble, el rendimiento "
+         "medio del ETF, el nivel de la inflación y la frecuencia y el monto de los gastos imprevistos. Este último es un supuesto "
+         f"sin datos: sin gastos imprevistos la probabilidad de meta de E2 a E4 sube a {pc(min(sin_liq), 0)} o {pc(max(sin_liq), 0)}, "
+         "y por eso mostramos los resultados con y sin ellos."],
     ]
     antes(doc, ancla, ["Resumen ejecutivo"], "Heading 1")
     for t in textos:
@@ -270,47 +283,11 @@ def portada_y_resumen(doc):
 
 
 def notas_7(doc):
-    pi = markov.estacionaria(markov.matriz(P))
-    notas = {
-        "7.2.4 Dependencia y pruebas": (
-            "Uso en el simulador. ",
-            "La tabla anterior es la versión estimada con 46 reuniones. Al simular diez años con ella la TPM tiende a subir hasta "
-            "el tope de 15 % en cerca de la mitad de las réplicas, algo que no ocurre en la historia. Por eso el simulador usa como "
-            "referencia un logit ordenado estimado con las 266 decisiones de la Junta entre 2001 y 2026, con dos variables: la "
-            "tendencia de la inflación en tres meses y la brecha frente a una regla de Taylor, TPM − (1 + π + 0,5(π − 3)). La "
-            f"tabla queda como alternativa en la aplicación. El detalle está en la hoja TPM_Logit y en la sección 16.2."),
-        "7.4.10 Dependencia": (
-            "Uso en el simulador. ",
-            "El simulador usa M5 como referencia, con los residuos observados sorteados por bootstrap. El margen por fase de la TPM "
-            "queda como alternativa y su efecto sobre las conclusiones se mide en la sección 16.3 (cambio en la "
-            "probabilidad de meta, un punto o menos)."),
-        "7.5.10 Dependencia con otras variables": (
-            "Uso en el simulador. ",
-            "Aunque la Jones-Faddy ajusta mejor la distribución sin estados, el simulador usa como referencia la t de Student con "
-            f"ν = {c(P.f('etf.nu'))} y volatilidad mensual que depende del estado económico ({pc(P.f('etf.vol_E'), 1)} en expansión y "
-            f"normal, {pc(P.f('etf.vol_C'), 1)} en crisis), estimada por el equipo con la hoja MARKOV_ETF. La razón es el punto 8: "
-            "el enunciado pide que los estados muevan el ETF, y la Jones-Faddy no tiene estados. La Jones-Faddy queda como "
-            "alternativa; cambiarla mueve la probabilidad de meta en menos de dos puntos (sección 16.3)."),
-        "7.6.10 Dependencia": (
-            "Uso en el simulador. ",
-            "El simulador usa como referencia la valorización normal por estado del análisis del equipo (IPVNBR de Medellín): media "
-            f"logarítmica anual de {c(P.f('val.mu_E'), 3)} en expansión y {c(P.f('val.mu_N'), 3)} en normal y crisis. El AR(1) del IPVU "
-            "nacional queda como alternativa. Esta elección sí pesa: con el AR(1) la probabilidad de meta de E2 a E4 baja entre "
-            f"{rango_sm('Valorización')} puntos (sección 16.3), porque su media de largo plazo (7,55 %) es menor que la de Medellín."),
-        "7.7.10 Dependencia": (
-            "Uso en el simulador. ",
-            "La validación de la sección 16.2 muestra que con estos valores el apartamento pasa desocupado cerca de 3 % del tiempo, "
-            "más que el 0,6 % que reporta Ciencuadras para Medellín. Lo dejamos así a propósito: preferimos un modelo que exagere "
-            "la vacancia a uno que la ignore."),
-        "Referencias de las secciones 5.4, 7.6 y 7.7": (
-            "Uso en el simulador. ",
-            "El simulador usa la clasificación del equipo (sección 8), que difiere de la de esta sección en dos cosas: el periodo "
-            "(2006 a 2026, 82 trimestres) y el umbral de crisis (crecimiento menor que 1 %, para incluir el estancamiento). Con 0 % "
-            "solo quedaban 4 trimestres de crisis en ese periodo. A largo plazo la cadena pasa "
-            f"{pc(pi[0], 0)} del tiempo en expansión, {pc(pi[1], 0)} en normal y {pc(pi[2], 0)} en crisis."),
-    }
-    for inicio, (lead, texto) in notas.items():
-        antes(doc, buscar(doc, inicio, True), ["**" + lead, texto])
+    antes(doc, buscar(doc, "7.4.10 Dependencia", True), [
+        "**Uso en el simulador. ",
+        "El simulador usa M5 como referencia, con los residuos observados sorteados por bootstrap. El margen por fase de la TPM "
+        "queda como alternativa y su efecto sobre las conclusiones se mide en la sección 16.3 (cambio en la probabilidad de meta "
+        "de un punto o menos)."])
 
 
 # ---------------------------------------------------------------- secciones nuevas
@@ -321,34 +298,43 @@ def seccion_8(w: Informe):
     w.salto()
     w.h("8. Dependencia entre variables y estados económicos")
     w.p("No suponemos que las variables sean independientes. El modelo tiene dos estructuras de dependencia. La primera es una "
-        "cadena causal: la inflación mueve la decisión de la Junta, la TPM fija la tasa de la cuenta (α × TPM) y la tasa a la que "
-        "se abre cada CDT, y la inflación también reajusta el canon y las cuotas del inmueble. La segunda es una cadena de Markov "
-        "de tres estados económicos que cambia al mismo tiempo la volatilidad del ETF, la valorización del inmueble, la vacancia y "
-        "la frecuencia de los gastos imprevistos.")
+        "cadena causal: la inflación mueve la decisión de la Junta, la TPM fija la tasa de la cuenta (α × TPM) y la de cada CDT "
+        "que se abre, y la inflación reajusta el canon y los gastos del inmueble. La segunda es una cadena de Markov de tres "
+        "estados económicos que cambia a la vez la volatilidad del ETF, la vacancia y la frecuencia de los gastos imprevistos, y "
+        "que la estrategia E4 usa para decidir.")
     w.h("8.1 Estados y matriz de transición", 2)
     w.p("Clasificamos cada trimestre de 2006 a 2026 según el crecimiento anual del PIB real (DANE): expansión si pasa de 4 %, "
-        "crisis si es menor que 1 % y normal en otro caso. Usamos tres estados y no cinco porque Colombia tuvo pocas crisis en el "
-        "periodo; con cinco, algunos estados tendrían dos o tres datos. De 82 trimestres, 30 fueron de expansión, 40 normales y 12 "
-        "de crisis. La matriz sale de contar las transiciones de cada estado a cada otro y dividir por el total de la fila.")
+        "crisis si es menor que 1 % y normal en otro caso. De 82 trimestres, 30 fueron de expansión, 40 normales y 12 de crisis. "
+        "La matriz sale de contar las transiciones de cada estado a cada otro y dividir por el total de la fila.")
+    w.p("El enunciado propone, como una alternativa, cinco estados: expansión, normalidad, desaceleración, crisis y recuperación. "
+        "Usamos tres. Con 81 transiciones, una matriz de 5 × 5 tiene 25 casillas y varias quedarían con uno o dos datos, sobre "
+        "todo alrededor de las crisis, que en el periodo son solo tres episodios. Lo que el enunciado exige es al menos una "
+        "estructura de dependencia, y con tres estados las probabilidades se pueden estimar con los datos que hay.")
     filas = [[s] + [c(Pm[i, j], 3) for j in range(3)] + [c(dur[i], 1), pc(pi[i], 0)] for i, s in enumerate(markov.ESTADOS)]
     w.tabla("8", "Matriz de transición trimestral y lo que implica.", ["Desde \\ hacia", "Expansión", "Normal", "Crisis",
             "Duración media (trimestres)", "Tiempo a largo plazo"], filas)
-    w.p("Los estados son persistentes y la economía nunca pasó directo de expansión a crisis ni de crisis a expansión. La "
+    w.p("Los estados son persistentes, y en veinte años la economía nunca pasó directo de expansión a crisis ni al revés. La "
         "simulación empieza en Normal, que es el estado del segundo trimestre de 2026 (crecimiento de 3,5 %), y cada tres meses "
         "sortea el estado siguiente con la fila del estado vigente.")
+    w.p("La matriz hay que leerla con cuidado. Con tan pocos datos los intervalos son anchos: con bootstrap, la probabilidad de "
+        "seguir en crisis va de 0,25 a 0,89 y la de pasar de normal a crisis de 0,02 a 0,17. Parte de la persistencia es "
+        "mecánica, porque el crecimiento anual de un trimestre comparte tres trimestres con el del anterior. Y la cadena genera "
+        "crisis más largas que las observadas: las tres reales duraron cuatro trimestres, mientras que en la simulación la racha "
+        "más larga de crisis tiene mediana de seis. Lo que sí comprobamos es que la matriz no cambia entre 2006-2015 y "
+        "2016-2026 (G = 4,29; p = 0,37). La probabilidad de crisis entra al análisis de sensibilidad.")
     w.h("8.2 Qué cambia con el estado", 2)
     filas = [
         ["ETF: volatilidad mensual", pc(P.f("etf.vol_E"), 1), pc(P.f("etf.vol_N"), 1), pc(P.f("etf.vol_C"), 1), "MARKOV_ETF"],
-        ["Inmueble: valorización log anual", c(P.f("val.mu_E"), 3), c(P.f("val.mu_N"), 3), c(P.f("val.mu_C"), 3), "MARKOV_Vivienda"],
         ["Vacancia: probabilidad de no renovar", pc(P.f("vac.p_E"), 0), pc(P.f("vac.p_N"), 0), pc(P.f("vac.p_C"), 0), "Supuesto"],
         ["Vacancia: duración media (meses)", c(P.f("vac.media_E"), 1), c(P.f("vac.media_N"), 1), c(P.f("vac.media_C"), 1), "7.7"],
         ["Gastos imprevistos: uno cada ... meses", c(1 / P.f("liq.tasa_E")), c(1 / P.f("liq.tasa_N")), c(1 / P.f("liq.tasa_C")), "Supuesto"],
+        ["E4: reparto objetivo", "Más ETF", "Intermedio", "Más CDT y cuenta", "Sección 11"],
     ]
     w.tabla("8", "Efecto del estado económico sobre los demás procesos.", ["Variable", "Expansión", "Normal", "Crisis", "Fuente"], filas)
-    w.p("Así, cuando llega una crisis el ETF se vuelve más riesgoso, la vivienda deja de valorizarse como en la expansión, "
-        "arrendar cuesta más y los imprevistos llegan el doble de seguido, todo en la misma réplica. Una cosa no cambia con el "
-        "estado: el rendimiento medio del ETF. Con 182 meses de datos la diferencia de medias entre estados no fue significativa, "
-        "y preferimos no inventarla. Esa decisión explica buena parte del resultado de E4 (sección 18).")
+    w.p("Así, cuando llega una crisis el ETF se vuelve más riesgoso, arrendar cuesta más y los imprevistos llegan el doble de "
+        "seguido, todo en la misma réplica. Dos cosas no cambian con el estado porque los datos no lo sostienen: el rendimiento "
+        "medio del ETF (Kruskal-Wallis, p = 0,39) y la valorización del inmueble (Welch, p = 0,275). Preferimos no inventar esas "
+        "diferencias, y esa decisión explica buena parte del resultado de E4 (sección 18).")
 
 
 def seccion_9(w: Informe):
@@ -372,7 +358,7 @@ def seccion_9(w: Informe):
         ["7", "Fin de contrato de arriendo", "Sortea si el inquilino renueva; si no, empieza una vacancia de duración gamma", "Cada 12 meses"],
         ["8", "Fin de vacancia", "Entra un inquilino nuevo con el canon de mercado", "Aleatorio"],
         ["6", "Pago de arriendo", "Abona el canon menos la comisión de la inmobiliaria", "Mensual si está ocupado"],
-        ["10", "Reparación extraordinaria", "Apagado (sin datos)", "Poisson"],
+        ["10", "Reparación extraordinaria", "Programado en el código pero apagado (frecuencia 0, sin datos)", "Poisson"],
         ["11", "Necesidad de liquidez", "Sortea el monto y llama a la cobertura (12); programa la siguiente", "Poisson según el estado"],
         ["12", "Cobertura de liquidez", "Obtiene el efectivo: cuenta, ETF, venta anticipada de CDT, venta urgente del inmueble", "Al instante, la llama otro evento"],
         ["13", "Venta del inmueble", "Recibe el producto de la venta urgente, con descuento y costos", "3 a 6 meses después de decidirla"],
@@ -387,6 +373,10 @@ def seccion_9(w: Informe):
         "de modo que E4 decide cuánto renovar sin vender el CDT antes de tiempo. La compra o venta de activos y el pago de "
         "dividendos no son eventos separados: las compras ocurren en el inicio y en la revisión de E4, las ventas en la cobertura "
         "de liquidez, y los dividendos del ETF ya están dentro de su rendimiento total (sección 7.5).")
+    w.p("La reparación extraordinaria (evento 10) está en el diagrama y en el código, pero la dejamos con frecuencia cero. No "
+        "encontramos datos de cuánto cuestan ni cada cuánto pasan en un apartamento usado de este tamaño, y no quisimos inventarlos. "
+        "El mantenimiento normal (0,3 % del valor al año) y la pintura cada vez que cambia el inquilino sí se cobran. Desde la "
+        "aplicación se puede encender el evento con una frecuencia y un costo para ver su efecto.")
     w.h("9.2 Variables de estado", 2)
     filas = [
         ["Reloj", "t (meses)"], ["Efectivo", "Saldo de la cuenta"], ["Renta fija", "Lista de CDT abiertos: capital, tasa, vencimiento"],
@@ -405,14 +395,14 @@ def seccion_9(w: Informe):
         "sigue idéntica. Y dos estrategias con la misma semilla ven exactamente la misma inflación, la misma Junta y el mismo "
         "ETF, que es lo que permite compararlas réplica a réplica (sección 14).")
     w.h("9.4 Modelos de referencia del simulador", 2)
-    w.p("Para algunos procesos el estudio de la sección 7 y el análisis del equipo propusieron modelos distintos. El simulador "
-        "trae los dos; el de referencia es el que se usa en los resultados y el otro se puede elegir en la aplicación.")
+    w.p("Para algunos procesos estudiamos más de un modelo. El simulador trae los dos: el de referencia es el que se usa en los "
+        "resultados y el otro se puede elegir en la aplicación y entra al análisis de sensibilidad (sección 16.3).")
     filas = [
         ["Estados económicos", "Markov del equipo (umbral 1 % y 4 %)", "No"],
-        ["Junta", "Logit ordenado con tendencia y brecha de Taylor", "Tabla por tendencia (7.2)"],
+        ["Junta", "Logit ordenado con tendencia y brecha de Taylor (7.2.7)", "Tabla por tendencia (7.2.3)"],
         ["Margen del CDT", "M5 con residuos observados (7.4)", "Normal por fase de la TPM"],
-        ["ETF", "t de Student con volatilidad por estado (equipo)", "Jones-Faddy sin estados (7.5)"],
-        ["Valorización", "Normal por estado, IPVNBR Medellín (equipo)", "AR(1) del IPVU (7.6)"],
+        ["ETF", "t de Student (ν = 5) con volatilidad por estado (7.5.11)", "Jones-Faddy sin estados (7.5.9)"],
+        ["Valorización", "AR(1) del IPVU (7.6)", "Normal por estado con el IPVNBR de Medellín (vivienda nueva)"],
         ["Reajuste del canon", "Modelo DANE con tope en el IPC previo (5.4.3)", "Sube todo el IPC (diagrama del equipo)"],
     ]
     w.tabla("9", "Modelo de referencia y alternativa de cada proceso.", ["Proceso", "Referencia", "Alternativa"], filas)
@@ -473,6 +463,15 @@ def seccion_12(w: Informe):
         f"{c(P.f('liq.sigma'), 1)} en el logaritmo, y se indexa con el índice de precios simulado. Con esos valores, una de cada "
         "diez necesidades pasa de 55 millones. En diez años el inversionista enfrenta en promedio "
         f"{c(r('base', 'E1', 'n_necesidades_media'), 1)} necesidades en el escenario base.")
+    w.p("Estos valores son un supuesto del equipo, como el enunciado admite para este componente, y buscamos con qué "
+        "contrastarlos. La Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) del DANE, de 2017 y 2018, "
+        "pregunta si en el último mes los gastos del hogar superaron sus ingresos y cómo se cubren esos meses. Entre el 10 % de "
+        "hogares de Medellín con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos "
+        "aparece una vez cada 16 a 23 meses. No la usamos para calibrar, por dos razones: cuenta déficits de cualquier tamaño, "
+        "también los pequeños, y la pregunta de cómo se cubren es sobre lo que el hogar suele hacer, no sobre ese mes. Sí muestra "
+        "que una necesidad cada dos años no es exagerada. Para el monto no encontramos ninguna fuente. Como el supuesto pesa "
+        "mucho, la sección 16.3 muestra los resultados sin necesidades extraordinarias. (Fuente: Departamento Administrativo "
+        "Nacional de Estadística: www.dane.gov.co. Los microdatos no se publican con este trabajo; solo el resumen.)")
     w.p("Cuando llega una necesidad, o cuando la cuenta queda por debajo del mínimo al cierre de mes, el simulador consigue el "
         "efectivo en este orden y registra lo que cuesta cada paso:")
     w.vinetas([
@@ -506,7 +505,7 @@ def seccion_13(w: Informe):
         ["TPM (Junta)", "Logit", "Logit (sube más por la inflación)", "Bajadas de 0,5 a 2 puntos por reunión"],
         ["Cuenta", f"{c(P.f('cta.alfa'), 3)} × TPM", f"{c(PA.f('cta.alfa'), 2)} × TPM", "Base"],
         ["ETF", f"μ = {pc(P.f('etf.mu'), 2)} mensual", "μ = 0", "Caída de 25 % al empezar la crisis"],
-        ["Valorización", "Según el estado", "2 puntos menos en cada estado", "−5 % anual durante la crisis"],
+        ["Valorización", "AR(1) del IPVU, media 7,55 %", "Media 2 puntos menos", "−5 % anual durante la crisis"],
         ["Vacancia", "5 / 10 / 30 %; 1 / 1,5 / 6 meses", "Probabilidad y duración × 1,5", "30 % y 9 meses durante la crisis"],
         ["Necesidades de liquidez", "1 cada 24 meses (12 en crisis)", "Frecuencia × 1,5", "1 cada 12 meses y monto × 2 durante la crisis"],
     ]
@@ -556,8 +555,8 @@ def seccion_14(w: Informe):
 
 def seccion_15(w: Informe):
     w.h("15. Indicadores de desempeño")
-    w.p("Cada réplica produce una fila con 66 columnas (hoja DICCIONARIO del Excel). Estos son los indicadores del enunciado y "
-        "los que agregamos:")
+    w.p("Cada réplica produce una fila con 66 columnas (hoja DICCIONARIO del Excel). En el informe usamos los indicadores que pide "
+        "el enunciado y tres que agregamos porque responden preguntas del estudio; el resto queda en los archivos de resultados.")
     filas = [
         ["Patrimonio nominal y real final", "Inmueble neto de costos de venta; real = nominal / índice de precios"],
         ["Rentabilidad real", "Tasa anual compuesta del patrimonio real"],
@@ -567,11 +566,9 @@ def seccion_15(w: Informe):
         ["Meta", "Probabilidad de que el patrimonio real final alcance la meta"],
         ["Momento de la meta", "Primer mes en que el patrimonio real alcanza la meta"],
         ["Iliquidez", "Probabilidad de algún episodio, número, duración y meses en iliquidez"],
-        ["Agregado: CVaR 5 %", "Promedio del 5 % de réplicas con peor patrimonio final"],
+        ["Agregado: CVaR 5 %", "Promedio del 5 % de réplicas con peor patrimonio final: qué tan malo es el peor caso"],
         ["Agregado: venta urgente", "Probabilidad de tener que vender el inmueble con descuento"],
-        ["Agregado: costos totales", "Comisiones, impuestos, castigos y descuentos pagados en diez años"],
-        ["Agregado: peso del arriendo", "Arriendo neto sobre la ganancia total"],
-        ["Agregado: liquidez final", "Cuenta, CDT y ETF al final, en pesos de hoy"],
+        ["Agregado: costos totales", "Comisiones, impuestos, castigos y descuentos pagados en diez años, para juzgar a E4"],
     ]
     w.tabla("15", "Indicadores.", ["Indicador", "Definición"], filas, [2.2, 4.4])
 
@@ -621,14 +618,21 @@ def seccion_16(w: Informe):
     vac = VAL[VAL.proceso == "Vacancia"].iloc[0]
     w.p("La mayoría de los procesos quedan cerca de sus datos: la mediana de la inflación, la media y la desviación del ETF, la "
         "proporción del tiempo en cada estado y la valorización. Tres diferencias merecen comentario.")
+    tardia = VAL[VAL.medida.str.startswith("Tasa real media en los años")].iloc[0]
+    taylor = re.search(r"pide (\d+,\d) puntos", str(tardia.lectura)).group(1)
     w.vinetas([
-        ("Tasa real alta.", f"La TPM menos la inflación promedia {c(float(tasa_real.simulado), 1)} puntos en la simulación y "
-                            f"{c(float(tasa_real.observado), 1)} en la historia. El modelo parte de una tasa real de unos 6 puntos (TPM de "
-                            "12,25 % con inflación de 6,3 %) y la Junta simulada la baja despacio. Esto favorece a la renta fija, es decir "
-                            "a E1, y lo tratamos como limitación."),
+        ("Tasa real alta.", f"La TPM menos la inflación promedia {c(float(tasa_real.simulado), 1)} puntos en los diez años simulados y "
+                            f"{c(float(tasa_real.observado), 1)} en la historia. La diferencia viene sobre todo del punto de partida: hoy la "
+                            "TPM está en 12,25 % con inflación de 6,3 %, una tasa real de 6 puntos, y la Junta simulada la baja de a poco. "
+                            f"En los años 6 a 10 la tasa real ya es {c(float(tardia.simulado), 1)} y sigue bajando hacia lo que pide la "
+                            f"regla de Taylor con la inflación simulada ({taylor} puntos). Esto favorece a la renta fija, es decir a E1, y "
+                            "lo tratamos como limitación."),
         ("ETF sin asimetría.", "La t de Student es simétrica y los datos tienen asimetría negativa (−1,12); el peor mes simulado en "
-                               "diez años es más suave que marzo de 2020. La Jones-Faddy sí la reproduce y está disponible como alternativa."),
-        ("Vacancia conservadora.", f"El apartamento pasa {pc(float(vac.simulado), 1)} del tiempo desocupado frente a 0,6 % en Ciencuadras."),
+                               "diez años es más suave que marzo de 2020. La Jones-Faddy sí la reproduce y está disponible como "
+                               f"alternativa; usarla cambia la probabilidad de meta entre {rango_sm('ETF')} puntos."),
+        ("Vacancia conservadora.", f"El apartamento pasa {pc(float(vac.simulado), 1)} del tiempo desocupado frente a 0,6 % en "
+                                   "Ciencuadras. Con la duración de la Lonja (121 días) en vez de la de Palomma, la probabilidad de "
+                                   f"meta cambia menos de un punto."),
     ])
     w.h("16.3 Análisis de sensibilidad", 2)
     w.p("Movimos 14 factores, uno a la vez, a un valor bajo y uno alto, con 400 réplicas y las mismas semillas, y medimos el "
@@ -637,9 +641,10 @@ def seccion_16(w: Informe):
     w.figura(FIG / "f06_tornado.png", "16", "Tornado de la probabilidad de meta para E2 y E3 (escenario base, 400 réplicas por punto).")
     top = TOR[TOR.estrategia == "E2"].sort_values("rango_p_meta", ascending=False).head(5)
     w.p("Para E2, los cinco factores con más efecto son: " + "; ".join(
-        f"{x.factor.split(' (')[0].lower()} ({c(x.bajo_p_meta * 100)} % a {c(x.alto_p_meta * 100)} %)" for x in top.itertuples())
-        + ". La vacancia, la volatilidad del ETF y el margen del CDT casi no mueven el resultado. El riesgo de no llegar a la meta "
-        "lo explican el poder adquisitivo (inflación) y el crecimiento de los dos activos de riesgo, más el tamaño de los imprevistos.")
+        f"{x.factor.split(' (')[0][0].lower() + x.factor.split(' (')[0][1:]} ({c(x.bajo_p_meta * 100)} % a {c(x.alto_p_meta * 100)} %)" for x in top.itertuples())
+        + ". La vacancia, el margen del CDT, la tasa de la cuenta y la probabilidad de crisis casi no mueven el resultado. Un detalle "
+        "que parece raro: subir la volatilidad del ETF sube un poco la probabilidad de meta. Pasa porque la meta está lejos de la "
+        "mediana, y con más dispersión más réplicas quedan por encima de ella.")
     w.p("También medimos qué pasa si cada proceso se simula con su modelo alternativo (Tabla 16-c).")
     filas = []
     for m, g in SM.groupby("modelo", sort=False):
@@ -647,11 +652,14 @@ def seccion_16(w: Informe):
         filas.append([m] + [f"{(g.loc[e, 'alt_p_meta'] - g.loc[e, 'ref_p_meta']) * 100:+.1f}".replace(".", ",") for e in EST])
     w.tabla("16", "Cambio en la probabilidad de meta (puntos) al usar el modelo alternativo.", ["Modelo alternativo"] + EST, filas,
             [3.4, 0.8, 0.8, 0.8, 0.8])
-    w.p("Tres alternativas mueven menos de tres puntos. Dos sí cambian la conclusión. Con la tabla de la Junta la TPM sube hasta el "
-        f"tope y la renta fija se vuelve muy rentable: E1 gana {c(sm('Junta', 'E1'))} puntos y pasa a ser la mejor estrategia. Con el "
-        f"AR(1) del IPVU las estrategias con inmueble pierden entre {rango_sm('Valorización')} puntos. Ninguna de las dos alternativas reproduce mejor la historia que la "
-        "referencia (la primera lleva la TPM a niveles que nunca tuvo; la segunda usa precios nacionales para un apartamento en "
-        "Medellín), pero muestran que la comparación entre E1 y las estrategias con inmueble depende de esos dos supuestos.")
+    w.p("Cinco alternativas mueven tres puntos o menos: el CDT por fase, el canon que sube todo el IPC, la Jones-Faddy, el logit de "
+        "la Junta estimado solo con 2017 a 2026 y la vacancia de 4 meses de la Lonja. Tres sí cambian la conclusión. Con la tabla "
+        "de la Junta la TPM llega al tope de 15 % en cerca de la mitad de las réplicas y la renta fija se vuelve muy rentable: E1 "
+        f"gana {c(sm('Junta: tabla', 'E1'))} puntos y pasa a ser la mejor estrategia. Con el índice de vivienda nueva de Medellín "
+        f"(IPVNBR) las estrategias con inmueble ganan entre {rango_sm('Valorización')} puntos. Y sin necesidades extraordinarias de "
+        f"liquidez la probabilidad de meta de E2 a E4 sube entre {rango_sm('Sin necesidades')} puntos. Las dos primeras alternativas "
+        "no reproducen mejor la historia: la tabla lleva la TPM a niveles que nunca tuvo y el IPVNBR mide vivienda nueva, no usada. "
+        "La tercera muestra cuánto pesa un supuesto que no tiene datos.")
 
 
 def seccion_17(w: Informe):
@@ -671,13 +679,14 @@ def seccion_17(w: Informe):
             filas.append(fila)
     w.tabla("17", "Capital inicial (millones) para tener 80 % de probabilidad de alcanzar cada meta real.",
             ["Escenario", "Meta (M)"] + EST, filas)
-    w.p(f"Con el capital actual de 700 millones, la meta de 1.000 millones es casi una moneda al aire para E2 y E3 "
-        f"({pc(r('base', 'E2', 'p_meta'), 0)} y {pc(r('base', 'E3', 'p_meta'), 0)}). La curva es empinada entre 600 y 900 millones: cada 100 "
-        f"millones adicionales suben la probabilidad entre {c(min(pm('base', e, k + 1e8) - pm('base', e, k) for e in ('E2', 'E3') for k in (6e8, 7e8, 8e8)) * 100)} "
-        f"y {c(max(pm('base', e, k + 1e8) - pm('base', e, k) for e in ('E2', 'E3') for k in (6e8, 7e8, 8e8)) * 100)} puntos. Con E1 hace falta más capital para cualquier meta: para "
-        f"1.000 millones con 80 % se necesitan {mm(cap('base', 'E1', 1e9))}, frente a {mm(cap('base', 'E2', 1e9))} con E2. En el "
-        "escenario de estrés ninguna estrategia llega a 80 % para la meta de 1.000 millones con menos de 1.000 millones de capital, "
-        "es decir, habría que empezar casi con la meta.")
+    saltos = [pm("base", e, k + 1e8) - pm("base", e, k) for e in ("E2", "E3") for k in (7e8, 8e8, 9e8)]
+    w.p(f"Con el capital actual de 700 millones, la meta de 1.000 millones es poco probable para todas "
+        f"({pc(pm('base', 'E3', 7e8), 0)} con E3 en esta corrida de 500 réplicas). La curva es empinada entre 700 y 1.000 millones: "
+        f"cada 100 millones adicionales suben la probabilidad entre {c(min(saltos) * 100)} y {c(max(saltos) * 100)} puntos con E2 y "
+        f"E3. Con E1 hace falta más capital para cualquier meta: empezando con 1.000 millones llega a 1.000 millones reales en "
+        f"{pc(pm('base', 'E1', 1e9), 0)} de las réplicas, frente a {pc(pm('base', 'E2', 1e9), 0)} con E2. Para 80 % de probabilidad "
+        f"con E2 se necesitan unos {mm(cap('base', 'E2', 1e9))}. En el escenario de estrés ninguna estrategia llega a 80 % para la "
+        "meta de 1.000 millones con menos de 1.000 millones de capital: habría que empezar con la meta ya cumplida.")
 
 
 def seccion_18(w: Informe):
@@ -687,74 +696,88 @@ def seccion_18(w: Informe):
         for e in EST:
             x = R.loc[(esc, e)]
             filas.append([ESC[esc].capitalize(), e, f"{pc(x.p_meta)} ({c(x.p_meta_lo * 100, 1)} a {c(x.p_meta_hi * 100, 1)})",
-                          c(x.W_real_p5 / 1e6), c(x.W_real_p50 / 1e6), c(x.W_real_p95 / 1e6), c(x.cvar5_W_real / 1e6),
-                          pc(x.rent_real_media), pc(x.p_perdida_real, 0), pc(x.caida_max_p50, 0), pc(x.p_iliquidez), pc(x.p_venta_urgente)])
-    w.tabla("18", f"Indicadores principales ({c(N)} réplicas por fila). Patrimonio en millones de pesos de hoy.",
-            ["Escenario", "Estr.", "P(meta) e IC 95 %", "P5", "P50", "P95", "CVaR 5 %", "Rent. real", "P(pérdida real)",
+                          c(x.W_real_p5 / 1e6), c(x.W_real_p25 / 1e6), c(x.W_real_p50 / 1e6), c(x.W_real_p75 / 1e6),
+                          c(x.W_real_p95 / 1e6), c(x.cvar5_W_real / 1e6), pc(x.rent_real_media), pc(x.p_perdida_real, 0),
+                          pc(x.caida_max_p50, 0), pc(x.p_iliquidez), pc(x.p_venta_urgente)])
+    w.tabla("18", f"Indicadores principales ({c(N)} réplicas por fila). Patrimonio real final en millones de pesos de hoy.",
+            ["Escenario", "Estr.", "P(meta) e IC 95 %", "P5", "P25", "P50", "P75", "P95", "CVaR 5 %", "Rent. real", "P(pérdida real)",
              "Caída máx. P50", "P(iliquidez)", "P(venta urgente)"], filas,
-            [0.55, 0.35, 0.95, 0.4, 0.4, 0.45, 0.48, 0.48, 0.55, 0.48, 0.55, 0.55], tam=7.5)
+            [0.5, 0.33, 0.9, 0.36, 0.36, 0.36, 0.38, 0.4, 0.44, 0.45, 0.5, 0.45, 0.5, 0.5], tam=7)
+    w.p("El momento de llegar a la meta, la duración de los episodios de iliquidez y los costos totales están en la hoja "
+        "RESULTADOS del Excel y en el archivo resumen.csv.")
     w.figura(FIG / "f01_abanico.png", "18", "Patrimonio real mes a mes: mediana (línea) y percentiles 25 a 75 (banda). La línea gris es la meta.")
     w.figura(FIG / "f02_cajas.png", "18", "Patrimonio real final: caja del percentil 25 al 75 y bigotes del 5 al 95. Punteada: capital inicial; rayada: meta.")
     w.figura(FIG / "f03_prob_meta.png", "18", "Probabilidad de alcanzar la meta con su intervalo de 95 %.", 5.5)
     w.figura(FIG / "f04_iliquidez.png", "18", "Porcentaje de réplicas en iliquidez cada mes.")
     w.h("18.1 Respuestas a las preguntas del estudio", 2)
 
+    e32 = par("base", "E3", "E2", "W_real")
     w.p("**1. ¿Cómo cambia la distribución del patrimonio final entre estrategias? ",
         f"En el escenario base E2, E3 y E4 tienen medianas parecidas ({mm(r('base', 'E2', 'W_real_p50'))}, {mm(r('base', 'E3', 'W_real_p50'))} "
-        f"y {mm(r('base', 'E4', 'W_real_p50'))}) y E1 queda unos 120 millones abajo ({mm(r('base', 'E1', 'W_real_p50'))}). Lo que cambia es la "
-        f"forma. E3 tiene la cola derecha más larga (percentil 95 de {mm(r('base', 'E3', 'W_real_p95'))}) y también una cola izquierda peor "
-        f"que E2: su CVaR 5 % es {mm(r('base', 'E3', 'cvar5_W_real'))} frente a {mm(r('base', 'E2', 'cvar5_W_real'))} de E2. Las diferencias "
-        f"pareadas son todas distintas de cero: E3 supera a E2 en {mm(par('base', 'E3', 'E2', 'W_real').diferencia)} en promedio "
-        f"(IC 95 % de {c(par('base', 'E3', 'E2', 'W_real').lo / 1e6)} a {c(par('base', 'E3', 'E2', 'W_real').hi / 1e6)} millones).")
+        f"y {mm(r('base', 'E4', 'W_real_p50'))}) y E1 queda unos {c((r('base', 'E2', 'W_real_p50') - r('base', 'E1', 'W_real_p50')) / 1e6)} "
+        f"millones abajo ({mm(r('base', 'E1', 'W_real_p50'))}). Lo que cambia es la forma. E3 tiene la cola derecha más larga "
+        f"(percentil 95 de {mm(r('base', 'E3', 'W_real_p95'))}) y también una cola izquierda peor que E2: su CVaR 5 % es "
+        f"{mm(r('base', 'E3', 'cvar5_W_real'))} frente a {mm(r('base', 'E2', 'cvar5_W_real'))}. Las diferencias pareadas entre "
+        f"estrategias son distintas de cero: E3 supera a E2 en {mm(e32.diferencia)} en promedio (IC 95 % de {c(e32.lo / 1e6)} a "
+        f"{c(e32.hi / 1e6)} millones).")
     w.p("**2. ¿Qué efecto tiene la inflación sobre las conclusiones? ",
-        "Es la variable que más cambia la respuesta. Si la meta se midiera en pesos corrientes, todas las estrategias con inmueble "
-        f"la alcanzarían en más de {pc(min(NR.loc[('base', e), 'p_meta_nominal'] for e in ('E2', 'E3', 'E4')), 0)} de las réplicas; en pesos "
-        f"de hoy, en menos de {pc(r('base', 'E3', 'p_meta') + 0.01, 0)}. En el escenario adverso, con inflación alrededor de 6,5 %, los precios "
-        f"se duplican en la mediana ({pc(NR.loc[('adverso', 'E2'), 'inflacion_acumulada_p50'], 0)} de inflación acumulada) y la probabilidad "
-        "de meta cae a menos de 1 % para todas. En el tornado, pasar la inflación de largo plazo de 3,5 % a 6,5 % mueve la probabilidad "
-        "de meta de E2 en más de 40 puntos. La inflación también ordena las estrategias: E1, la más expuesta, pierde poder adquisitivo en "
-        f"{pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas del escenario base.")
+        "Es la que más cambia la respuesta. Si la meta se midiera en pesos corrientes, las estrategias con inmueble la alcanzarían "
+        f"en más de {pc(min(NR.loc[('base', e), 'p_meta_nominal'] for e in ('E2', 'E3', 'E4')), 0)} de las réplicas; en pesos de hoy, "
+        f"en menos de {pc(r('base', 'E3', 'p_meta') + 0.01, 0)}. En el escenario adverso, con inflación alrededor de 6,5 %, los precios "
+        f"se duplican en la mediana ({pc(NR.loc[('adverso', 'E2'), 'inflacion_acumulada_p50'], 0)} de inflación acumulada) y la "
+        "probabilidad de meta cae a menos de 1 % para todas. En el tornado, pasar la inflación de largo plazo de 3,5 % a 6,5 % mueve "
+        f"la probabilidad de meta de E2 en {c(tor('Nivel de la inflación', 'E2') * 100)} puntos. La inflación también afecta más a "
+        f"E1: pierde poder adquisitivo en {pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas del escenario base.")
     w.p("**3. ¿Qué estrategias presentan mayor exposición a problemas de liquidez? ",
         f"E3, con diferencia. En el escenario base {pc(r('base', 'E3', 'p_iliquidez'))} de sus réplicas tienen algún episodio, contra "
         f"{pc(r('base', 'E2', 'p_iliquidez'))} de E2. En el adverso la cifra sube a {pc(r('adverso', 'E3', 'p_iliquidez'))} para E3, "
-        f"{pc(r('adverso', 'E2', 'p_iliquidez'))} para E2 y {pc(r('adverso', 'E4', 'p_iliquidez'))} para E4, y en {pc(r('adverso', 'E3', 'p_venta_urgente'))} "
-        "de las réplicas E3 vende el apartamento con descuento. E1 casi nunca tiene problemas porque 80 % de su capital está en cuenta y "
-        f"CDT. La exposición depende de cuánto efectivo y ETF quedan después de comprar el inmueble: E3 empieza con {pc(1 - P.lista('E3.pesos')[3], 0)} del capital "
-        f"en activos líquidos, E2 con {pc(1 - P.lista('E2.pesos')[3], 0)}.")
+        f"{pc(r('adverso', 'E2', 'p_iliquidez'))} para E2 y {pc(r('adverso', 'E4', 'p_iliquidez'))} para E4, y en "
+        f"{pc(r('adverso', 'E3', 'p_venta_urgente'))} de las réplicas E3 vende el apartamento con descuento. E1 casi nunca tiene "
+        "problemas porque 80 % de su capital está en cuenta y CDT. La exposición depende de cuánto efectivo y ETF quedan después de "
+        f"comprar el inmueble: E3 empieza con {pc(1 - P.lista('E3.pesos')[3], 0)} del capital en activos líquidos y E2 con "
+        f"{pc(1 - P.lista('E2.pesos')[3], 0)}.")
     w.p("**4. ¿Cuál es la probabilidad de alcanzar diferentes metas para distintos capitales iniciales? ",
         "La sección 17 lo responde con la matriz completa. En resumen, con E2 en el escenario base la probabilidad de llegar a 1.000 "
-        f"millones pasa de {pc(pm('base', 'E2', 5e8))} con 500 millones a {pc(pm('base', 'E2', 9e8), 0)} con 900 millones, y 80 % de probabilidad pide unos "
-        f"{mm(cap('base', 'E2', 1e9))}. Para una meta de 800 millones bastan {mm(cap('base', 'E2', 800e6))}.")
+        f"millones pasa de {pc(pm('base', 'E2', 5e8))} con 500 millones a {pc(pm('base', 'E2', 9e8), 0)} con 900 millones, y 80 % de "
+        f"probabilidad pide unos {mm(cap('base', 'E2', 1e9))}. Para una meta de 800 millones bastan {mm(cap('base', 'E2', 800e6))}.")
+    m_adv, m_est = mejor("adverso", "W_real_p50"), mejor("estres", "W_real_p50")
     w.p("**5. ¿Cómo cambia el desempeño bajo escenarios adversos y de estrés? ",
-        f"En el adverso todas pierden poder adquisitivo en la mediana (rentabilidad real media entre {pc(min(r('adverso', e, 'rent_real_media') for e in EST))} "
-        f"y {pc(max(r('adverso', e, 'rent_real_media') for e in EST))} al año) y el orden se invierte: E3, la mejor en el base, termina con "
-        f"la mediana más baja ({mm(r('adverso', 'E3', 'W_real_p50'))}) y la peor caída máxima. En estrés la crisis forzada baja la "
-        f"probabilidad de meta a menos de {pc(max(r('estres', e, 'p_meta') for e in EST) + 0.01, 0)} y la probabilidad de terminar con menos "
-        f"poder adquisitivo que al inicio queda entre {pc(min(r('estres', e, 'p_perdida_real') for e in EST), 0)} y "
-        f"{pc(max(r('estres', e, 'p_perdida_real') for e in EST), 0)}. E2 es la que mejor resiste el estrés en patrimonio mediano.")
+        f"En el adverso todas pierden poder adquisitivo (rentabilidad real media entre {pc(min(r('adverso', e, 'rent_real_media') for e in EST))} "
+        f"y {pc(max(r('adverso', e, 'rent_real_media') for e in EST))} al año) y el orden se invierte. E3, la de mayor probabilidad de "
+        f"meta en el base, termina con la mediana más baja ({mm(r('adverso', 'E3', 'W_real_p50'))}) y la peor caída máxima. "
+        f"{NOM[m_adv]} termina con la más alta ({mm(r('adverso', m_adv, 'W_real_p50'))}): casi todo su capital está en cuenta y CDT, "
+        "cuyas tasas suben con la inflación, y no tiene inmueble que vender con descuento. En estrés la crisis forzada baja la "
+        f"probabilidad de meta a menos de {pc(max(r('estres', e, 'p_meta') for e in EST) + 0.01, 0)} y la probabilidad de terminar con "
+        f"menos poder adquisitivo que al inicio queda entre {pc(min(r('estres', e, 'p_perdida_real') for e in EST), 0)} y "
+        f"{pc(max(r('estres', e, 'p_perdida_real') for e in EST), 0)}. También ahí {NOM[m_est]} conserva el patrimonio mediano más alto "
+        f"({mm(r('estres', m_est, 'W_real_p50'))}).")
     w.p("**6. ¿Qué variables y supuestos explican principalmente el riesgo? ",
-        "El nivel de la inflación, la valorización del inmueble, el rendimiento medio del ETF y el monto y la frecuencia de los gastos "
-        "imprevistos (sección 16.3). Entre los supuestos de modelación, la regla de la Junta y el modelo de valorización son los que "
-        "más pesan. La vacancia y la volatilidad del ETF, que intuitivamente parecerían importantes, mueven poco el resultado a diez años.")
+        "La valorización del inmueble, el rendimiento medio del ETF, el nivel de la inflación y la frecuencia y el monto de los "
+        "gastos imprevistos (sección 16.3). Entre las decisiones de modelación, la regla de la Junta es la que más pesa, seguida del "
+        "índice de vivienda que se use para la valorización. La vacancia y la probabilidad de crisis mueven poco el resultado a "
+        "diez años.")
     w.p("**7. ¿Qué diferencias aparecen entre analizar rentabilidad esperada y la distribución completa? ",
-        f"Por rentabilidad real media, E3 es la mejor en el base ({pc(r('base', 'E3', 'rent_real_media'))} anual contra {pc(r('base', 'E2', 'rent_real_media'))} "
-        f"de E2). Mirando la distribución, E3 tiene peor CVaR, más iliquidez, más ventas urgentes y una caída máxima mediana mayor "
-        f"({pc(r('base', 'E3', 'caida_max_p50'), 0)} contra {pc(r('base', 'E2', 'caida_max_p50'), 0)}). En el escenario adverso su ventaja "
-        "desaparece y su cola izquierda es la peor de las cuatro. Un inversionista que solo mire el promedio elegiría E3 sin ver que en "
-        "los años malos es la que más sufre.")
+        f"Por probabilidad de meta, E3 es la mejor en el base ({pc(r('base', 'E3', 'p_meta'), 0)} contra {pc(r('base', 'E2', 'p_meta'), 0)} "
+        f"de E2), y su rentabilidad real media es casi la misma de E2 ({pc(r('base', 'E3', 'rent_real_media'))} y "
+        f"{pc(r('base', 'E2', 'rent_real_media'))} al año). Mirando la distribución, E3 tiene peor CVaR, más iliquidez, más ventas "
+        f"urgentes y una caída máxima mediana mayor ({pc(r('base', 'E3', 'caida_max_p50'), 0)} contra {pc(r('base', 'E2', 'caida_max_p50'), 0)}). "
+        "En el escenario adverso su cola izquierda es la peor de las cuatro. Quien solo mire el promedio o la probabilidad de meta "
+        "elegiría E3 sin ver que en los años malos es la que más sufre.")
     v = par("base", "E4", "E2", "W_real")
     w.p("**8. ¿Qué efecto tienen las reglas dinámicas de decisión? ",
-        f"En este modelo, ninguno favorable. E4 termina {mm(-v.diferencia)} por debajo de E2 en promedio en el escenario base (IC 95 % de "
-        f"{c(-v.hi / 1e6, 1)} a {c(-v.lo / 1e6, 1)} millones), con la misma probabilidad de meta y la misma iliquidez. Paga más costos "
-        f"({mm(r('base', 'E4', 'costos_totales_media'))} contra {mm(r('base', 'E2', 'costos_totales_media'))}) porque rebalancea en promedio "
-        f"{c(r('base', 'E4', 'n_rebalanceos_media'), 1)} veces. La regla saca ETF cuando la economía entra en crisis, pero el modelo no "
-        "le da al ETF un rendimiento medio más bajo en crisis (los datos no lo sostienen), solo más volatilidad, y la revisión es "
-        "anual mientras una crisis dura unos 4 trimestres. La regla reduce algo el riesgo en estrés frente a E3 "
-        f"({c(-par('estres', 'E4', 'E3', 'algun_episodio').diferencia * 100, 1)} puntos menos de probabilidad de iliquidez), pero eso se debe más a su reparto inicial que a la regla.")
+        f"En este modelo, ninguno favorable. E4 termina {mm(-v.diferencia)} por debajo de E2 en promedio en el escenario base (IC 95 % "
+        f"de {c(-v.hi / 1e6, 1)} a {c(-v.lo / 1e6, 1)} millones), con la misma probabilidad de meta y la misma iliquidez. Paga más "
+        f"costos ({mm(r('base', 'E4', 'costos_totales_media'))} contra {mm(r('base', 'E2', 'costos_totales_media'))}) porque rebalancea "
+        f"en promedio {c(r('base', 'E4', 'n_rebalanceos_media'), 1)} veces. La regla saca ETF cuando la economía entra en crisis, "
+        "pero el modelo no le da al ETF un rendimiento medio más bajo en crisis (los datos no lo sostienen), solo más volatilidad, "
+        "y la revisión es anual mientras una crisis dura unos cuatro trimestres. Frente a E3, E4 tiene "
+        f"{c(-par('estres', 'E4', 'E3', 'algun_episodio').diferencia * 100, 1)} puntos menos de probabilidad de iliquidez en el estrés, "
+        "pero eso viene más de su reparto inicial que de la regla.")
     w.p("**9. ¿Cuáles son las principales limitaciones del modelo y cuándo no deberían usarse sus resultados? ",
-        "Las detallamos en la sección de limitaciones. Las más importantes: la tasa real simulada es más alta que la histórica, el "
-        "resultado entre E1 y las estrategias con inmueble depende del modelo de la Junta y del de valorización, las necesidades de "
-        "liquidez son un supuesto sin datos, y no modelamos impuestos sobre el arriendo ni sobre la ganancia al vender.")
+        "Las detallamos en la sección de limitaciones. Las más importantes: la tasa real simulada es más alta que la histórica, "
+        "sobre todo en los primeros años; la comparación entre E1 y las estrategias con inmueble depende de la regla de la Junta; "
+        "las necesidades de liquidez son un supuesto sin datos que pesa mucho; y no modelamos el impuesto de renta sobre intereses "
+        "y arriendos ni la ganancia ocasional al vender el inmueble.")
 
 
 def seccion_19(w: Informe):
@@ -769,7 +792,7 @@ def seccion_19(w: Informe):
         ("Registro de decisiones:", "docs/decision_log.md."),
     ])
     w.p("Para reproducir todo: instalar las dependencias (pip install -r requirements-dev.txt), correr pytest para las pruebas, "
-        "python tools/correr_experimentos.py 8 para la corrida completa (unos 5 minutos con 8 procesos) y streamlit run "
+        "python tools/correr_experimentos.py 12 para la corrida completa (unos 10 minutos con 12 procesos) y streamlit run "
         "app/main.py para abrir la aplicación. Con la semilla base y los parámetros de referencia se obtienen exactamente las "
         "tablas de este informe.")
     w.p("La aplicación permite cambiar sin tocar código el capital, el horizonte, la meta, la liquidez mínima, los pesos de las "
@@ -779,77 +802,97 @@ def seccion_19(w: Informe):
         "metodología. Los resultados, las réplicas y los parámetros usados se descargan en CSV, Excel y JSON.")
 
 
-def discusion_y_cierre(w: Informe):
+def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
     w.h("Discusión")
-    w.p("La pregunta del trabajo no era qué activo rinde más. Los resultados muestran por qué. Las cuatro estrategias crecen en "
-        f"pesos corrientes: la mediana nominal de E2 en el escenario base es {mm(r('base', 'E2', 'W_nominal_p50'))}. Lo que decide la meta "
-        "es cuánto de ese crecimiento sobrevive a la inflación y cuánto se pierde vendiendo a destiempo.")
-    w.p("El inmueble es la pieza que más separa a las estrategias. En el escenario base aporta valorización nominal de "
-        f"{pc(np.exp(P.f('val.mu_N')) - 1, 1)} a {pc(np.exp(P.f('val.mu_E')) - 1, 1)} por año y un arriendo neto que explica {pc(r('base', 'E2', 'participacion_arriendo_media'), 0)} de la ganancia de E2 y "
-        f"{pc(r('base', 'E3', 'participacion_arriendo_media'), 0)} de la de E3. Por eso E2, E3 y E4 superan a E1. Pero el inmueble no "
-        "se puede vender por partes ni rápido. Cuando llegan varios imprevistos seguidos, una estrategia con poco efectivo vende ETF, "
-        "luego CDT con castigo, y al final el apartamento con 10 % de descuento y costos de casi 5 %. En el escenario adverso eso le "
-        f"pasa a E3 en {pc(r('adverso', 'E3', 'p_venta_urgente'), 0)} de las réplicas, y esa venta es la razón de que su cola izquierda "
-        "sea la peor. La relación causa y efecto es directa: menos efectivo inicial, más ventas forzadas cuando la economía empeora.")
-    w.p("E1 muestra el otro lado. Nunca vende de urgencia, pero su rendimiento depende de la TPM, y la TPM sigue a la inflación con "
-        "retraso. Cuando la inflación sube, E1 pierde poder adquisitivo antes de que la Junta reaccione. Su resultado mejora mucho si "
-        "la tasa real se mantiene alta, como ocurre con la tabla de 7.2, y empeora con una tasa real como la histórica. Una conclusión "
-        "honesta es que E1 conviene solo a quien le importa más no vender nunca que llegar a la meta.")
+    w.p("La pregunta del trabajo no era qué activo rinde más, y los resultados muestran por qué. Las cuatro estrategias crecen en "
+        f"pesos corrientes: la mediana nominal de E2 en el escenario base es {mm(r('base', 'E2', 'W_nominal_p50'))}. Lo que decide la "
+        "meta es cuánto de ese crecimiento sobrevive a la inflación y cuánto se pierde vendiendo a destiempo.")
+    w.p("El inmueble es la pieza que más separa a las estrategias. En el escenario base se valoriza en promedio "
+        f"{pc(np.exp(P.lista('val.ar1')[0]) - 1, 1)} nominal al año y su arriendo neto explica "
+        f"{pc(r('base', 'E2', 'participacion_arriendo_media'), 0)} de la ganancia de E2 y {pc(r('base', 'E3', 'participacion_arriendo_media'), 0)} "
+        "de la de E3. Por eso E2, E3 y E4 superan a E1 en el escenario base. Pero el inmueble no se puede vender por partes ni "
+        "rápido. Cuando llegan varios imprevistos seguidos, una estrategia con poco efectivo vende ETF, luego CDT con castigo y al "
+        "final el apartamento con 10 % de descuento y costos de casi 5 %. En el escenario adverso eso le pasa a E3 en "
+        f"{pc(r('adverso', 'E3', 'p_venta_urgente'), 0)} de las réplicas, y esa venta explica que su cola izquierda sea la peor. La "
+        "relación es directa: menos efectivo inicial, más ventas forzadas cuando la economía empeora.")
+    w.p("E1 muestra el otro lado. Nunca vende de urgencia y es la que mejor aguanta los escenarios adverso y de estrés, porque "
+        "sus tasas suben cuando sube la inflación. Pero en el escenario base pierde poder adquisitivo en "
+        f"{pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas, porque la TPM sigue a la inflación con retraso. Su resultado "
+        "mejora mucho si la tasa real se mantiene alta, como pasa con la tabla de la Junta de 7.2. E1 le sirve a quien le importa "
+        "más no vender nunca y protegerse de un mal escenario que llegar a la meta.")
     w.p("Sobre E4, el resultado no dice que las reglas dinámicas no sirvan. Dice que esta regla, con revisión anual y en un modelo "
         "donde el estado no cambia el rendimiento medio del ETF, no tiene de dónde sacar ventaja y sí paga costos. Una regla que "
         "reaccione a la liquidez disponible o que proteja el inmueble de una venta urgente atacaría el riesgo que de verdad pesa.")
     w.p("Todo esto es evidencia de simulación, no un pronóstico. Las probabilidades describen lo que pasaría si el futuro se "
-        "pareciera a los procesos que estimamos con datos de 2001 a 2026. Los intervalos de confianza miden el error de simular con un "
-        "número finito de réplicas; no miden el error de haber elegido mal un modelo, que es más grande y por eso hicimos la "
-        "sensibilidad a los modelos.")
+        "pareciera a los procesos que estimamos con datos de 2001 a 2026. Los intervalos de confianza miden el error de simular "
+        "con un número finito de réplicas; no miden el error de haber elegido mal un modelo, que puede ser más grande, y por eso "
+        "hicimos la sensibilidad a los modelos.")
 
     w.h("Conclusiones")
     w.vinetas([
-        f"Con 700 millones y diez años, la meta de 1.000 millones reales tiene a lo sumo {pc(r('base', mejor('base', 'p_meta'), 'p_meta'), 0)} de "
-        f"probabilidad en el escenario base. Para 80 % hacen falta unos {mm(cap('base', 'E2', 1e9))} de capital.",
+        f"Con 700 millones y diez años, la meta de 1.000 millones reales tiene a lo sumo {pc(r('base', mejor('base', 'p_meta'), 'p_meta'), 0)} "
+        f"de probabilidad en el escenario base. Para 80 % hacen falta unos {mm(cap('base', 'E2', 1e9))} de capital con E2.",
         "Las estrategias con inmueble (E2, E3, E4) dan más patrimonio que E1 en el escenario base, y E2 lo hace con casi la misma "
-        "liquidez que E1. E3 gana algo más en promedio a cambio de bastante más riesgo de iliquidez y de ventas urgentes.",
+        "liquidez que E1. E3 tiene la mayor probabilidad de meta a cambio de más riesgo de iliquidez y de ventas urgentes.",
         "La inflación es la variable que más pesa en las conclusiones. Medir la meta en pesos corrientes daría una imagen falsa: "
         f"con E2 la probabilidad nominal es {pc(NR.loc[('base', 'E2'), 'p_meta_nominal'], 0)} y la real {pc(r('base', 'E2', 'p_meta'), 0)}.",
-        "En escenarios adversos el orden cambia: la estrategia más agresiva pasa de primera a última y la moderada resiste mejor.",
+        "En los escenarios adverso y de estrés el orden se invierte: E1 termina con el patrimonio mediano más alto y E3 con el más bajo.",
         "La regla dinámica de E4 no mejora a E2 en este modelo; cuesta más y no gana rentabilidad.",
-        "Los resultados son sensibles a dos decisiones de modelación (la regla de la Junta y la valorización), que el equipo debe "
-        "tener presentes al defender cualquier recomendación.",
+        "Dos supuestos pueden cambiar la recomendación: la regla de la Junta (con la tabla de 7.2, E1 pasa a ser la mejor) y las "
+        "necesidades extraordinarias de liquidez, que no tienen datos y bajan mucho la probabilidad de meta de todas las estrategias.",
     ])
 
     w.h("Limitaciones")
+    real = VAL[VAL.medida.str.startswith("Tasa real media en los años")].iloc[0]
     w.vinetas([
-        ("Tasa real alta.", f"La TPM simulada menos la inflación promedia {c(TASA_REAL, 1)} puntos, contra 1,2 en la historia. Esto favorece "
-                            "la renta fija. El logit ordenado corrige la deriva de la tabla de 7.2 pero no del todo."),
-        ("Necesidades de liquidez.", "Frecuencia y monto son un supuesto del equipo. No encontramos datos de gastos imprevistos de "
-                                     "hogares con este patrimonio, y es uno de los factores que más mueve el resultado."),
+        ("Tasa real alta.", f"La TPM simulada menos la inflación promedia {c(TASA_REAL, 1)} puntos en los diez años, contra 1,2 en la "
+                            f"historia, y {c(float(real.simulado), 1)} en los años 6 a 10. Viene de partir de una tasa real de 6 puntos. "
+                            "Favorece la renta fija, es decir a E1."),
+        ("Necesidades de liquidez.", "Frecuencia y monto son un supuesto del equipo. La IEFIC del DANE solo sirve de referencia para la "
+                                     "frecuencia, y para el monto no hay datos. Es uno de los factores que más mueve el resultado."),
         ("Rendimiento del ETF por estado.", "Solo la volatilidad depende del estado. Si el rendimiento medio también dependiera, la "
                                             "regla de E4 podría servir."),
-        ("Impuestos.", "Modelamos retención sobre intereses y 4x1000. No modelamos impuesto de renta sobre arriendos ni ganancia "
-                       "ocasional al vender el inmueble, que reducirían el patrimonio de E2, E3 y E4."),
-        ("Inmueble.", "Es un solo apartamento indivisible; su valorización viene del índice de vivienda nueva de Medellín aplicado a "
-                      "un apartamento usado. Las reparaciones extraordinarias están apagadas porque no tenemos datos."),
-        ("Pocos datos de crisis.", "La matriz de Markov se estimó con 12 trimestres de crisis y solo tres episodios."),
+        ("ETF con poca historia.", "La muestra tiene 15 años y casi todo el rendimiento positivo está en 2024 a 2026. La media que "
+                                   "usamos depende mucho de esos años, y la t no reproduce la asimetría de los datos."),
+        ("Impuestos.", "Modelamos la retención en la fuente (4 % en el CDT y 7 % en la cuenta) y el 4x1000, y tratamos la retención "
+                       "como costo final aunque es un anticipo. No modelamos el impuesto de renta sobre intereses y arriendos ni la "
+                       "ganancia ocasional al vender el inmueble, que reducirían el patrimonio de todas las estrategias."),
+        ("Inmueble.", "Es un solo apartamento indivisible. Su valorización viene del IPVU, que agrega nueve ciudades y suaviza los "
+                      "precios porque usa avalúos, y el apartamento no tiene riesgo propio (un daño grande, un barrio que se "
+                      "deteriora). Las reparaciones extraordinarias están apagadas porque no tenemos datos."),
+        ("Pocos datos de crisis.", "La matriz de Markov se estimó con 12 trimestres de crisis y tres episodios, y simula crisis más "
+                                   "largas que las observadas."),
         ("Vacancia.", "Más alta que la reportada por el mercado, a propósito."),
     ])
     w.p("Los resultados no deberían usarse para recomendar una inversión concreta a una persona, para horizontes mucho más largos "
         "que los datos (más de 15 años), para economías con inflación muy distinta a la colombiana de 2001 a 2026, ni para elegir un "
         "CDT o un fondo particular. Sirven para comparar estrategias bajo los mismos supuestos y para ver qué supuestos pesan.")
 
-    w.h("Referencias adicionales")
-    for ref in [
+    w.h("Referencias")
+    propias = [
         "Banco de la República. (2026). Comunicados de las decisiones de política monetaria de la Junta Directiva, 2001 a 2026. https://www.banrep.gov.co.",
         "Banks, J., Carson, J. S., Nelson, B. L. y Nicol, D. M. (2010). Discrete-event system simulation (5.ª ed.). Pearson.",
+        "Brant, R. (1990). Assessing proportionality in the proportional odds model for ordinal logistic regression. Biometrics, 46(4), 1171-1178.",
+        "DANE. (2019). Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) 2017 y 2018 [microdatos, catálogo 626]. Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co.",
+        "El País. (2026). CDT en Colombia: estas son las tasas que ofrecen algunas entidades para septiembre de 2026. https://www.elpais.com.co/economia/cdt-en-colombia-estas-son-las-tasas-que-ofrecen-algunas-entidades-para-septiembre-de-2026-3049.html.",
         "Harris, C. R. et al. (2020). Array programming with NumPy. Nature, 585, 357-362.",
         "Jones, M. C. y Faddy, M. J. (2003). A skew extension of the t-distribution, with applications. Journal of the Royal Statistical Society B, 65(1), 159-174.",
         "Law, A. M. (2015). Simulation modeling and analysis (5.ª ed.). McGraw-Hill.",
         "McCullagh, P. (1980). Regression models for ordinal data. Journal of the Royal Statistical Society B, 42(2), 109-142.",
+        "Noticias Caracol. (2026). Esto le paga Davivienda por invertir 1 millón en un CDT en enero de 2026. https://www.noticiascaracol.com/economia/esto-le-paga-davivienda-por-invertir-1-millon-en-un-cdt-en-enero-de-2026-nuevas-tasas-so35.",
         "Seabold, S. y Perktold, J. (2010). Statsmodels: econometric and statistical modeling with Python. Proceedings of the 9th Python in Science Conference.",
         "Taylor, J. B. (1993). Discretion versus policy rules in practice. Carnegie-Rochester Conference Series on Public Policy, 39, 195-214.",
         "Virtanen, P. et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. Nature Methods, 17, 261-272.",
         "Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. Journal of the American Statistical Association, 22(158), 209-212.",
         "Equipo del trabajo. (2026). Estrategias de inversión; Escenarios; Dependencia entre variables y estados económicos; Diseño experimental; Diagrama de eventos y diagrama de flujo; Análisis de estados económicos (Markov). Documentos internos.",
-    ]:
+    ]
+    vistas, lista = set(), []
+    for ref in propias + refs_equipo:
+        clave = re.sub(r"[^a-z]", "", ref.lower())[:30]
+        if clave not in vistas:
+            vistas.add(clave)
+            lista.append(ref)
+    for ref in sorted(lista, key=lambda x: (x.startswith("Equipo"), x.lower())):
         w.p(ref)
 
 
@@ -884,6 +927,7 @@ def main(origen: Path) -> None:
     portada_y_resumen(doc)
     notas_7(doc)
     w = Informe(doc)
+    refs_equipo = actualizar(w, P, c, pc)
     seccion_8(w)
     seccion_9(w)
     seccion_10(w)
@@ -896,7 +940,7 @@ def main(origen: Path) -> None:
     seccion_17(w)
     seccion_18(w)
     seccion_19(w)
-    discusion_y_cierre(w)
+    discusion_y_cierre(w, refs_equipo)
     anexos(w)
     DESTINO.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(DESTINO))

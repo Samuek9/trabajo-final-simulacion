@@ -55,6 +55,8 @@ Con el logit corregido la TPM mediana al año 10 queda en 7,25 % y 0,8 % de las 
 - Tornado (N1): el factor de valorización movía las medias de la normal por estado, que con el AR(1) ya no se usan, y su rango era 0. Ahora mueve la media del AR(1) del IPVU (5,55 % / 9,55 %).
 - Cuenta en el libro (M8): la hoja TPM_Cuenta excluye Ualá y da α = 0,8978 con 19 tasas, igual que PARAMETROS.
 - Estados económicos: las limitaciones de la cadena (intervalos amplios con 81 transiciones, persistencia en parte mecánica del crecimiento interanual, crisis simuladas más largas que las observadas) quedan en la hoja DECISIONES (D13).
+- Inversión mínima (punto 5): cuenta sin monto mínimo; CDT de $50.000 a $500.000 según la entidad (prensa, 2026); ETF una unidad; inmueble completo. Ninguna limita al modelo porque las posiciones son de decenas de millones.
+- Hoja INM del Excel: los avisos de Aptología se reemplazan en la copia del master por la tabla de la Lonja (edición 275) con la que se fija el canon.
 - Impuestos (M5): no se modelan el impuesto de renta sobre intereses y arriendos ni la ganancia ocasional en la venta del inmueble; la retención se trata como costo definitivo aunque es un anticipo.
 
 ## Pendientes

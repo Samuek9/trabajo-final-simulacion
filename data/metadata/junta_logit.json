@@ -36,5 +36,27 @@
   },
   "tasa_real_media": 1.2299172920792079,
   "tasa_real_p5": -1.4745893000000003,
-  "tasa_real_p95": 4.4096715
+  "tasa_real_p95": 4.4096715,
+  "brant_w": 1.4732557939884507,
+  "brant_p": 0.4787255084912806,
+  "calibracion": {
+    "bajo": {
+      "p_baja": 0.482,
+      "p_sube": 0.056,
+      "obs_baja": 0.448,
+      "obs_sube": 0.09
+    },
+    "medio": {
+      "p_baja": 0.181,
+      "p_sube": 0.172,
+      "obs_baja": 0.224,
+      "obs_sube": 0.149
+    },
+    "alto": {
+      "p_baja": 0.052,
+      "p_sube": 0.535,
+      "obs_baja": 0.044,
+      "obs_sube": 0.529
+    }
+  }
 }

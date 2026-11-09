@@ -27,6 +27,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 from scipy.stats import chi2
 from statsmodels.miscmodels.ordinal_model import OrderedModel
 
@@ -73,6 +74,20 @@ def estimar(desde: int = 2001) -> dict:
     subidas = d.cambio[d.cambio > 0].value_counts(normalize=True).sort_index()
     bajadas = (-d.cambio[d.cambio < 0]).value_counts(normalize=True).sort_index()
     real = (d.tpm - d.inf).dropna()
+    # Odds proporcionales: logit binario en cada corte; las pendientes deberían coincidir (Brant aproximado,
+    # sin la covarianza entre cortes).
+    X = sm.add_constant(d[["dpi3", "brecha_taylor"]])
+    c1 = sm.Logit((d.decision >= 0).astype(int), X).fit(disp=False)
+    c2 = sm.Logit((d.decision >= 1).astype(int), X).fit(disp=False)
+    dif = (c1.params - c2.params)[["dpi3", "brecha_taylor"]].to_numpy()
+    var = (c1.bse ** 2 + c2.bse ** 2)[["dpi3", "brecha_taylor"]].to_numpy()
+    brant = float(np.sum(dif ** 2 / var))
+    # Calibración: probabilidades predichas frente a frecuencias observadas por tercil del índice latente.
+    lat = m1.params["dpi3"] * d.dpi3 + m1.params["brecha_taylor"] * d.brecha_taylor
+    logis = lambda z: 1 / (1 + np.exp(-z))  # noqa: E731
+    cal = pd.DataFrame({"p_baja": logis(k1 - lat), "p_sube": 1 - logis(k2 - lat), "obs_baja": d.decision == -1,
+                        "obs_sube": d.decision == 1, "tercil": pd.qcut(lat, 3, labels=["bajo", "medio", "alto"])})
+    cal = cal.groupby("tercil", observed=True).mean()
     return {
         "n": int(len(d)), "desde": str(d.index[0].date()), "hasta": str(d.index[-1].date()),
         "decisiones": {str(int(k)): int(v) for k, v in d.decision.value_counts().items()},
@@ -85,6 +100,8 @@ def estimar(desde: int = 2001) -> dict:
         "bajadas": {f"{k:g}": float(v) for k, v in bajadas.items()},
         "tasa_real_media": float(real.mean()), "tasa_real_p5": float(real.quantile(0.05)),
         "tasa_real_p95": float(real.quantile(0.95)),
+        "brant_w": brant, "brant_p": float(chi2.sf(brant, 2)),
+        "calibracion": {k: {c: round(float(v), 3) for c, v in fila.items()} for k, fila in cal.iterrows()},
     }, d
 
 
