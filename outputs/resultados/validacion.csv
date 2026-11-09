@@ -2,19 +2,19 @@ proceso,medida,simulado,observado,referencia,lectura
 Inflación,Mediana de la inflación de diciembre (%),4.65513823396014,5.09988,DANE 2001-2025,
 Inflación,Percentil 5 y 95 (%),2.01 y 10.82,1.95 y 8.96,DANE 2001-2025,
 Inflación,Autocorrelación de ln(π) de un año al siguiente,0.19143703732706915,0.41687311180064096,DANE 2001-2025,Con 10 datos por réplica la autocorrelación muestral sale sesgada hacia abajo.
-TPM,TPM mediana en el año 10 (%),8.5,6.0,BanRep 2001-2026,
-TPM,Tasa real media: TPM − inflación (puntos),4.604224148236354,1.2149504097744364,BanRep y DANE 2001-2026,"El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio."
-TPM,Réplicas con la TPM en el tope de 15 % al año 10,0.004,0.0,"Máximo histórico desde 2001: 13,25 %",
-ETF,Rendimiento log mensual medio,0.004468539658620095,0.0036327192628493733,BlackRock NAV 2011-2026,
+TPM,TPM mediana en el año 10 (%),7.5,6.0,BanRep 2001-2026,
+TPM,Tasa real media: TPM − inflación (puntos),3.680674148236354,1.2125905594059405,BanRep y DANE 2001-2026,"El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio."
+TPM,Réplicas con la TPM en el tope de 15 % al año 10,0.008,0.0,"Máximo histórico desde 2001: 13,25 %",
+ETF,Rendimiento log mensual medio,0.0038015057983817203,0.0036327192628493733,BlackRock NAV 2011-2026,
 ETF,Desviación mensual (todos los estados),0.054576807640489576,0.053819480299156314,BlackRock NAV 2011-2026,
 ETF,Desviación mensual en crisis,0.08524451508200478,0.08783,Hoja MARKOV (24 meses),
-ETF,Asimetría,-0.09498690588468514,-1.1191953821976646,BlackRock NAV 2011-2026,La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.
+ETF,Asimetría,-0.09498690588468547,-1.1191953821976646,BlackRock NAV 2011-2026,La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.
 ETF,Curtosis en exceso,5.5933623421927905,6.28737156398531,BlackRock NAV 2011-2026,
-ETF,Peor mes en 10 años (mediana de las réplicas),-0.16220939182874733,-0.3112215514896113,Marzo de 2020: −31 % en logaritmo,
+ETF,Peor mes en 10 años (mediana de las réplicas),-0.16287642568898575,-0.3112215514896113,Marzo de 2020: −31 % en logaritmo,
 Estados,Proporción del tiempo en Expansión,0.30535,0.366,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Normal,0.5381,0.488,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Crisis,0.15655,0.146,DANE PIB 2006-2026,
 Estados,Duración media de una crisis (trimestres),3.6076923076923078,4.0,DANE PIB 2006-2026,Las rachas que tocan el final del horizonte quedan truncadas.
-Valorización,Valorización nominal media (ln anual),0.09475673068306728,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
-Valorización,Desviación anual,0.03159943786483959,0.0336,IPVU 2001-2025,
-Vacancia,Fracción del tiempo desocupado,0.03054700053561865,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.
+Valorización,Valorización nominal media (ln anual),0.07563778726362712,0.0832,"IPVNBR Medellín, normal y crisis","Expansión: 0,119. El IPVU nacional da 0,0755."
+Valorización,Desviación anual,0.030917888744899525,0.0336,IPVU 2001-2025,
+Vacancia,Fracción del tiempo desocupado,0.03056746616642103,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.

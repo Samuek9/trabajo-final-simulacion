@@ -39,6 +39,17 @@ Con el logit la TPM mediana al año 10 queda en 8,5 % y solo 0,4 % de las répli
 - Patrimonio: el inmueble va a valor de mercado cada mes y, al final, neto de los costos de venta (4,84 %).
 - E4 fija en la revisión el monto con que se renueva el CDT y aplaza las compras de ETF hasta que el CDT venza, para no pagar el castigo por venta anticipada.
 
+## Correcciones de la auditoría independiente (noviembre de 2026)
+
+- Valorización (C1): el modelo de referencia pasa a ser el AR(1) del IPVU (media 7,55 %, φ 0,676, σ 2,36 %). El IPVNBR mide vivienda nueva y el inmueble es usado; con el IPVU el estado económico no cambia la valorización (Welch, p = 0,275). La normal por estado con IPVNBR queda solo como alternativa en la sensibilidad. Adverso: media −2 puntos. Estrés: −5 % anual mientras dura la crisis.
+- Junta (A2): el logit se estimaba con reuniones mensuales (2001-2016) y se simulaba con 8 por año, así que la TPM se movía menos de lo que se movió y la tasa real simulada quedaba en 4,6 puntos. Ahora se estima con el calendario de 8 reuniones en todos los años (202 decisiones). En un simulador aislado de inflación y Junta, la tasa real media bajó de 4,78 a 3,72 puntos. Lo que queda por encima de la media histórica (1,2) viene de dos cosas que no son errores: se parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la regla de Taylor pide una tasa real de 1 + 0,5·(π − 3), mayor que 1 cuando la inflación está sobre la meta.
+- Retención (M4): 4 % para los intereses del CDT y 7 % para los de la cuenta de ahorros (tarifa general de rendimientos financieros).
+- Interés del CDT (B10): K·((1 + r)^(plazo/12) − 1); antes era simple y solo era correcto con plazo de 12 meses.
+- ETF (M2): la media sale de la misma muestra que las volatilidades por estado (179 meses, ago-2011 a jun-2026).
+- Cuenta (M8): α = 0,8978 con 4 cuentas. Ualá se excluye porque es un depósito de bajo monto con tope cercano a $10 M.
+- Vacancia (M7) y necesidades de liquidez (A1): siguen como supuestos sin datos; la sensibilidad de modelos incluye la corrida sin necesidades.
+- Impuestos (M5): no se modelan el impuesto de renta sobre intereses y arriendos ni la ganancia ocasional en la venta del inmueble; la retención se trata como costo definitivo aunque es un anticipo.
+
 ## Pendientes
 
 - Reparaciones extraordinarias: apagadas (frecuencia 0). Sin datos de costo ni de frecuencia.

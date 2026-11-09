@@ -1,175 +1,175 @@
 t,n,evento,detalle,estado,cuenta,W
 0.0,0,Inicio,Compra con los pesos de E4 Dinámica; TPM 12.25 %; inflación 6.29 %,Normal,59998223.600000024,689263223.6
-1.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.00 %,Normal,59998223.600000024,691058048.2063762
-3.0,2,Cambio de estado económico,Normal → Normal,Normal,63851609.831458025,697488791.0922097
-3.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Normal,63851609.831458025,697488791.0922097
-4.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Normal,65801462.207790196,696784963.2115841
-6.0,2,Cambio de estado económico,Normal → Normal,Normal,69747417.37710707,700294859.6624472
-6.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Normal,69747417.37710707,700294859.6624472
-6.6189,11,Necesidad extraordinaria de liquidez,"Necesidad de 13,422,504; la cuenta pasa de 71,743,792 a 58,321,287",Normal,58321287.48834131,678788513.3469472
-7.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Normal,58321287.48834131,679518167.2905403
-9.0,2,Cambio de estado económico,Normal → Normal,Normal,62136387.001986526,690838782.9797034
-9.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Normal,62136387.001986526,690838782.9797034
-10.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 11.50 %,Normal,64066545.119346716,694712372.0927553
-12.0,2,Cambio de estado económico,Normal → Normal,Normal,67928253.98977654,698343719.9586451
-12.0,3,Inflación anual,Inflación de diciembre 5.39 %; la del próximo será 4.54 %,Normal,67928253.98977654,698343719.9586451
-12.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Normal,67928253.98977654,698343719.9586451
-12.0,9,Valorización y gastos anuales,"El inmueble cambia +7.84%; predial y mantenimiento 2,921,396",Normal,65006858.37138145,719021837.4952605
-12.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; comprará ETF por 23,290,321; renovará CDT por 177,490,046",Normal,65006858.37138145,719021837.4952605
-12.0,5,Vencimiento de CDT,"Vence CDT de 182,000,000 al 13.05%; se renueva por 177,490,046 al 12.01%",Normal,91665905.96561229,718373515.3289742
-12.0,7,Fin de contrato de arriendo,"Renueva: canon 1,806,000 → 1,895,345 (IPC previo 5.39 %)",Normal,68282423.30776829,718163902.4366231
-13.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Normal,70237304.13587746,722399604.2711229
-15.0,2,Cambio de estado económico,Normal → Normal,Normal,74352576.9574758,713665844.0388718
-15.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Normal,74352576.9574758,713665844.0388718
-16.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Normal,76433742.9058645,719146416.9305882
-18.0,2,Cambio de estado económico,Normal → Expansión,Expansión,80643802.6437526,719753728.2050565
-18.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Expansión,80643802.6437526,719753728.2050565
-19.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Expansión,82772967.5567878,727938454.8503358
-21.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,87080254.43100715,743035684.2517021
-21.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.25 %,Expansión,87080254.43100715,743035684.2517021
-22.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.25 %,Expansión,89243855.37565757,737801981.5575031
-24.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,93619831.89230205,740410140.6031742
-24.0,3,Inflación anual,Inflación de diciembre 4.54 %; la del próximo será 2.90 %,Expansión,93619831.89230205,740410140.6031742
-24.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.25 %,Expansión,93619831.89230205,740410140.6031742
-24.0,9,Valorización y gastos anuales,"El inmueble cambia +9.09%; predial y mantenimiento 3,186,859",Expansión,90432972.83876334,766719218.7878151
-24.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 102,699,302; renovará CDT por 144,418,319",Expansión,90432972.83876334,766719218.7878151
-24.0,5,Vencimiento de CDT,"Vence CDT de 177,490,046 al 12.01%; se renueva por 144,418,319 al 12.28%",Expansión,143444582.16185993,766202121.6758485
-24.0,7,Fin de contrato de arriendo,"Renueva: canon 1,895,345 → 1,981,433 (IPC previo 4.54 %)",Expansión,40334482.517758384,765277827.9539392
-25.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.25 %,Expansión,42127904.82205972,776618496.7580926
-27.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,45910030.83688299,779012277.5629823
-27.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 12.25 %,Expansión,45910030.83688299,779012277.5629823
-28.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.25 %,Expansión,47854033.40617208,780309197.4610324
-30.0,2,Cambio de estado económico,Expansión → Normal,Normal,51789831.238274656,766530990.2939965
-30.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.25 %,Normal,51789831.238274656,766530990.2939965
-31.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.25 %,Normal,53781939.88416585,754893722.9833112
-33.0,2,Cambio de estado económico,Normal → Normal,Normal,57815371.897178255,722277921.3901
-33.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.25 %,Normal,57815371.897178255,722277921.3901
-34.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.25 %,Normal,59857018.12195239,725196760.6163802
-36.0,2,Cambio de estado económico,Normal → Normal,Normal,63990990.123451866,731266422.1968375
-36.0,3,Inflación anual,Inflación de diciembre 2.90 %; la del próximo será 2.43 %,Normal,63990990.123451866,731266422.1968375
-36.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 12.50 %,Normal,63990990.123451866,731266422.1968375
-36.0,9,Valorización y gastos anuales,"El inmueble cambia +10.34%; predial y mantenimiento 3,516,412",Normal,60474577.96218408,764367022.0054672
-36.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; sin ajustes",Normal,60474577.96218408,764367022.0054672
-36.0,5,Vencimiento de CDT,"Vence CDT de 144,418,319 al 12.28%; se renueva por 144,418,319 al 13.86%",Normal,76981349.4207635,763848606.6810697
-36.0,7,Fin de contrato de arriendo,"Renueva: canon 1,981,433 → 2,038,948 (IPC previo 2.90 %)",Normal,76981349.4207635,763848606.6810697
-37.0,4,Reunión de la Junta,Inflación estable: TPM 12.50 % → 12.50 %,Normal,79196828.06738937,767562990.0232553
-39.0,2,Cambio de estado económico,Normal → Normal,Normal,83788534.90412532,771777002.1129744
-39.0,4,Reunión de la Junta,Inflación estable: TPM 12.50 % → 11.50 %,Normal,83788534.90412532,771777002.1129744
-40.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Normal,86056776.01388274,803772010.2163684
-42.0,2,Cambio de estado económico,Normal → Crisis,Crisis,90646519.1612557,815021963.4717603
-42.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.25 %,Crisis,90646519.1612557,815021963.4717603
-43.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.00 %,Crisis,92952902.61319025,825137552.958663
-45.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,97586573.5192263,829905237.5002327
-45.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Crisis,97586573.5192263,829905237.5002327
-46.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Crisis,99929464.09619181,822000294.8755199
-48.0,2,Cambio de estado económico,Crisis → Normal,Normal,104668054.69245175,837915779.0824286
-48.0,3,Inflación anual,Inflación de diciembre 2.43 %; la del próximo será 3.93 %,Normal,104668054.69245175,837915779.0824286
-48.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,104668054.69245175,837915779.0824286
-48.0,9,Valorización y gastos anuales,"El inmueble cambia +8.14%; predial y mantenimiento 3,802,580",Normal,100865474.6384519,865909631.5542125
-48.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; renovará CDT por 199,530,331",Normal,100865474.6384519,865909631.5542125
-48.0,5,Vencimiento de CDT,"Vence CDT de 144,418,319 al 13.86%; se renueva por 199,530,331 al 12.03%",Normal,64226365.45866367,865169623.5079988
-48.0,7,Fin de contrato de arriendo,El inquilino no renueva; vacancia de 0.9 meses,Normal,62096012.599764705,863039270.6490998
-48.8986,8,Fin de vacancia,"Nuevo inquilino; canon 2,535,053",Normal,64163952.07679688,872269843.5190077
-49.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,64163952.07679688,872455443.2407947
-51.0,2,Cambio de estado económico,Normal → Normal,Normal,69197757.8688602,871770072.4865143
-51.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,69197757.8688602,871770072.4865143
-52.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 10.50 %,Normal,71742962.52221791,881813995.5295297
-54.0,2,Cambio de estado económico,Normal → Normal,Normal,76841466.90391009,892380483.8222995
-54.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,76841466.90391009,892380483.8222995
-55.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,79418003.68734175,892439680.0980972
-57.0,2,Cambio de estado económico,Normal → Normal,Normal,84626196.89342862,895635506.1653976
-57.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,84626196.89342862,895635506.1653976
-58.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,87258075.44689469,893147456.9753098
-60.0,2,Cambio de estado económico,Normal → Normal,Normal,92577956.62102616,898309290.5937891
-60.0,3,Inflación anual,Inflación de diciembre 3.93 %; la del próximo será 5.68 %,Normal,92577956.62102616,898309290.5937891
-60.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,92577956.62102616,898309290.5937891
-60.0,9,Valorización y gastos anuales,"El inmueble cambia +7.26%; predial y mantenimiento 4,078,614",Normal,88499342.37164994,924901142.4973443
-60.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; sin ajustes",Normal,88499342.37164994,924901142.4973443
-60.0,5,Vencimiento de CDT,"Vence CDT de 199,530,331 al 12.03%; se renueva por 199,530,331 al 11.89%",Normal,110801589.11285794,924160030.3143492
-60.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,535,053 → 2,602,271 (IPC previo 3.93 %)",Normal,111389476.66250098,933643165.527869
-61.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,113622858.68088356,936060086.068413
-63.0,2,Cambio de estado económico,Normal → Normal,Normal,119446153.57683784,939224119.713556
-63.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.50 %,Normal,119446153.57683784,939224119.713556
-64.0,4,Reunión de la Junta,Inflación estable: TPM 10.50 % → 10.75 %,Normal,122388739.16548438,949368509.238621
-66.0,2,Cambio de estado económico,Normal → Normal,Normal,128378101.24908562,951669088.2641529
-66.0,4,Reunión de la Junta,Inflación estable: TPM 10.75 % → 10.75 %,Normal,128378101.24908562,951669088.2641529
-67.0,4,Reunión de la Junta,Inflación estable: TPM 10.75 % → 10.75 %,Normal,131405258.52251554,941266863.0730531
-69.0,2,Cambio de estado económico,Normal → Normal,Normal,137525189.43083218,952156850.7804716
-69.0,4,Reunión de la Junta,Inflación estable: TPM 10.75 % → 10.75 %,Normal,137525189.43083218,952156850.7804716
-70.0,4,Reunión de la Junta,Inflación estable: TPM 10.75 % → 10.75 %,Normal,140618230.7140821,957985590.8908244
-72.0,2,Cambio de estado económico,Normal → Normal,Normal,146871139.20584399,964614427.7801211
-72.0,3,Inflación anual,Inflación de diciembre 5.68 %; la del próximo será 11.91 %,Normal,146871139.20584399,964614427.7801211
-72.0,4,Reunión de la Junta,Inflación estable: TPM 10.75 % → 10.75 %,Normal,146871139.20584399,964614427.7801211
-72.0,9,Valorización y gastos anuales,"El inmueble cambia +5.99%; predial y mantenimiento 4,322,752",Normal,142548387.44887075,987418065.7561481
-72.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; comprará ETF por 47,908,712",Normal,142548387.44887075,987418065.7561481
-72.0,5,Vencimiento de CDT,"Vence CDT de 199,530,331 al 11.89%; se renueva por 199,530,331 al 11.99%",Normal,164581488.87451315,986675977.0231225
-72.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,602,271 → 2,692,750 (IPC previo 5.68 %)",Normal,117119270.85039479,993067873.6828357
-73.0,4,Reunión de la Junta,Inflación subiendo: TPM 10.75 % → 10.75 %,Normal,119411871.78200145,995545485.6435897
-75.0,2,Cambio de estado económico,Normal → Normal,Normal,125497840.86978185,1023236467.8270035
-75.0,4,Reunión de la Junta,Inflación subiendo: TPM 10.75 % → 11.00 %,Normal,125497840.86978185,1023236467.8270035
-76.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.00 % → 11.25 %,Normal,128594145.91191882,1016645961.8745165
-76.0705,11,Necesidad extraordinaria de liquidez,"Necesidad de 5,801,298; la cuenta pasa de 129,361,917 a 123,560,619",Normal,123560618.82621509,1011813249.9812412
-78.0,2,Cambio de estado económico,Normal → Normal,Normal,129050510.80674551,1024181397.214469
-78.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.25 % → 11.25 %,Normal,129050510.80674551,1024181397.214469
-79.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.25 % → 11.25 %,Normal,132190852.94929875,1022553281.64557
-81.0,2,Cambio de estado económico,Normal → Normal,Normal,138540099.06626374,1032062866.8123865
-81.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.25 % → 11.25 %,Normal,138540099.06626374,1032062866.8123865
-82.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.25 % → 12.25 %,Normal,141749136.1584025,1052187960.5559921
-84.0,2,Cambio de estado económico,Normal → Normal,Normal,148427876.13880712,1089092177.4894383
-84.0,3,Inflación anual,Inflación de diciembre 11.91 %; la del próximo será 5.45 %,Normal,148427876.13880712,1089092177.4894383
-84.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 11.25 %,Normal,148427876.13880712,1089092177.4894383
-84.0,9,Valorización y gastos anuales,"El inmueble cambia +4.89%; predial y mantenimiento 4,534,024",Normal,143893852.4567619,1108032812.1487255
-84.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; renovará CDT por 271,913,581",Normal,143893852.4567619,1108032812.1487255
-84.0,5,Vencimiento de CDT,"Vence CDT de 199,530,331 al 11.99%; se renueva por 271,913,581 al 11.87%",Normal,93444875.0482204,1107000345.3285384
-84.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,692,750 → 2,820,424 (IPC previo 11.91 %)",Normal,93919608.8690596,1120548966.8290107
-85.0,4,Reunión de la Junta,Inflación bajando: TPM 11.25 % → 12.25 %,Normal,96291921.68844822,1123170998.5828588
-87.0,2,Cambio de estado económico,Normal → Crisis,Crisis,102404884.09302224,1120939319.7932322
-87.0,4,Reunión de la Junta,Inflación bajando: TPM 12.25 % → 12.25 %,Crisis,102404884.09302224,1120939319.7932322
-88.0,4,Reunión de la Junta,Inflación bajando: TPM 12.25 % → 12.00 %,Crisis,105497191.95974772,1124214489.2548184
-90.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,111719289.7154162,1141357987.1931055
-90.0,4,Reunión de la Junta,Inflación bajando: TPM 12.00 % → 11.50 %,Crisis,111719289.7154162,1141357987.1931055
-91.0,4,Reunión de la Junta,Inflación bajando: TPM 11.50 % → 12.00 %,Crisis,114829353.13235007,1167446789.126694
-93.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,121197011.0625586,1199716757.5769584
-93.0,4,Reunión de la Junta,Inflación bajando: TPM 12.00 % → 12.00 %,Crisis,121197011.0625586,1199716757.5769584
-94.0,4,Reunión de la Junta,Inflación bajando: TPM 12.00 % → 12.00 %,Crisis,124418378.801096,1201150254.7530203
-96.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,130937778.66668479,1266266220.1696665
-96.0,3,Inflación anual,Inflación de diciembre 5.45 %; la del próximo será 8.01 %,Crisis,130937778.66668479,1266266220.1696665
-96.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Crisis,130937778.66668479,1266266220.1696665
-96.0,9,Valorización y gastos anuales,"El inmueble cambia +8.43%; predial y mantenimiento 4,916,433",Crisis,126021345.74824649,1303839702.4060154
-96.0,14,Revisión anual de la estrategia,"Estado Crisis: objetivo cuenta 25.0%, CDT 55.0%, ETF 20.0%; vende ETF por 177,135,479; renovará CDT por 416,663,158",Crisis,301566148.11857843,1302249025.8048515
-96.0,5,Vencimiento de CDT,"Vence CDT de 271,913,581 al 11.87%; se renueva por 416,663,158 al 12.41%",Crisis,186188673.16903824,1300636031.0412807
-96.8986,7,Fin de contrato de arriendo,El inquilino no renueva; vacancia de 4.7 meses,Crisis,184742100.27000156,1304090347.5239677
-97.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Crisis,187226893.84471926,1306974436.3690844
-99.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,189801663.83821562,1332369044.4920583
-99.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 12.00 %,Crisis,189801663.83821562,1332369044.4920583
-100.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 12.50 %,Crisis,191103132.0466693,1320581974.0633204
-101.6213,8,Fin de vacancia,"Nuevo inquilino; canon 3,277,622",Crisis,193861968.37422138,1346494495.467827
-102.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,193861968.37422138,1348057537.7509956
-102.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.50 % → 12.50 %,Crisis,193861968.37422138,1348057537.7509956
-103.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.50 % → 12.50 %,Crisis,198144648.56167582,1362427001.1815557
-105.0,2,Cambio de estado económico,Crisis → Normal,Normal,206816968.48015302,1337138931.528924
-105.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.50 % → 12.00 %,Normal,206816968.48015302,1337138931.528924
-106.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 12.00 %,Normal,211138591.25155005,1341701040.8211374
-108.0,2,Cambio de estado económico,Normal → Expansión,Expansión,219884966.33475405,1356599275.941504
-108.0,3,Inflación anual,Inflación de diciembre 8.01 %; la del próximo será 10.71 %,Expansión,219884966.33475405,1356599275.941504
-108.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 12.00 %,Expansión,219884966.33475405,1356599275.941504
-108.0,9,Valorización y gastos anuales,"El inmueble cambia +12.11%; predial y mantenimiento 5,511,870",Expansión,214373096.55199325,1417247057.7501316
-108.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 318,516,264; renovará CDT por 281,685,979",Expansión,214373096.55199325,1417247057.7501316
-108.0,5,Vencimiento de CDT,"Vence CDT de 416,663,158 al 12.41%; se renueva por 281,685,979 al 13.65%",Expansión,397922504.20060474,1416171589.9563575
-109.0,4,Reunión de la Junta,Inflación estable: TPM 12.00 % → 13.50 %,Expansión,81372342.61265673,1430826355.8421884
-111.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,88095614.39448865,1391229268.8084118
-111.0,4,Reunión de la Junta,Inflación subiendo: TPM 13.50 % → 13.50 %,Expansión,88095614.39448865,1391229268.8084118
-112.0,4,Reunión de la Junta,Inflación subiendo: TPM 13.50 % → 14.50 %,Expansión,91501294.97227953,1399784252.048689
-113.6213,7,Fin de contrato de arriendo,"Renueva: canon 3,277,622 → 3,402,939 (IPC previo 8.01 %)",Expansión,95636729.85949051,1378685310.3534756
-114.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,98524314.79358661,1382734989.4590168
-114.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.50 % → 14.50 %,Expansión,98524314.79358661,1382734989.4590168
-115.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.50 % → 14.50 %,Expansión,102195524.5055718,1415255657.3658638
-117.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,109641148.70113288,1491212828.84372
-117.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.50 % → 14.50 %,Expansión,109641148.70113288,1491212828.84372
-118.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.50 % → 14.50 %,Expansión,113416105.93576632,1474895014.278709
-120.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,121071677.92761476,1464294675.70427
-120.0,3,Inflación anual,Inflación de diciembre 10.71 %; la del próximo será 10.17 %,Expansión,121071677.92761476,1464294675.70427
-120.0,4,Reunión de la Junta,Inflación estable: TPM 14.50 % → 14.25 %,Expansión,121071677.92761476,1464294675.70427
-120.0,9,Valorización y gastos anuales,"El inmueble cambia +1.36%; predial y mantenimiento 5,586,716",Expansión,115484961.93054117,1467024205.74195
-120.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 53,268,564",Expansión,115484961.93054117,1467024205.74195
-120.0,5,Vencimiento de CDT,"Vence CDT de 281,685,979 al 13.65%; se renueva por 281,685,979 al 14.52%",Expansión,151331910.50602108,1465948438.5633187
+1.0,4,Reunión de la Junta,Inflación estable: TPM 12.25 % → 11.75 %,Normal,59998223.600000024,691058048.2063762
+3.0,2,Cambio de estado económico,Normal → Normal,Normal,63782991.11673078,697226598.6213193
+3.0,4,Reunión de la Junta,Inflación estable: TPM 11.75 % → 11.75 %,Normal,63782991.11673078,697226598.6213193
+4.0,4,Reunión de la Junta,Inflación estable: TPM 11.75 % → 11.75 %,Normal,65696548.55080607,696398790.4416082
+6.0,2,Cambio de estado económico,Normal → Normal,Normal,69565848.72762993,699658805.00455
+6.0,4,Reunión de la Junta,Inflación estable: TPM 11.75 % → 11.00 %,Normal,69565848.72762993,699658805.00455
+6.6189,11,Necesidad extraordinaria de liquidez,"Necesidad de 13,422,504; la cuenta pasa de 71,487,859 a 58,065,354",Normal,58065354.319058694,678032349.0441263
+7.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,58065354.319058694,678762002.9877195
+9.0,2,Cambio de estado económico,Normal → Normal,Normal,61751621.93677769,689768169.2232032
+9.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,61751621.93677769,689768169.2232032
+10.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 10.25 %,Normal,63613718.49669922,693488368.2759726
+12.0,2,Cambio de estado económico,Normal → Normal,Normal,67312623.71977018,696817066.9820368
+12.0,3,Inflación anual,Inflación de diciembre 5.39 %; la del próximo será 4.54 %,Normal,67312623.71977018,696817066.9820368
+12.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Normal,67312623.71977018,696817066.9820368
+12.0,9,Valorización y gastos anuales,"El inmueble cambia +6.94%; predial y mantenimiento 2,896,953",Normal,64415671.19336642,714803728.5004952
+12.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; comprará ETF por 23,638,015; renovará CDT por 176,814,052",Normal,64415671.19336642,714803728.5004952
+12.0,5,Vencimiento de CDT,"Vence CDT de 182,000,000 al 13.05%; se renueva por 176,814,052 al 10.59%",Normal,91753514.9858352,714158208.0843694
+12.0,7,Fin de contrato de arriendo,"Renueva: canon 1,806,000 → 1,895,345 (IPC previo 5.39 %)",Normal,68020947.55212118,713945465.9460194
+13.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Normal,69892199.46392407,717808397.3795412
+15.0,2,Cambio de estado económico,Normal → Normal,Normal,73831311.74748452,708409265.8816876
+15.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Normal,73831311.74748452,708409265.8816876
+16.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Normal,75819868.04898596,713500191.0697906
+18.0,2,Cambio de estado económico,Normal → Expansión,Expansión,79835453.78407322,713383361.1167618
+18.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Expansión,79835453.78407322,713383361.1167618
+19.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.25 %,Expansión,81862674.68223083,721136735.8440443
+21.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,85956457.10612395,735347176.2653139
+21.0,4,Reunión de la Junta,Inflación estable: TPM 10.25 % → 10.00 %,Expansión,85956457.10612395,735347176.2653139
+22.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 10.00 %,Expansión,88009140.80304967,729787136.8151237
+24.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,92153454.5790564,731605296.6420928
+24.0,3,Inflación anual,Inflación de diciembre 4.54 %; la del próximo será 2.90 %,Expansión,92153454.5790564,731605296.6420928
+24.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 10.00 %,Expansión,92153454.5790564,731605296.6420928
+24.0,9,Valorización y gastos anuales,"El inmueble cambia +4.89%; predial y mantenimiento 3,038,678",Expansión,89114776.21285227,744313933.8092623
+24.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 100,893,656; renovará CDT por 142,339,051",Expansión,89114776.21285227,744313933.8092623
+24.0,5,Vencimiento de CDT,"Vence CDT de 176,814,052 al 10.59%; se renueva por 142,339,051 al 11.03%",Expansión,141053769.3551613,743805746.4898739
+24.0,7,Fin de contrato de arriendo,"Renueva: canon 1,895,345 → 1,981,433 (IPC previo 4.54 %)",Expansión,39756538.478708625,742897703.583611
+25.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 10.00 %,Expansión,41497157.009002455,753765308.2227931
+27.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,45166048.42558554,755501351.3574597
+27.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 11.50 %,Expansión,45166048.42558554,755501351.3574597
+28.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.25 %,Expansión,47062851.71190628,756478631.2385032
+30.0,2,Cambio de estado económico,Expansión → Normal,Normal,50882164.32268225,742340973.8834302
+30.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.25 %,Normal,50882164.32268225,742340973.8834302
+31.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.00 %,Normal,52812326.647612244,730627462.3021455
+33.0,2,Cambio de estado económico,Normal → Normal,Normal,56696514.2843081,698076163.1777935
+33.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,56696514.2843081,698076163.1777935
+34.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Normal,58659109.27049282,700655739.8325768
+36.0,2,Cambio de estado económico,Normal → Normal,Normal,62625912.82762034,706028527.9281826
+36.0,3,Inflación anual,Inflación de diciembre 2.90 %; la del próximo será 2.43 %,Normal,62625912.82762034,706028527.9281826
+36.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.25 %,Normal,62625912.82762034,706028527.9281826
+36.0,9,Valorización y gastos anuales,"El inmueble cambia +7.62%; predial y mantenimiento 3,270,332",Normal,59355580.48977911,728497525.7722429
+36.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; sin ajustes",Normal,59355580.48977911,728497525.7722429
+36.0,5,Vencimiento de CDT,"Vence CDT de 142,339,051 al 11.03%; se renueva por 142,339,051 al 12.61%",Normal,73918464.03770953,727988411.8369681
+36.0,7,Fin de contrato de arriendo,"Renueva: canon 1,981,433 → 2,038,948 (IPC previo 2.90 %)",Normal,73918464.03770953,727988411.8369681
+37.0,4,Reunión de la Junta,Inflación estable: TPM 11.25 % → 11.00 %,Normal,76016879.13466291,731338281.8176932
+39.0,2,Cambio de estado económico,Normal → Normal,Normal,80338405.13540809,734861651.380769
+39.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 10.00 %,Normal,80338405.13540809,734861651.380769
+40.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 10.00 %,Normal,82469588.76890843,765765518.3191489
+42.0,2,Cambio de estado económico,Normal → Crisis,Crisis,86773354.64373948,776084625.8810017
+42.0,4,Reunión de la Junta,Inflación estable: TPM 10.00 % → 9.75 %,Crisis,86773354.64373948,776084625.8810017
+43.0,4,Reunión de la Junta,Inflación estable: TPM 9.75 % → 9.50 %,Crisis,88931880.79215704,785602640.0969341
+45.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,93260189.27336057,789568714.2516756
+45.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.50 %,Crisis,93260189.27336057,789568714.2516756
+46.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.50 %,Crisis,95444340.94791359,781552531.1587594
+48.0,2,Cambio de estado económico,Crisis → Normal,Normal,99853094.35791115,796319825.1431646
+48.0,3,Inflación anual,Inflación de diciembre 2.43 %; la del próximo será 3.93 %,Normal,99853094.35791115,796319825.1431646
+48.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.50 %,Normal,99853094.35791115,796319825.1431646
+48.0,9,Valorización y gastos anuales,"El inmueble cambia +7.11%; predial y mantenimiento 3,503,006",Normal,96350088.06311087,818669480.732703
+48.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; renovará CDT por 193,250,952",Normal,96350088.06311087,818669480.732703
+48.0,5,Vencimiento de CDT,"Vence CDT de 142,339,051 al 12.61%; se renueva por 193,250,952 al 10.53%",Normal,61952720.01374093,817955788.5011649
+48.0,7,Fin de contrato de arriendo,El inquilino no renueva; vacancia de 0.9 meses,Normal,59822367.15484196,815825435.642266
+48.8986,8,Fin de vacancia,"Nuevo inquilino; canon 2,335,338",Normal,61791486.64219274,824431617.0987301
+49.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.50 %,Normal,61791486.64219274,824589876.2663862
+51.0,2,Cambio de estado económico,Normal → Normal,Normal,66268712.504484795,822862536.9234799
+51.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.50 %,Normal,66268712.504484795,822862536.9234799
+52.0,4,Reunión de la Junta,Inflación estable: TPM 9.50 % → 9.00 %,Normal,68527971.90279399,832043349.7527885
+54.0,2,Cambio de estado económico,Normal → Normal,Normal,73042917.24328168,841161962.1569545
+54.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,73042917.24328168,841161962.1569545
+55.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,75320013.43643805,840663640.6795456
+57.0,2,Cambio de estado económico,Normal → Normal,Normal,79913729.25056233,842625856.1820755
+57.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,79913729.25056233,842625856.1820755
+58.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,82230459.94565448,839662930.2858093
+60.0,2,Cambio de estado económico,Normal → Normal,Normal,86903945.82211044,843493242.324547
+60.0,3,Inflación anual,Inflación de diciembre 3.93 %; la del próximo será 5.68 %,Normal,86903945.82211044,843493242.324547
+60.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,86903945.82211044,843493242.324547
+60.0,9,Valorización y gastos anuales,"El inmueble cambia +5.82%; predial y mantenimiento 3,706,908",Normal,83197038.28685838,862442028.172826
+60.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; sin ajustes",Normal,83197038.28685838,862442028.172826
+60.0,5,Vencimiento de CDT,"Vence CDT de 193,250,952 al 10.53%; se renueva por 193,250,952 al 10.39%",Normal,102017882.64465842,861727520.3363261
+60.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,335,338 → 2,397,260 (IPC previo 3.93 %)",Normal,102407726.68707754,870390061.0447602
+61.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,104465159.05089024,872603733.4304074
+63.0,2,Cambio de estado económico,Normal → Normal,Normal,109513115.12684247,874480576.3462834
+63.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.00 %,Normal,109513115.12684247,874480576.3462834
+64.0,4,Reunión de la Junta,Inflación estable: TPM 9.00 % → 9.25 %,Normal,112058787.61834455,883628664.0117149
+66.0,2,Cambio de estado económico,Normal → Normal,Normal,117230608.6319489,884634463.6924367
+66.0,4,Reunión de la Junta,Inflación estable: TPM 9.25 % → 9.25 %,Normal,117230608.6319489,884634463.6924367
+67.0,4,Reunión de la Junta,Inflación estable: TPM 9.25 % → 9.25 %,Normal,119839270.77591091,874066284.8603175
+69.0,2,Cambio de estado económico,Normal → Normal,Normal,125102417.87297462,883275066.0459898
+69.0,4,Reunión de la Junta,Inflación estable: TPM 9.25 % → 9.25 %,Normal,125102417.87297462,883275066.0459898
+70.0,4,Reunión de la Junta,Inflación estable: TPM 9.25 % → 9.25 %,Normal,127757030.92103265,888231077.2101927
+72.0,2,Cambio de estado económico,Normal → Normal,Normal,133112656.82370265,893310984.1813712
+72.0,3,Inflación anual,Inflación de diciembre 5.68 %; la del próximo será 11.91 %,Normal,133112656.82370265,893310984.1813712
+72.0,4,Reunión de la Junta,Inflación estable: TPM 9.25 % → 9.25 %,Normal,133112656.82370265,893310984.1813712
+72.0,9,Valorización y gastos anuales,"El inmueble cambia +3.59%; predial y mantenimiento 3,839,959",Normal,129272697.535792,904254552.9666376
+72.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; comprará ETF por 43,304,016",Normal,129272697.535792,904254552.9666376
+72.0,5,Vencimiento de CDT,"Vence CDT de 193,250,952 al 10.39%; se renueva por 193,250,952 al 10.49%",Normal,147833280.40764484,903539512.9231272
+72.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,397,260 → 2,480,611 (IPC previo 5.68 %)",Normal,104765869.22373585,909117378.0675445
+73.0,4,Reunión de la Junta,Inflación subiendo: TPM 9.25 % → 9.25 %,Normal,106877855.13352244,911387046.466125
+75.0,2,Cambio de estado económico,Normal → Normal,Normal,112114040.13805677,936360212.7344961
+75.0,4,Reunión de la Junta,Inflación subiendo: TPM 9.25 % → 9.50 %,Normal,112114040.13805677,936360212.7344961
+76.0,4,Reunión de la Junta,Inflación subiendo: TPM 9.50 % → 9.75 %,Normal,114772585.6863333,929619379.981271
+76.0705,11,Necesidad extraordinaria de liquidez,"Necesidad de 5,801,298; la cuenta pasa de 115,279,637 a 109,478,340",Normal,109478339.55739917,924376007.1416335
+78.0,2,Cambio de estado económico,Normal → Normal,Normal,114334330.39176914,935230496.5650777
+78.0,4,Reunión de la Junta,Inflación subiendo: TPM 9.75 % → 10.00 %,Normal,114334330.39176914,935230496.5650777
+79.0,4,Reunión de la Junta,Inflación subiendo: TPM 10.00 % → 10.00 %,Normal,117039013.51124752,933163443.2876616
+81.0,2,Cambio de estado económico,Normal → Normal,Normal,122497154.80421758,940980144.8759425
+81.0,4,Reunión de la Junta,Inflación subiendo: TPM 10.00 % → 10.00 %,Normal,122497154.80421758,940980144.8759425
+82.0,4,Reunión de la Junta,Inflación subiendo: TPM 10.00 % → 11.00 %,Normal,125250604.44779663,959256244.7112459
+84.0,2,Cambio de estado económico,Normal → Normal,Normal,130969070.23742498,992583780.0000303
+84.0,3,Inflación anual,Inflación de diciembre 11.91 %; la del próximo será 5.45 %,Normal,130969070.23742498,992583780.0000303
+84.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 10.00 %,Normal,130969070.23742498,992583780.0000303
+84.0,9,Valorización y gastos anuales,"El inmueble cambia +0.95%; predial y mantenimiento 3,876,350",Normal,127092720.12822115,992750854.4789569
+84.0,14,Revisión anual de la estrategia,"Estado Normal: objetivo cuenta 17.5%, CDT 45.0%, ETF 37.5%; renovará CDT por 252,920,379",Normal,127092720.12822115,992750854.4789569
+84.0,5,Vencimiento de CDT,"Vence CDT de 193,250,952 al 10.49%; se renueva por 252,920,379 al 10.62%",Normal,85930573.17481545,991796991.1622988
+84.8986,7,Fin de contrato de arriendo,"Renueva: canon 2,480,611 → 2,598,226 (IPC previo 11.91 %)",Normal,86246186.17839786,1003957800.55373
+85.0,4,Reunión de la Junta,Inflación bajando: TPM 10.00 % → 11.00 %,Normal,88431604.13713679,1006352040.1351657
+87.0,2,Cambio de estado económico,Normal → Crisis,Crisis,93802446.26143081,1003149637.9194599
+87.0,4,Reunión de la Junta,Inflación bajando: TPM 11.00 % → 11.00 %,Crisis,93802446.26143081,1003149637.9194599
+88.0,4,Reunión de la Junta,Inflación bajando: TPM 11.00 % → 10.75 %,Crisis,96514142.94861223,1005639275.9775313
+90.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,101959812.60135698,1020460037.6416724
+90.0,4,Reunión de la Junta,Inflación bajando: TPM 10.75 % → 10.00 %,Crisis,101959812.60135698,1020460037.6416724
+91.0,4,Reunión de la Junta,Inflación bajando: TPM 10.00 % → 11.00 %,Crisis,104660064.12369959,1044127386.121444
+93.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,110245968.60057394,1072932774.370878
+93.0,4,Reunión de la Junta,Inflación bajando: TPM 11.00 % → 11.00 %,Crisis,110245968.60057394,1072932774.370878
+94.0,4,Reunión de la Junta,Inflación bajando: TPM 11.00 % → 11.00 %,Crisis,113067256.51311617,1073658548.8189826
+96.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,118767736.23354131,1132797410.7480392
+96.0,3,Inflación anual,Inflación de diciembre 5.45 %; la del próximo será 8.01 %,Crisis,118767736.23354131,1132797410.7480392
+96.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Crisis,118767736.23354131,1132797410.7480392
+96.0,9,Valorización y gastos anuales,"El inmueble cambia +2.88%; predial y mantenimiento 3,988,177",Crisis,114779558.73537892,1141234498.6897178
+96.0,14,Revisión anual de la estrategia,"Estado Crisis: objetivo cuenta 25.0%, CDT 55.0%, ETF 20.0%; vende ETF por 164,997,256; renovará CDT por 383,957,016",Crisis,278295139.5472338,1139752823.3292904
+96.0,5,Vencimiento de CDT,"Vence CDT de 252,920,379 al 10.62%; se renueva por 383,957,016 al 11.41%",Crisis,171565783.85548759,1138274366.1550646
+96.8986,7,Fin de contrato de arriendo,El inquilino no renueva; vacancia de 4.7 meses,Crisis,169821444.8664835,1140703553.0632052
+97.0,4,Reunión de la Junta,Inflación estable: TPM 11.00 % → 11.00 %,Crisis,172110482.15430066,1143332201.1570487
+99.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,174076831.98941442,1165542186.5402637
+99.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.00 % → 11.00 %,Crisis,174076831.98941442,1165542186.5402637
+100.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.00 % → 12.00 %,Crisis,175068760.53842017,1154119191.5413344
+101.6213,8,Fin de vacancia,"Nuevo inquilino; canon 2,658,785",Crisis,177294227.72828323,1176948934.7899842
+102.0,2,Cambio de estado económico,Crisis → Crisis,Crisis,177294227.72828323,1178273538.2969217
+102.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 12.00 %,Crisis,177294227.72828323,1178273538.2969217
+103.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 12.00 %,Crisis,180760346.16536832,1190597394.590524
+105.0,2,Cambio de estado económico,Crisis → Normal,Normal,187770691.9695868,1165699109.9546406
+105.0,4,Reunión de la Junta,Inflación subiendo: TPM 12.00 % → 11.50 %,Normal,187770691.9695868,1165699109.9546406
+106.0,4,Reunión de la Junta,Inflación subiendo: TPM 11.50 % → 11.50 %,Normal,191255631.44283003,1169023781.7627068
+108.0,2,Cambio de estado económico,Normal → Expansión,Expansión,198300207.74833786,1180929937.7951999
+108.0,3,Inflación anual,Inflación de diciembre 8.01 %; la del próximo será 10.71 %,Expansión,198300207.74833786,1180929937.7951999
+108.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 11.50 %,Expansión,198300207.74833786,1180929937.7951999
+108.0,9,Valorización y gastos anuales,"El inmueble cambia +4.11%; predial y mantenimiento 4,152,031",Expansión,194148177.0043028,1194983823.2592402
+108.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 290,028,603; renovará CDT por 256,776,476",Expansión,194148177.0043028,1194983823.2592402
+108.0,5,Vencimiento de CDT,"Vence CDT de 383,957,016 al 11.41%; se renueva por 256,776,476 al 13.15%",Expansión,362422919.69209135,1194013432.8327732
+109.0,4,Reunión de la Junta,Inflación estable: TPM 11.50 % → 14.00 %,Expansión,73821329.00330159,1206642158.4588642
+111.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,79289187.16189289,1169242384.074111
+111.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.00 % → 14.00 %,Expansión,79289187.16189289,1169242384.074111
+112.0,4,Reunión de la Junta,Inflación subiendo: TPM 14.00 % → 15.00 %,Expansión,82057856.1786874,1176359582.1072512
+113.6213,7,Fin de contrato de arriendo,"Renueva: canon 2,658,785 → 2,760,441 (IPC previo 8.01 %)",Expansión,85427329.55595303,1156185911.6374373
+114.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,87769719.13987374,1159548957.291996
+114.0,4,Reunión de la Junta,Inflación subiendo: TPM 15.00 % → 15.00 %,Expansión,87769719.13987374,1159548957.291996
+115.0,4,Reunión de la Junta,Inflación subiendo: TPM 15.00 % → 15.00 %,Expansión,90754004.31917757,1188393339.5316613
+117.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,96803737.99698465,1255861915.023069
+117.0,4,Reunión de la Junta,Inflación subiendo: TPM 15.00 % → 15.00 %,Expansión,96803737.99698465,1255861915.023069
+118.0,4,Reunión de la Junta,Inflación subiendo: TPM 15.00 % → 15.00 %,Expansión,99869573.84788772,1240364726.644977
+120.0,2,Cambio de estado económico,Expansión → Expansión,Expansión,106084156.26114151,1229363302.6158252
+120.0,3,Inflación anual,Inflación de diciembre 10.71 %; la del próximo será 10.17 %,Expansión,106084156.26114151,1229363302.6158252
+120.0,4,Reunión de la Junta,Inflación estable: TPM 15.00 % → 14.75 %,Expansión,106084156.26114151,1229363302.6158252
+120.0,9,Valorización y gastos anuales,"El inmueble cambia -2.02%; predial y mantenimiento 4,068,180",Expansión,102015975.84231028,1215978419.3965673
+120.0,14,Revisión anual de la estrategia,"Estado Expansión: objetivo cuenta 10.0%, CDT 35.0%, ETF 55.0%; comprará ETF por 47,436,295",Expansión,102015975.84231028,1215978419.3965673
+120.0,5,Vencimiento de CDT,"Vence CDT de 256,776,476 al 13.15%; se renueva por 256,776,476 al 15.02%",Expansión,133471032.19996953,1215008364.371401

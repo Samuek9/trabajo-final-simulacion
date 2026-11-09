@@ -98,7 +98,8 @@ with st.expander("Tasas: TPM, cuenta y CDT (7.2 a 7.4)"):
         numero("tpm.max", "TPM máxima (%)", paso=0.5, fmt="%.2f")
     with c[1]:
         numero("cta.alfa", "Cuenta: tasa = α × TPM", paso=0.01, minimo=0.0, maximo=1.0)
-        numero("imp.retencion", "Retención sobre intereses", paso=0.01, minimo=0.0, maximo=0.5)
+        numero("imp.retencion", "Retención sobre intereses del CDT", paso=0.01, minimo=0.0, maximo=0.5)
+        numero("imp.retencion_cuenta", "Retención sobre intereses de la cuenta", paso=0.01, minimo=0.0, maximo=0.5)
         numero("cdt.castigo", "Castigo por venta anticipada del CDT", paso=0.005, minimo=0.0, maximo=0.1)
     with c[2]:
         opcion("cdt.modelo", "Margen del CDT", {"m5": "M5: a + b·ΔTPM + ε (residuos observados)", "fase": "Normal por fase de la TPM"})

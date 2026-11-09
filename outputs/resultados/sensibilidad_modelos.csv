@@ -1,21 +1,25 @@
 modelo,estrategia,ref_p_meta,alt_p_meta,ref_W,alt_W
-ETF: Jones-Faddy sin estados (en vez de t por estado),E1,0.135,0.13,818526370.8426939,816184562.1819805
-ETF: Jones-Faddy sin estados (en vez de t por estado),E2,0.355,0.3575,943231687.8260968,941736842.4296985
-ETF: Jones-Faddy sin estados (en vez de t por estado),E3,0.4125,0.4025,950564548.5855494,953039265.5082204
-ETF: Jones-Faddy sin estados (en vez de t por estado),E4,0.3575,0.37,925549232.2672154,927139668.5147724
-Valorización: AR(1) del IPVU (en vez de normal por estado),E1,0.135,0.135,818526370.8426939,818526370.8426939
-Valorización: AR(1) del IPVU (en vez de normal por estado),E2,0.355,0.2175,943231687.8260968,859986058.0103388
-Valorización: AR(1) del IPVU (en vez de normal por estado),E3,0.4125,0.2275,950564548.5855494,851509133.1482098
-Valorización: AR(1) del IPVU (en vez de normal por estado),E4,0.3575,0.2325,925549232.2672154,854638016.3269628
-CDT: margen por fase (en vez de M5),E1,0.135,0.145,818526370.8426939,817242642.8479855
-CDT: margen por fase (en vez de M5),E2,0.355,0.3575,943231687.8260968,939669792.6657085
-CDT: margen por fase (en vez de M5),E3,0.4125,0.4075,950564548.5855494,952204947.3108209
-CDT: margen por fase (en vez de M5),E4,0.3575,0.3575,925549232.2672154,929634435.9483739
-Canon: sube todo el IPC (en vez del modelo DANE),E1,0.135,0.135,818526370.8426939,818526370.8426939
-Canon: sube todo el IPC (en vez del modelo DANE),E2,0.355,0.38,943231687.8260968,952624525.9917166
-Canon: sube todo el IPC (en vez del modelo DANE),E3,0.4125,0.43,950564548.5855494,962998463.3929822
-Canon: sube todo el IPC (en vez del modelo DANE),E4,0.3575,0.37,925549232.2672154,934823994.3518388
-Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.135,0.6125,818526370.8426939,1070860263.1478488
-Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.355,0.6225,943231687.8260968,1065215260.9641392
-Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.4125,0.53,950564548.5855494,1012915428.1488767
-Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.3575,0.55,925549232.2672154,1033371847.7817981
+ETF: Jones-Faddy sin estados (en vez de t por estado),E1,0.0475,0.055,743505395.2338068,758843426.6958184
+ETF: Jones-Faddy sin estados (en vez de t por estado),E2,0.145,0.1625,820996014.6108403,834029252.425058
+ETF: Jones-Faddy sin estados (en vez de t por estado),E3,0.1725,0.205,822408579.5745738,841027689.550791
+ETF: Jones-Faddy sin estados (en vez de t por estado),E4,0.165,0.1825,816705838.6235504,831960211.3491646
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E1,0.0475,0.0475,743505395.2338068,743505395.2338068
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E2,0.145,0.24,820996014.6108403,902003832.4850054
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E3,0.1725,0.325,822408579.5745738,922630208.0353392
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E4,0.165,0.2425,816705838.6235504,893235931.4789991
+CDT: margen por fase (en vez de M5),E1,0.0475,0.055,743505395.2338068,743514767.5765519
+CDT: margen por fase (en vez de M5),E2,0.145,0.15,820996014.6108403,820309295.5397894
+CDT: margen por fase (en vez de M5),E3,0.1725,0.17,822408579.5745738,823778882.3140402
+CDT: margen por fase (en vez de M5),E4,0.165,0.165,816705838.6235504,816420181.3297622
+Canon: sube todo el IPC (en vez del modelo DANE),E1,0.0475,0.0475,743505395.2338068,743505395.2338068
+Canon: sube todo el IPC (en vez del modelo DANE),E2,0.145,0.155,820996014.6108403,827199123.8225363
+Canon: sube todo el IPC (en vez del modelo DANE),E3,0.1725,0.18,822408579.5745738,831156528.2536755
+Canon: sube todo el IPC (en vez del modelo DANE),E4,0.165,0.1675,816705838.6235504,823663732.7636347
+Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.0475,0.56,743505395.2338068,1034076159.973015
+Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.145,0.4175,820996014.6108403,962422570.4071248
+Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.1725,0.315,822408579.5745738,896413804.4061861
+Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.165,0.375,816705838.6235504,931785453.5266676
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E1,0.0475,0.2225,743505395.2338068,905371699.2485834
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E2,0.145,0.455,820996014.6108403,982903364.4182904
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E3,0.1725,0.465,822408579.5745738,980705562.0872853
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E4,0.165,0.44,816705838.6235504,976324657.5121531

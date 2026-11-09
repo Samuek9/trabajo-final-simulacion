@@ -1,14 +1,14 @@
 {
   "version_modelo": "1.0.0",
-  "fecha": "2026-11-07T13:46:31",
-  "procesos": 14,
+  "fecha": "2026-11-09T09:51:06",
+  "procesos": 12,
   "replicas": 1068,
   "semilla_base": 20261107,
   "replicas_necesarias_W_real": {
-    "E1": 621,
-    "E2": 500,
-    "E3": 704,
-    "E4": 552
+    "E1": 627,
+    "E2": 575,
+    "E3": 854,
+    "E4": 631
   },
-  "segundos": 280.5
+  "segundos": 466.3
 }

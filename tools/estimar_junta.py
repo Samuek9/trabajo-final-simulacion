@@ -1,8 +1,13 @@
 """Decisión de la Junta: logit ordenado con tendencia de la inflación y brecha de Taylor.
 
 Datos: TPM diaria del Banco de la República (fin de mes) e inflación anual mensual del
-DANE, 2001-2026. Una observación por mes con reunión (desde 2017 no hay reunión en
-febrero, mayo, agosto y noviembre). Decisión: baja, mantiene o sube.
+DANE, 2001-2026. Una observación por cada mes del calendario actual de la Junta
+(enero, marzo, abril, junio, julio, septiembre, octubre y diciembre) en todos los años,
+porque el simulador decide con ese calendario. Antes de 2017 la Junta se reunía cada mes;
+la decisión de esos años es el cambio acumulado desde el mes de calendario anterior.
+Estimar con las reuniones mensuales y simular 8 por año hacía que la TPM se moviera
+menos de lo que se movió (la tasa real simulada quedaba en 4,6 puntos). Decisión: baja,
+mantiene o sube.
 
   latente = b_tend·(π(t−1) − π(t−4)) + b_taylor·[TPM(t−1) − (r* + π(t−1) + 0,5·(π(t−1) − meta))]
   P(baja) = logística(k1 − latente); P(sube) = 1 − logística(k2 − latente)
@@ -23,6 +28,7 @@ from statsmodels.miscmodels.ordinal_model import OrderedModel
 RAIZ = Path(__file__).resolve().parents[1]
 CRUDOS = RAIZ / "data" / "raw"
 R_NEUTRAL = 1.0
+MESES_JUNTA = [1, 3, 4, 6, 7, 9, 10, 12]
 METAS = {2001: 8, 2002: 6, 2003: 5.5, 2004: 5.5, 2005: 5, 2006: 4.5, 2007: 4, 2008: 4, 2009: 5}
 
 
@@ -32,14 +38,14 @@ def datos() -> pd.DataFrame:
     inf.index = inf.index.to_period("M").to_timestamp("M")
     d = pd.DataFrame({"tpm": tpm, "inf": inf}).dropna()
     d["meta"] = [METAS.get(y, 3.0) for y in d.index.year]
-    d["cambio"] = d.tpm.diff().round(4)
-    d["decision"] = np.sign(d["cambio"])
     d["dpi3"] = d.inf.shift(1) - d.inf.shift(4)
     pi = d.inf.shift(1)
     d["brecha_taylor"] = d.tpm.shift(1) - (R_NEUTRAL + pi + 0.5 * (pi - d.meta.shift(1)))
     d = d.dropna()
-    sin_reunion = (d.index.year >= 2017) & d.index.month.isin([2, 5, 8, 11])
-    return d[~sin_reunion]
+    d = d[d.index.month.isin(MESES_JUNTA)].copy()
+    d["cambio"] = d.tpm.diff().round(4)
+    d["decision"] = np.sign(d["cambio"])
+    return d.dropna()
 
 
 def estimar() -> dict:

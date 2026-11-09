@@ -13,8 +13,8 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
-if (-not $Consolidado) { $Consolidado = "$aqui\..\..\Consolidado\Trabajo_Final_Simulacion_puntos_1_a_7.xlsx" }
-if (-not $Markov) { $Markov = "$aqui\..\..\Analisis_completo_estados_economicos_Markov.xlsx" }
+if (-not $Consolidado) { $Consolidado = "$aqui\..\..\insumos_equipo\07_consolidado_puntos_1_a_7\Trabajo_Final_Simulacion_puntos_1_a_7.xlsx" }
+if (-not $Markov) { $Markov = "$aqui\..\..\insumos_equipo\01_estados_markov\Analisis_completo_estados_economicos_Markov.xlsx" }
 if (-not $Destino) { $Destino = "$aqui\..\data\master_datos.xlsx" }
 $Nuevas = (Resolve-Path $Nuevas).Path
 $Consolidado = (Resolve-Path $Consolidado).Path
@@ -42,6 +42,16 @@ try {
     $ultima = $dest.Worksheets.Item($dest.Worksheets.Count)
     $dest.Worksheets.Item("RESULTADOS").Move($falta, $ultima)
     $dest.Worksheets.Item("Parametros_simulador").Delete()
+
+    # Correcciones de la auditoría sobre las copias (los originales del equipo no se tocan).
+    # B1: el conteo de años dentro del rango meta apuntaba a una columna vacía.
+    $dest.Worksheets.Item("INF").Range("C40").Formula = "=SUMPRODUCT((B17:B32>=G17:G32)*(B17:B32<=H17:H32))"
+    # B6: los ejemplos de generación usaban ALEATORIO() y cambiaban en cada recálculo; quedan con u = 0,5.
+    $etf = $dest.Worksheets.Item("ETF")
+    $etf.Range("B52").Formula = "=BETA.INV(0.5,B51,C51)"
+    $etf.Range("B57").Formula = "=B56+C56*T.INV(0.5,B55)"
+    $etf.Range("A52").Value2 = [string]$etf.Range("A52").Value2 + " (ejemplo con ALEATORIO() = 0,5)"
+    $etf.Range("A57").Value2 = [string]$etf.Range("A57").Value2 + " (ejemplo con ALEATORIO() = 0,5)"
     $mar.Close($false)
     $nue.Close($false)
 

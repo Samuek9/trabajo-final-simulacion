@@ -65,10 +65,12 @@ def modelos_alternativos() -> list[dict]:
     """Sensibilidad a la elección del modelo (cada proceso con su candidato alternativo)."""
     return [
         {"factor": "ETF: Jones-Faddy sin estados (en vez de t por estado)", "cambios": {"etf.modelo": "jf"}},
-        {"factor": "Valorización: AR(1) del IPVU (en vez de normal por estado)", "cambios": {"val.modelo": "ar1"}},
+        {"factor": "Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)", "cambios": {"val.modelo": "estado"}},
         {"factor": "CDT: margen por fase (en vez de M5)", "cambios": {"cdt.modelo": "fase"}},
         {"factor": "Canon: sube todo el IPC (en vez del modelo DANE)", "cambios": {"inm.reajuste_modelo": "ipc"}},
         {"factor": "Junta: tabla por tendencia de 7.2 (en vez del logit)", "cambios": {"junta.modelo": "tendencia"}},
+        {"factor": "Sin necesidades extraordinarias de liquidez (no tienen fuente)",
+         "cambios": {"liq.tasa_E": 0.0, "liq.tasa_N": 0.0, "liq.tasa_C": 0.0}},
     ]
 
 

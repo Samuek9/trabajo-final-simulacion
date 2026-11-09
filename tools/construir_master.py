@@ -298,12 +298,12 @@ def resultados(ws) -> None:
     filas = []
     for x in r.itertuples():
         filas.append([x.escenario, x.estrategia, x.p_meta, x.p_meta_lo, x.p_meta_hi, x.W_real_media / 1e6, x.W_real_p5 / 1e6,
-                      x.W_real_p50 / 1e6, x.W_real_p95 / 1e6, x.cvar5_W_real / 1e6, x.rent_real_media, x.p_perdida_real,
+                      x.W_real_p25 / 1e6, x.W_real_p50 / 1e6, x.W_real_p75 / 1e6, x.W_real_p95 / 1e6, x.cvar5_W_real / 1e6, x.rent_real_media, x.p_perdida_real,
                       x.caida_max_p50, x.p_iliquidez, x.p_iliquidez_lo, x.p_iliquidez_hi, x.p_venta_urgente, x.t_meta_p50_anios])
-    f = tabla(ws, f, ["Escenario", "Estrategia", "P(meta)", "IC bajo", "IC alto", "W real media", "W real P5", "W real P50",
-                      "W real P95", "CVaR 5 %", "Rent. real anual", "P(pérdida real)", "Caída máx. P50", "P(iliquidez)",
+    f = tabla(ws, f, ["Escenario", "Estrategia", "P(meta)", "IC bajo", "IC alto", "W real media", "W real P5", "W real P25", "W real P50",
+                      "W real P75", "W real P95", "CVaR 5 %", "Rent. real anual", "P(pérdida real)", "Caída máx. P50", "P(iliquidez)",
                       "IC bajo", "IC alto", "P(venta urgente)", "Años a la meta P50"], filas,
-              [11, 10] + [12] * 16, "Indicadores principales")
+              [11, 10] + [12] * 18, "Indicadores principales")
     n = pd.read_csv(RES / "capital_necesario.csv")
     f = tabla(ws, f, ["Escenario", "Estrategia", "Meta (M)", "Capital para 80 % (M)", "Capital para 50 % (M)"],
               [[x.escenario, x.estrategia, x.meta / 1e6, x.capital_80 / 1e6, x.capital_50 / 1e6] for x in n.itertuples()], None,

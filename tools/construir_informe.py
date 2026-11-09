@@ -29,7 +29,7 @@ from investment_sim.config.parameters import cargar  # noqa: E402
 from investment_sim.models import inflation, markov  # noqa: E402
 from parametros_def import FILAS  # noqa: E402
 
-ORIGEN = RAIZ.parent / "Consolidado" / "Trabajo_Final_Simulacion_puntos_1_a_7.docx"
+ORIGEN = RAIZ.parent / "insumos_equipo" / "07_consolidado_puntos_1_a_7" / "Trabajo_Final_Simulacion_puntos_1_a_7.docx"
 DESTINO = RAIZ / "docs" / "informe_final.docx"
 RES = RAIZ / "outputs" / "resultados"
 FIG = RAIZ / "docs" / "figuras"
@@ -459,8 +459,8 @@ def seccion_11(w: Informe):
                              "Si no, se repone con la cobertura de la sección 12."),
         ("Inmueble.", f"Vale el porcentaje del capital de cada estrategia; la compra cuesta {pc(P.f('inv.capital') * 0 + P.f('inm.costo_compra'), 1)} "
                       f"del valor y se arrienda desde el primer mes con un canon de {pc(P.f('inm.canon_inicial'), 1)} del valor."),
-        ("Costos.", f"Comisión de {pc(P.f('etf.comision'), 1)} al comprar o vender ETF, retención de {pc(P.f('imp.retencion'), 0)} sobre "
-                    f"intereses, 4x1000 sobre los retiros que pasan la exención mensual de {mm(P.f('imp.gmf_exencion'))} (350 UVT) y "
+        ("Costos.", f"Comisión de {pc(P.f('etf.comision'), 1)} al comprar o vender ETF, retención de {pc(P.f('imp.retencion'), 0)} sobre los intereses del CDT y de "
+                    f"{pc(P.f('imp.retencion_cuenta'), 0)} sobre los de la cuenta, 4x1000 sobre los retiros que pasan la exención mensual de {mm(P.f('imp.gmf_exencion'))} (350 UVT) y "
                     f"comisión de la inmobiliaria de {pc(P.f('inm.comision_inmobiliaria'), 1)} del canon."),
     ])
 

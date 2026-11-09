@@ -32,10 +32,10 @@ def test_inflacion_cero_real_igual_a_nominal(quieto):
 def test_cuenta_sola_crece_al_interes_compuesto(quieto):
     """Todo en la cuenta, TPM fija de 10 % y α = 1: crece a 10 % anual neto de retención."""
     p = quieto.con(**{"E1.pesos": "1;0;0;0", "tpm.inicial": 10.0, "tpm.hace_3m": 10.0, "cta.alfa": 1.0,
-                      "imp.retencion": 0.04})
+                      "imp.retencion_cuenta": 0.07})
     r = una_replica(p, "E1", 3)
     tasa_mes = 1.1 ** (1 / 12) - 1
-    esperado = C * (1 + tasa_mes * 0.96) ** 120
+    esperado = C * (1 + tasa_mes * 0.93) ** 120
     assert r.indicadores["W_nominal"] == pytest.approx(esperado, rel=1e-9)
 
 

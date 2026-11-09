@@ -59,6 +59,7 @@ class Simulacion:
         self.con_traza = traza
         self.H = p.i("inv.horizonte")
         self.ret = p.f("imp.retencion")
+        self.ret_cta = p.f("imp.retencion_cuenta")
         self.gmf = p.f("imp.gmf")
         self.exencion = p.f("imp.gmf_exencion")
         self.com_etf = p.f("etf.comision")
@@ -492,7 +493,7 @@ class Simulacion:
         cdt: CDT = ev.datos["cdt"]
         if cdt not in s.cdts:
             return
-        interes = cdt.capital * cdt.tasa * (cdt.vence - cdt.abierto) / 12
+        interes = cdt.capital * ((1 + cdt.tasa) ** ((cdt.vence - cdt.abierto) / 12) - 1)
         s.acum["intereses_cdt"] += interes * (1 - self.ret)
         s.acum["retencion"] += interes * self.ret
         s.cdts.remove(cdt)
@@ -634,9 +635,9 @@ class Simulacion:
         # Cuenta: interés mensual neto de retención.
         if s.cuenta > 0:
             interes = s.cuenta * ((1 + p.f("cta.alfa") * s.tpm / 100) ** (1 / 12) - 1)
-            s.acum["intereses_cuenta"] += interes * (1 - self.ret)
-            s.acum["retencion"] += interes * self.ret
-            s.cuenta += interes * (1 - self.ret)
+            s.acum["intereses_cuenta"] += interes * (1 - self.ret_cta)
+            s.acum["retencion"] += interes * self.ret_cta
+            s.cuenta += interes * (1 - self.ret_cta)
         # Inflación del mes e índice de precios.
         pi = self.pi_actual(s.t)
         s.indice *= (1 + pi / 100) ** (1 / 12)
