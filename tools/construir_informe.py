@@ -236,7 +236,8 @@ def antes(doc, ancla: Paragraph, partes: list[str], estilo: str = "Normal") -> P
 def portada_y_resumen(doc):
     poner(doc.paragraphs[1], "Trabajo final de Simulación. Informe completo: planteamiento, procesos aleatorios, modelo de "
                              "eventos discretos, estrategias, diseño experimental, verificación, validación y resultados")
-    poner(buscar(doc, "Archivo de soporte"), "Archivos de soporte: data/master_datos.xlsx (Excel maestro con parámetros, fuentes, "
+    poner(buscar(doc, "Integrantes:"), "Integrantes: Daniel Giraldo Arenas, Allison Correa y Samuel Alexis Vásquez Muñoz")
+    poner(buscar(doc, "Archivo de soporte"),"Archivos de soporte: data/master_datos.xlsx (Excel maestro con parámetros, fuentes, "
           "datos, validación y resultados), el repositorio del simulador (código, datos, pruebas y resultados de la corrida) y "
           "docs/decision_log.md (decisiones de modelación).")
     poner(buscar(doc, "Este documento cubre los puntos 1 a 7"),
