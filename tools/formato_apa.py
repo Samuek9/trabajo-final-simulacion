@@ -502,10 +502,10 @@ def estilo(doc) -> None:
         ppr = st.element.get_or_add_pPr()
         _quitar(ppr, "w:pBdr")
     # Portada (APA, trabajo de estudiantes): todo centrado hasta la fecha.
-    for p in doc.paragraphs[:6]:
+    for p in doc.paragraphs[:10]:
         p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _quitar(p._p, "w:pBdr")
-        if p.text.startswith("Noviembre"):
+        if p.text.startswith("10 de noviembre"):
             break
     # Ningún texto con color ni sombreado: todo en negro.
     for r in doc.element.body.iter(qn("w:rPr")):

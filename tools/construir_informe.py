@@ -287,6 +287,10 @@ def portada_y_resumen(doc):
     poner(doc.paragraphs[1], "Trabajo final de Simulación. Informe completo: planteamiento, procesos aleatorios, modelo de "
                              "eventos discretos, estrategias, diseño experimental, verificación, validación y resultados")
     poner(buscar(doc, "Integrantes:"), "Integrantes: Daniel Giraldo Arenas, Allison Correa y Samuel Alexis Vásquez Muñoz")
+    fecha = buscar(doc, "Noviembre de 2026")
+    for t in ("Universidad Pontificia Bolivariana", "Curso: Simulación", "Profesor: John Fernando Vargas Buitrago"):
+        antes(doc, fecha, [t])
+    poner(fecha, "10 de noviembre de 2026")
     poner(buscar(doc, "Archivo de soporte"),"Archivos de soporte: data/master_datos.xlsx (Excel maestro con parámetros, fuentes, "
           "datos, validación y resultados), el repositorio del simulador (código, datos, pruebas y resultados de la corrida) y "
           "docs/decision_log.md (decisiones de modelación).")
