@@ -866,8 +866,110 @@ try {
     $c.Range("A8:A59").EntireRow.RowHeight = 15
     $c.Range("A1").Select()
 
+    # ------------------------------------------------ PIB, estados
+    $p = Nueva-Hoja $dest "PIB, estados"
+    Titulo $p "Estado de la economía: PIB real de Colombia" "Crecimiento anual trimestral, primer trimestre de 1995 – segundo de 2026"
+    $p.Range("A4").Value2 = "Crecimiento medio"
+    $p.Range("B4").Value2 = "Desviación"
+    $p.Range("C4").Value2 = "Mínimo"
+    $p.Range("D4").Value2 = "Trimestres de crisis"
+    $p.Range("A5").Formula = "=AVERAGE(B43:B168)/100"
+    $p.Range("B5").Formula = "=STDEV.S(B43:B168)/100"
+    $p.Range("C5").Formula = "=MIN(B43:B168)/100"
+    $p.Range("D5").Formula = '=COUNTIFS(C43:C168,"crisis",A43:A168,">="&DATE(2006,1,1))'
+    $p.Range("A6").Value2 = "Anual, 126 trimestres"
+    $p.Range("B6").Value2 = "Del crecimiento anual"
+    $p.Range("C6").Formula = "=INDEX(A43:A168,MATCH(MIN(B43:B168),B43:B168,0))"
+    $p.Range("C6").NumberFormat = '"Terminado en "mm/yyyy'
+    $p.Range("C6").HorizontalAlignment = -4131
+    $p.Range("D6").Value2 = "Desde 2006"
+    foreach ($z in @("A4", "B4", "C4", "D4")) { $p.Range($z).Font.Color = $gris }
+    foreach ($z in @("A5", "B5", "C5")) { $p.Range($z).NumberFormatLocal = "0,00 %" }
+    $p.Range("D5").NumberFormatLocal = "0"
+    foreach ($z in @("A5", "B5", "C5", "D5")) {
+        $x = $p.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    foreach ($z in @("A6", "B6", "C6", "D6")) { $p.Range($z).Font.Size = 9; $p.Range($z).Font.Color = $gris }
+    $p.Rows.Item(5).RowHeight = 28
+    foreach ($k in 1..6) { $p.Columns.Item($k).ColumnWidth = @(24, 24, 24, 24, 24, 4)[$k - 1] }
+
+    Seccion $p 8 "Crecimiento anual del PIB real"
+    $p.Range("A9").Value2 = "Variación frente al mismo trimestre del año anterior, con los umbrales que definen el estado."
+    $p.Range("A9").Font.Color = $gris
+
+    Seccion $p 32 "Estados de la economía"
+    $p.Range("A33").Value2 = "Cada trimestre se clasifica por su crecimiento anual. Los umbrales son parámetros del modelo."
+    $p.Range("A33").Font.Color = $gris
+    Encabezado $p 34 1 4 @("Estado", "Regla", "Trimestres", "Proporción")
+    $p.Range("A35").Value2 = "crisis"
+    $p.Range("A36").Value2 = "normal"
+    $p.Range("A37").Value2 = "expansión"
+    $p.Range("B35").Formula = '="Menor que "&TEXT(PIB!H4,"0")&" %"'
+    $p.Range("B36").Formula = '="Entre "&TEXT(PIB!H4,"0")&" % y "&TEXT(PIB!H5,"0")&" %"'
+    $p.Range("B37").Formula = '=TEXT(PIB!H5,"0")&" % o más"'
+    foreach ($k in 35..37) {
+        $p.Cells.Item($k, 3).Formula = "=COUNTIF(`$C`$43:`$C`$168,A$k)"
+        $p.Cells.Item($k, 4).Formula = "=C$k/SUM(`$C`$35:`$C`$37)"
+    }
+    $p.Range("C35:C37").NumberFormatLocal = "0"
+    $p.Range("D35:D37").NumberFormatLocal = "0 %"
+    $p.Range("C34:D37").HorizontalAlignment = -4152
+    $p.Range("A38").Value2 = "Desde 2006, un umbral de crisis en 0 % dejaría solo cuatro trimestres y la matriz de Markov no podría estimarse; con 1 % cuentan 2008-09, 2020 y 2023-24."
+    $p.Range("A38").Font.Size = 9; $p.Range("A38").Font.Color = $gris
+
+    Seccion $p 41 "Serie trimestral"
+    Encabezado $p 42 1 5 @("Trimestre", "Crecimiento anual (%)", "Estado", "Umbral de crisis (%)", "Umbral de expansión (%)")
+    $p.Range("A43:A168").Formula = "=PIB!A5"
+    $p.Range("B43:B168").Formula = "=PIB!B5"
+    $p.Range("C43:C168").Formula = "=PIB!C5"
+    $p.Range("D43:D168").Formula = "=PIB!`$H`$4"
+    $p.Range("E43:E168").Formula = "=PIB!`$H`$5"
+    $p.Range("A43:A168").NumberFormat = "mmm-yyyy"
+    $p.Range("A43:A168").HorizontalAlignment = -4131
+    $p.Range("B43:B168").NumberFormatLocal = "0,00"
+    $p.Range("D43:E168").NumberFormatLocal = "0,0"
+    $p.Range("B43:B168").HorizontalAlignment = -4152
+    $p.Range("D43:E168").HorizontalAlignment = -4152
+    $p.Range("B42").HorizontalAlignment = -4152
+    $p.Range("D42:E42").HorizontalAlignment = -4152
+    $p.Range("C42:C168").IndentLevel = 1
+    $p.Range("A42:E168").AutoFilter() | Out-Null
+    Nota $p 170 "Fuente: DANE y Banco de la República (SUAMECA). Bases 1994, 2005 y 2015 encadenadas por la variación anual."
+
+    $izq = $p.Range("A10").Left; $ancho = $p.Range("F10").Left - $izq
+    $arr = $p.Range("A10").Top; $alto = $p.Range("A31").Top - $arr
+    $co = $p.ChartObjects().Add($izq, $arr, $ancho, $alto)
+    $g = $co.Chart
+    $g.ChartType = 4
+    while ($g.SeriesCollection().Count -gt 0) { $g.SeriesCollection(1).Delete() | Out-Null }
+    foreach ($s1 in @(@("Crecimiento anual", "B43:B168", $azul, 1.75, 1), @("Umbral de crisis", "D43:D168", $gris, 1.0, 4), @("Umbral de expansión", "E43:E168", $gris, 1.0, 4))) {
+        $a1 = $g.SeriesCollection().NewSeries()
+        $a1.Name = $s1[0]
+        $a1.Values = $p.Range($s1[1])
+        $a1.XValues = $p.Range("A43:A168")
+        $a1.Format.Line.ForeColor.RGB = $s1[2]
+        $a1.Format.Line.Weight = $s1[3]
+        $a1.Format.Line.DashStyle = $s1[4]
+    }
+    $g.HasLegend = $true
+    $g.Legend.Position = -4107
+    $ejeX = $g.Axes(1)
+    $ejeX.CategoryType = 3
+    $ejeX.BaseUnit = 0
+    $ejeX.MajorUnitScale = 2
+    $ejeX.MajorUnit = 5
+    $ejeX.TickLabels.NumberFormat = "yyyy"
+    $ejeX.TickLabelPosition = -4134
+    $ejeY = $g.Axes(2)
+    $ejeY.TickLabels.NumberFormat = '0" %"'
+    $ejeY.MajorGridlines.Format.Line.ForeColor.RGB = 0xE0E0E0
+    $g.HasTitle = $true
+    $g.HasTitle = $false
+    $co.Border.LineStyle = -4142
+    $p.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
@@ -875,6 +977,7 @@ try {
     $dest.Worksheets.Item("INF").Visible = 0
     $dest.Worksheets.Item("ETF").Visible = 0
     $dest.Worksheets.Item("CDT").Visible = 0
+    $dest.Worksheets.Item("PIB").Visible = 0
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()

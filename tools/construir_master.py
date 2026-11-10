@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT, datos", "CDT, modelo", "INM", "PIB", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT, datos", "CDT, modelo", "INM", "PIB, estados", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -89,14 +89,14 @@ def leeme(ws) -> None:
         ["ETF, datos", "Evolución del NAV del ICOLCAP y serie mensual de rendimientos"],
         ["ETF, modelo", "Pruebas, modelos candidatos, estimación, validación y dependencia del ETF"],
         ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia"],
-        ["PIB", "Crecimiento del PIB 1995-2026 y clasificación en estados"],
+        ["PIB, estados", "Crecimiento del PIB 1995-2026 y clasificación en estados"],
         ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado"],
         ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda", "Datos que usa la hoja MARKOV"],
         ["VALIDACION", "Simulado contra observado"],
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
-        ["INF, ETF y CDT (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF y CDT leen de ellas"],
+        ["INF, ETF, CDT y PIB (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF, CDT y PIB leen de ellas"],
         ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")
@@ -441,7 +441,8 @@ AUDITORIA = [
     ["A06", "PARAMETROS", "Reparaciones (P160 a P162)", "Sin datos de costo ni frecuencia.", "Dato faltante", "Media", "Salen de la vista y del informe; quedan apagadas en MODELO", "Resuelto"],
     ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
     ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
-    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan TPM, CDT, ETF, inmueble y PIB", "Parcial"],
+    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan TPM, inmueble y Markov", "Parcial"],
+    ["A10", "PIB", "Nota de crisis y conteo desde 2011", "Decía que crisis es crecimiento negativo y contaba 4 trimestres de crisis desde 2011, pero los umbrales vigentes son 1 % y 4 % (12 trimestres de crisis desde 2006).", "Inconsistencia", "Media", "La hoja PIB, estados recalcula el conteo con fórmula y describe la regla con los umbrales vigentes; la hoja original queda oculta sin cambios", "Resuelto"],
     ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
 ]
 
