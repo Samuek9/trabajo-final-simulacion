@@ -1943,7 +1943,8 @@ try {
     foreach ($n in @("MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda")) { $dest.Worksheets.Item($n).Visible = 0 }
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
-    $dest.Worksheets.Item("LEEME").Activate()
+    foreach ($n in @("LEEME", "FUENTES", "DICCIONARIO")) { $dest.Worksheets.Item($n).Delete() }
+    $dest.Worksheets.Item("MODELOS").Activate()
     if (Test-Path $Destino) { Remove-Item $Destino -Force }
     $dest.SaveAs($Destino, 51)
     $lista = @($dest.Worksheets | ForEach-Object { $_.Name }) -join ", "
