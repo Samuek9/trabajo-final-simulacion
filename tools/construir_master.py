@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "CDT", "ETF", "INM", "PIB", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT", "INM", "PIB", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -81,12 +81,12 @@ def leeme(ws) -> None:
         ["LEEME", "Esta hoja: qué hay en el libro"],
         ["MODELOS", "El modelo elegido para cada proceso, con sus datos, sus pruebas y la razón"],
         ["PARAMETROS", "Capital, horizonte, meta, liquidez mínima, réplicas, estrategias y necesidades de liquidez: lo que se puede cambiar"],
-        ["INF", "Inflación: datos del DANE, pruebas y AR(1) en logaritmos (análisis completo)"],
         ["Inflación", "Evolución de la inflación frente a la meta y serie mensual"],
         ["Inflación, modelo", "Pruebas, estimación y validación del modelo de la inflación"],
         ["TPM_Cuenta", "TPM y tasa de la cuenta remunerada"],
         ["CDT", "Margen de los CDT a 360 días sobre la TPM"],
-        ["ETF", "Rendimientos mensuales del iCOLCAP, pruebas y ajuste de distribuciones"],
+        ["ETF, datos", "Evolución del NAV del ICOLCAP y serie mensual de rendimientos"],
+        ["ETF, modelo", "Pruebas, modelos candidatos, estimación, validación y dependencia del ETF"],
         ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia"],
         ["PIB", "Crecimiento del PIB 1995-2026 y clasificación en estados"],
         ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado"],
@@ -95,6 +95,7 @@ def leeme(ws) -> None:
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
+        ["INF y ETF (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación y ETF leen de ellas"],
         ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")

@@ -367,12 +367,244 @@ try {
     $m.Range("A26").Value2 = "Los logaritmos de la inflación son compatibles con una distribución normal, y modelar sobre ellos mantiene positiva la inflación simulada. La dependencia significativa entre años consecutivos justifica incluir memoria en el proceso. Con una muestra anual tan corta, los parámetros se estiman con incertidumbre, y la cobertura observada no garantiza el desempeño en un régimen distinto al de estos años."
     $m.Range("A1").Select()
 
+    # ------------------------------------------------ ETF, datos
+    $e = Nueva-Hoja $dest "ETF, datos"
+    Titulo $e "ETF de acciones colombianas" "Rendimiento total mensual del NAV del ICOLCAP, agosto de 2011 – septiembre de 2026"
+    $e.Range("A4").Value2 = "Rendimiento medio mensual"
+    $e.Range("B4").Value2 = "Desviación mensual"
+    $e.Range("C4").Value2 = "Caída máxima acumulada"
+    $e.Range("A5").Formula = "=ETF!B44"
+    $e.Range("B5").Formula = "=ETF!C44"
+    $e.Range("C5").Formula = "=ETF!B64"
+    $e.Range("A6").Value2 = "Del logaritmo del rendimiento"
+    $e.Range("B6").Value2 = "Del logaritmo del rendimiento"
+    $e.Range("C6").Value2 = "Del NAV, 182 meses"
+    foreach ($c in @("A4", "B4", "C4")) { $e.Range($c).Font.Color = $gris }
+    foreach ($c in @("A5", "B5", "C5")) {
+        $x = $e.Range($c); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+        $x.NumberFormatLocal = "0,00 %"
+    }
+    foreach ($c in @("A6", "B6", "C6")) { $e.Range($c).Font.Size = 9; $e.Range($c).Font.Color = $gris }
+    $e.Rows.Item(5).RowHeight = 28
+    foreach ($k in 1..5) { $e.Columns.Item($k).ColumnWidth = @(26, 26, 26, 22, 4)[$k - 1] }
+
+    Seccion $e 8 "Valor del fondo"
+    $e.Range("A9").Value2 = "NAV de fin de mes, en pesos por participación."
+    $e.Range("A9").Font.Color = $gris
+    Seccion $e 29 "Rendimiento mensual"
+    $e.Range("A30").Value2 = "Rendimiento total publicado de cada mes."
+    $e.Range("A30").Font.Color = $gris
+
+    Seccion $e 51 "Serie mensual"
+    Encabezado $e 52 1 4 @("Mes", "Rendimiento total", "NAV de fin de mes", "g = ln(1 + R)")
+    $e.Range("A53:A234").Formula = "=ETF!N5"
+    $e.Range("B53:B234").Formula = "=ETF!O5"
+    $e.Range("C53:C234").Formula = "=ETF!P5"
+    $e.Range("D53:D234").Formula = "=ETF!Q5"
+    $e.Range("A53:A234").NumberFormat = "mmm-yyyy"
+    $e.Range("A53:A234").HorizontalAlignment = -4131
+    $e.Range("B53:B234").NumberFormatLocal = "0,00 %"
+    $e.Range("C53:C234").NumberFormatLocal = "#.##0,00"
+    $e.Range("D53:D234").NumberFormatLocal = "0,0000"
+    $e.Range("B53:D234").HorizontalAlignment = -4152
+    $e.Range("B52:D52").HorizontalAlignment = -4152
+    $e.Range("A52:D234").AutoFilter() | Out-Null
+    Nota $e 236 "Fuente: BlackRock, archivo oficial del NAV del fondo. g = ln(1 + R) se calcula con fórmula."
+
+    $izq = $e.Range("A10").Left; $ancho = $e.Range("E10").Left - $izq
+    foreach ($par in @(@(10, 28, "NAV", "C53:C234", 4, "#.##0"), @(31, 49, "Rendimiento mensual", "B53:B234", 51, "0%"))) {
+        $arr = $e.Range("A" + $par[0]).Top; $alto = $e.Range("A" + $par[1]).Top - $arr
+        $co = $e.ChartObjects().Add($izq, $arr, $ancho, $alto)
+        $g = $co.Chart
+        $g.ChartType = $par[4]
+        while ($g.SeriesCollection().Count -gt 0) { $g.SeriesCollection(1).Delete() | Out-Null }
+        $a1 = $g.SeriesCollection().NewSeries()
+        $a1.Name = $par[2]
+        $a1.Values = $e.Range($par[3])
+        $a1.XValues = $e.Range("A53:A234")
+        if ($par[4] -eq 4) { $a1.Format.Line.ForeColor.RGB = $azul; $a1.Format.Line.Weight = 1.75 }
+        else { $a1.Format.Fill.ForeColor.RGB = $azul; $g.ChartGroups(1).GapWidth = 40 }
+        $g.HasTitle = $false
+        $g.HasLegend = $false
+        $ejeX = $g.Axes(1)
+        $ejeX.CategoryType = 3
+        $ejeX.BaseUnit = 1
+        $ejeX.MajorUnitScale = 2
+        $ejeX.MajorUnit = 2
+        $ejeX.TickLabels.NumberFormat = "yyyy"
+        $ejeX.TickLabelPosition = -4134
+        $ejeY = $g.Axes(2)
+        $ejeY.TickLabels.NumberFormat = $par[5]
+        $ejeY.MajorGridlines.Format.Line.ForeColor.RGB = 0xE0E0E0
+        $g.HasTitle = $true
+        $g.HasTitle = $false
+        $co.Border.LineStyle = -4142
+    }
+    $e.Range("A1").Select()
+
+    # ------------------------------------------------ ETF, modelo
+    $f = Nueva-Hoja $dest "ETF, modelo"
+    Titulo $f "ETF: modelo probabilístico" "Distribución de g = ln(1 + R) con 182 rendimientos mensuales"
+    foreach ($k in 1..12) { $f.Columns.Item($k).ColumnWidth = @(48, 12, 10, 16, 14, 12, 3, 28, 11, 13, 13, 17)[$k - 1] }
+    $f.Range("H4").Value2 = "Rendimiento medio mensual"
+    $f.Range("J4").Value2 = "Desviación"
+    $f.Range("K4").Value2 = "Asimetría"
+    $f.Range("H5").Formula = "=ETF!B44"
+    $f.Range("J5").Formula = "=ETF!C44"
+    $f.Range("K5").Formula = "=ETF!D44"
+    foreach ($c in @("H4", "J4", "K4")) { $f.Range($c).Font.Color = $gris }
+    foreach ($c in @("H5", "J5", "K5")) {
+        $x = $f.Range($c); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    $f.Range("H5").NumberFormatLocal = "0,00 %"
+    $f.Range("J5").NumberFormatLocal = "0,00 %"
+    $f.Range("K5").NumberFormatLocal = "0,00"
+    $f.Rows.Item(5).RowHeight = 28
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    # Evidencia
+    Bloque $f 8 1 4 "Evidencia estadística"
+    Cabecera $f 9 1 @("Prueba y contraste", "Estadístico", "p", "Decisión") @(1, 2)
+    $pr = @(
+        "t de una muestra: rendimiento medio mensual igual a 0",
+        "Ljung-Box: sin autocorrelación a 1 mes",
+        "ARCH: sin autocorrelación de g² a 1 mes",
+        "Asimetría: g simétrica",
+        "Curtosis: g con curtosis normal",
+        "Jarque-Bera: g normal",
+        "Shapiro-Wilk: g normal",
+        "ADF: raíz unitaria en el NAV (logaritmo)",
+        "ADF: raíz unitaria en g",
+        "Kruskal-Wallis: media 2011–2023 frente a 2024–2026",
+        "Kruskal-Wallis: g igual entre estados del PIB",
+        "Correlación de g con el crecimiento anual del PIB",
+        "Razón de verosimilitud: t asimétrica frente a t simétrica"
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 10 + $k; $o = 6 + $k
+        $f.Cells.Item($r, 1).Value2 = $pr[$k]
+        $f.Cells.Item($r, 2).Formula = "=IF(ETF!B$o="""","""",ETF!B$o)"
+        $f.Cells.Item($r, 3).Formula = "=ETF!C$o"
+        $f.Cells.Item($r, 4).Formula = "=IF(C$r<0.05,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $f.Range("B10:B22").NumberFormatLocal = "0,000"
+    $f.Range("C10:C22").NumberFormatLocal = $pfmt
+    $f.Range("D9:D22").IndentLevel = 1
+    $f.Range("A23").Value2 = "Significancia de 5 %. No rechazar H₀ no demuestra que sea cierta."
+    $f.Range("A23").Font.Size = 9; $f.Range("A23").Font.Color = $gris
+
+    # Candidatos
+    Bloque $f 25 1 6 "Modelos candidatos"
+    Cabecera $f 26 1 @("Modelo", "Parámetros", "log L", "AIC", "BIC", "KS p") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 8; $k++) {
+        $r = 27 + $k; $o = 32 + $k
+        foreach ($j in 1..6) { $f.Cells.Item($r, $j).Formula = "=ETF!" + [char](64 + $j) + $o }
+    }
+    $f.Range("B27:B34").NumberFormatLocal = "0"
+    $f.Range("C27:E34").NumberFormatLocal = "0,0"
+    $f.Range("F27:F34").NumberFormatLocal = "0,000"
+    $f.Range("A35").Value2 = "Máxima verosimilitud sobre los 182 meses. AIC y BIC no separan con claridad los modelos de colas pesadas."
+    $f.Range("A35").Font.Size = 9; $f.Range("A35").Font.Color = $gris
+
+    # Reproducción
+    Bloque $f 37 1 6 "Cuánto reproduce cada modelo"
+    Cabecera $f 38 1 @("Modelo", "Media", "Desviación", "Asimetría", "P(caída ≥ 15 %)", "Meses de 182") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 5; $k++) {
+        $r = 39 + $k; $o = 44 + $k
+        foreach ($j in 1..6) { $f.Cells.Item($r, $j).Formula = "=ETF!" + [char](64 + $j) + $o }
+    }
+    $f.Range("B39:C43").NumberFormatLocal = "0,00 %"
+    $f.Range("D39:D43").NumberFormatLocal = "0,00"
+    $f.Range("E39:E43").NumberFormatLocal = "0,00 %"
+    $f.Range("F39:F43").NumberFormatLocal = "0,00"
+
+    # Dependencia
+    Bloque $f 45 1 6 "Dependencia con otras variables"
+    Cabecera $f 46 1 @("Variable (correlación con g)", "n", "Pearson", "p", "Spearman", "p") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 11; $k++) {
+        $r = 47 + $k; $o = 69 + $k
+        foreach ($j in 1..6) { $f.Cells.Item($r, $j).Formula = "=IF(ETF!" + [char](64 + $j) + "$o="""","""",ETF!" + [char](64 + $j) + "$o)" }
+    }
+    $f.Range("B47:B57").NumberFormatLocal = "0"
+    $f.Range("C47:C57").NumberFormatLocal = "0,000"
+    $f.Range("E47:E57").NumberFormatLocal = "0,000"
+    $f.Range("D47:D57").NumberFormatLocal = $pfmt
+    $f.Range("F47:F57").NumberFormatLocal = $pfmt
+    $f.Range("A58").Value2 = "Δlog: variación logarítmica mensual."
+    $f.Range("A58").Font.Size = 9; $f.Range("A58").Font.Color = $gris
+
+    # Especificación
+    Bloque $f 8 8 12 "Especificación"
+    $f.Range("H9").Value2 = "g = posición + escala · T,   T ~ t asimétrica (a, b)"
+    $f.Range("H9").Font.Italic = $true
+    Cabecera $f 10 8 @("Parámetro", "Estimación", "Significado", "", "") @(1)
+    $f.Range("J10").IndentLevel = 1
+    $par = @(
+        @("a", "=ETF!B51", "0,000", "Forma de la cola izquierda"),
+        @("b", "=ETF!C51", "0,000", "Forma de la cola derecha"),
+        @("Posición", "=ETF!D51", "0,000", "Centro de g"),
+        @("Escala", "=ETF!E51", "0,000", "Dispersión de g"),
+        @("ν (alternativa)", "=ETF!B55", "0", "Grados de libertad de la t simétrica")
+    )
+    for ($k = 0; $k -lt $par.Count; $k++) {
+        $f.Cells.Item(11 + $k, 8).Value2 = $par[$k][0]
+        $f.Cells.Item(11 + $k, 9).Formula = $par[$k][1]
+        $f.Cells.Item(11 + $k, 9).NumberFormatLocal = $par[$k][2]
+        $f.Cells.Item(11 + $k, 10).Value2 = $par[$k][3]
+    }
+    $f.Range("J11:J15").IndentLevel = 1
+    $f.Range("H16").Value2 = "El valor se acumula como V(t+1) = V(t) · exp(g)."
+    $f.Range("H16").Font.Size = 9; $f.Range("H16").Font.Color = $gris
+
+    # Validación
+    Bloque $f 18 8 12 "Validación"
+    Cabecera $f 19 8 @("Medida", "Observado", "t (ν = 5)", "Jones-Faddy", "") @(1, 2, 3)
+    $f.Range("H20").Value2 = "Caída máxima acumulada"
+    $f.Range("I20").Formula = "=ETF!B64"
+    $f.Range("J20").Formula = "=ETF!C64"
+    $f.Range("K20").Formula = "=ETF!E64"
+    $f.Range("H21").Value2 = "Rendimiento anual geométrico"
+    $f.Range("I21").Formula = "=ETF!B65"
+    $f.Range("J21").Formula = "=ETF!C65"
+    $f.Range("K21").Formula = "=ETF!E65"
+    $f.Range("I20:K21").NumberFormatLocal = "0,0 %"
+    $f.Range("H22").Value2 = "Mediana de 3.000 trayectorias simuladas de 182 meses."
+    $f.Range("H23").Value2 = "El ajuste a la muestra no garantiza el comportamiento futuro."
+    $f.Range("H22:H23").Font.Size = 9; $f.Range("H22:H23").Font.Color = $gris
+
+    # Estados
+    Bloque $f 25 8 12 "Estados de la economía"
+    Cabecera $f 26 8 @("Estado (PIB)", "Meses", "Media de g", "Desviación", "Meses negativos") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 27 + $k; $o = 25 + $k
+        foreach ($j in 1..5) { $f.Cells.Item($r, 7 + $j).Formula = "=ETF!" + [char](64 + $j) + $o }
+    }
+    $f.Range("H27:H29").HorizontalAlignment = -4131
+    $f.Range("I27:I29").NumberFormatLocal = "0"
+    $f.Range("J27:K29").NumberFormatLocal = "0,00 %"
+    $f.Range("L27:L29").NumberFormatLocal = "0 %"
+    $f.Range("H30").Value2 = "Tres meses quedan fuera de los límites de Tukey: marzo de 2020, junio de 2022 y enero de 2026."
+    $f.Range("H30").Font.Size = 9; $f.Range("H30").Font.Color = $gris
+
+    # Lectura
+    Bloque $f 33 8 12 "Lectura"
+    $lec = $f.Range("H34:L46")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $f.Range("H34").Value2 = "El rendimiento mensual no muestra autocorrelación ni agrupamiento de volatilidad, pero sí asimetría y colas pesadas, así que la normal no lo describe bien. La comparación por AIC y BIC no separa con claridad los modelos de colas pesadas; se eligió la t asimétrica porque reproduce la asimetría y la frecuencia de las caídas profundas, y la t simétrica de cinco grados queda como alternativa. La media mensual no es significativa y depende de los años 2024 a 2026. Además, el fondo se mueve con el dólar y el petróleo, que el simulador no modela, y la volatilidad de las crisis descansa en muy pocos meses."
+    $f.Rows.Item(18).RowHeight = 17
+    $f.Rows.Item(33).RowHeight = 17
+    $f.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "TPM_Logit", "CDT", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "TPM_Logit", "CDT", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
     $dest.Worksheets.Item("MODELO").Visible = 0
+    $dest.Worksheets.Item("INF").Visible = 0
+    $dest.Worksheets.Item("ETF").Visible = 0
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()
