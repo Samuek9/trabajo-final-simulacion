@@ -9,7 +9,8 @@ from components import charts, estado, fuente, ui
 st.title("Resultados")
 
 if not st.session_state.get("resultados"):
-    st.info("No hay resultados todavía. Configure el inversionista y las estrategias, y ejecute la simulación en Experimento.")
+    st.info("No hay resultados. Ejecute una simulación en Experimento.")
+    st.page_link("pages/05_experimento.py", label="Ir al experimento")
     st.stop()
 
 escs = fuente.escenarios()
@@ -25,28 +26,27 @@ def ic(r, col, f=ui.pct):
     return f"IC 95 %: {f(r[col + '_lo'])} a {f(r[col + '_hi'])}"
 
 
-st.markdown("### Probabilidad de alcanzar la meta")
+st.markdown("##### Probabilidad de alcanzar la meta")
 cols = st.columns(len(res))
 for col, (e, r) in zip(cols, res.iterrows()):
     with col:
         ui.tarjeta(ui.NOMBRES[e], ui.pct(r.p_meta), ic(r, "p_meta"), ui.COLORES[e])
-st.markdown("### Patrimonio real mediano al final")
+st.markdown("##### Patrimonio real mediano al final")
 cols = st.columns(len(res))
 for col, (e, r) in zip(cols, res.iterrows()):
     with col:
         ui.tarjeta(ui.NOMBRES[e], ui.cop(r.W_real_p50), ic(r, "W_real_p50", ui.cop), ui.COLORES[e])
-st.markdown("### Riesgo de liquidez")
+st.markdown("##### Riesgo de iliquidez")
 cols = st.columns(len(res))
 for col, (e, r) in zip(cols, res.iterrows()):
     with col:
-        ui.tarjeta(ui.NOMBRES[e], ui.pct(r.p_iliquidez), f"réplicas con algún episodio · venta urgente {ui.pct(r.p_venta_urgente)} "
-                   f"· {ui.num(r.episodios_iliquidez_media, 3)} episodios por réplica", ui.COLORES[e])
+        ui.tarjeta(ui.NOMBRES[e], ui.pct(r.p_iliquidez), f"réplicas con algún episodio · venta urgente {ui.pct(r.p_venta_urgente)}", ui.COLORES[e])
 
-t1, t2, t3, t4, t5 = st.tabs(["Trayectorias", "Distribución final", "Meta vs. iliquidez", "Tabla completa", "Comparaciones pareadas"])
+t1, t2, t3, t4, t5 = st.tabs(["Evolución del patrimonio", "Patrimonio final", "Riesgo y meta", "Indicadores completos", "Comparaciones pareadas"])
 with t1:
     if d["bandas"]:
         st.plotly_chart(charts.abanico_bandas(d["bandas"], meta), width="stretch", config=charts.CONFIG)
-        st.caption("Línea: mediana. Bandas: percentiles 25 a 75 y 5 a 95 de las réplicas, mes a mes.")
+        st.caption("Mediana y bandas de percentiles 25-75 y 5-95.")
     if d["iliq"]:
         st.plotly_chart(charts.serie_estrategias(d["iliq"], "Réplicas en iliquidez cada mes", "% de réplicas"),
                         width="stretch", config=charts.CONFIG)
@@ -55,8 +55,7 @@ with t2:
 with t3:
     st.plotly_chart(charts.riesgo_rentabilidad(d["resumen"]), width="stretch", config=charts.CONFIG)
 with t4:
-    st.caption("Indicadores del simulador con los datos ingresados. Los grupos 1 a 3 son los indicadores mínimos del enunciado "
-               "(punto 15); los grupos 4 y 5 son indicadores adicionales de riesgo, liquidez y costos.")
+    st.caption("Grupos 1 a 3: indicadores mínimos del enunciado. Grupos 4 y 5: adicionales.")
     pct1, n1 = ui.pct, (lambda x: ui.num(x, 1))
     grupos = {
         "1. Patrimonio y rentabilidad": {
@@ -94,13 +93,12 @@ with t4:
              for g, ks in grupos.items() for k, (c, f) in ks.items()}
     tabla = pd.DataFrame(filas).T
     tabla.index = pd.MultiIndex.from_tuples(tabla.index, names=["Grupo", "Indicador"])
-    st.dataframe(tabla, width="stretch", height=900)
+    st.dataframe(tabla, width="stretch", height=640)
     tabla = tabla.reset_index()
-    st.markdown("**Liquidez frente a patrimonio.** Una estrategia puede tener patrimonio alto y aun así quedarse sin efectivo: "
-                "el inmueble vale, pero no se vende rápido. Cuando llega una necesidad extraordinaria, el simulador cubre el monto "
-                "en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y, si no alcanza, venta urgente del inmueble con "
-                "descuento. Lo que no se alcanza a cubrir queda como deuda y es un episodio de iliquidez. Las filas del grupo 3 y "
-                "la probabilidad de venta urgente miden esas consecuencias.")
+    with st.expander("Liquidez frente a patrimonio"):
+        st.write("Una estrategia puede tener patrimonio alto e iliquidez: el inmueble vale, pero no se vende rápido. Cada necesidad "
+                 "extraordinaria se cubre en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y venta urgente del "
+                 "inmueble con descuento. Lo no cubierto queda como deuda y cuenta como episodio de iliquidez.")
 with t5:
     pares = d["pares"]
     if pares is not None and len(pares):
@@ -116,10 +114,9 @@ with t5:
         q["Reducción de varianza por CRN"] = q.reduccion_varianza.map(lambda x: ui.pct(x, 0))
         st.dataframe(q[["Comparación", "Diferencia", "IC 95 %", "¿Distinta de cero?", "Reducción de varianza por CRN"]],
                      hide_index=True, width="stretch")
-        st.caption("Diferencias réplica a réplica. Como las estrategias comparten la economía de cada réplica, el intervalo es "
-                   "mucho más angosto que si se compararan corridas independientes.")
+        st.caption("Diferencias réplica a réplica con números aleatorios comunes.")
 
-st.markdown("### Descargas")
+st.markdown("##### Descargas")
 c = st.columns(4)
 with c[0]:
     st.download_button("Réplicas (CSV)", d["tabla"].to_csv(index=False).encode("utf-8"), f"replicas_{esc}.csv", "text/csv")
@@ -140,4 +137,3 @@ with c[3]:
             "valores": {k: (v if isinstance(v, (int, float, str)) else str(v)) for k, v in p.valores.items()}}
     st.download_button("Parámetros usados (JSON)", json.dumps(conf, indent=2, ensure_ascii=False).encode("utf-8"),
                        f"parametros_{esc}.json", "application/json")
-st.caption("Cada gráfico se puede bajar en PNG con el ícono de cámara que aparece al pasar el mouse.")

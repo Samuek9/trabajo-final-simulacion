@@ -1,5 +1,3 @@
-import subprocess
-import sys
 from pathlib import Path
 
 import pandas as pd
@@ -17,21 +15,30 @@ st.title("Simulación, escenarios y validación")
 t1, t2, t3 = st.tabs(["Eventos discretos", "Escenarios", "Verificación y validación"])
 
 with t1:
-    st.write("El simulador es de eventos discretos: un reloj avanza de evento en evento (no mes a mes), una lista ordenada por "
-             "tiempo y prioridad programa los eventos futuros, y cada evento actualiza las variables de estado. Si dos eventos "
-             "caen en el mismo instante, se procesan por el orden de prioridad.")
+    c = st.columns(3)
+    with c[0]:
+        ui.tarjeta("Reloj", "Evento a evento", "avanza al siguiente evento programado")
+    with c[1]:
+        ui.tarjeta("Lista de eventos", "Tiempo y prioridad", "los empates se resuelven por prioridad")
+    with c[2]:
+        ui.tarjeta("Estado", "Se actualiza en cada evento", "variables listadas abajo")
+    st.write("")
     ev = pd.DataFrame([{"N.°": t.numero, "Evento": t.nombre, "Prioridad en empates": t.prioridad}
                        for t in sorted(Tipo, key=lambda t: t.prioridad)])
-    st.markdown("**Eventos**")
+    st.markdown("##### Eventos y prioridades")
     st.dataframe(ev, hide_index=True, width="stretch")
-    st.caption("La cobertura de liquidez, la compra y la venta de activos y el rebalanceo ocurren dentro de estos eventos: la "
-               "necesidad de liquidez dispara las ventas, la revisión anual de E4 dispara el rebalanceo y el vencimiento del CDT "
-               "dispara su renovación.")
-    st.markdown("**Variables de estado**")
-    st.write("Tiempo actual · efectivo en la cuenta · saldo en CDT · valor del ETF · valor del inmueble · deuda · ingresos y gastos "
-             "acumulados · inflación acumulada (índice de precios) · patrimonio nominal y real · estado económico vigente · "
-             "estado de ocupación del inmueble (ocupado o vacante) · TPM e inflación vigentes.")
-    st.markdown("**Traza de una réplica**")
+    st.caption("La necesidad de liquidez dispara las ventas, la revisión de E4 dispara el rebalanceo y el vencimiento del CDT su renovación.")
+    st.markdown("##### Variables de estado")
+    VARS = {"Tiempo": ["Tiempo actual", "Estado económico vigente", "TPM e inflación vigentes"],
+            "Activos y deuda": ["Efectivo en la cuenta", "Saldo en CDT", "Valor del ETF", "Valor del inmueble", "Deuda"],
+            "Inmueble": ["Estado de ocupación (ocupado o vacante)"],
+            "Resultado": ["Ingresos y gastos acumulados", "Índice de precios acumulado", "Patrimonio nominal y real"]}
+    cv = st.columns(len(VARS))
+    for col, (g, xs) in zip(cv, VARS.items()):
+        with col:
+            st.markdown(f"**{g}**")
+            st.markdown(chr(10).join(f"- {x}" for x in xs))
+    st.markdown("##### Traza de una réplica")
     c = st.columns(3)
     with c[0]:
         est = st.selectbox("Estrategia", ["E1", "E2", "E3", "E4"], format_func=ui.NOMBRES.get, key="est_traza")
@@ -39,44 +46,48 @@ with t1:
         esc = st.selectbox("Escenario", list(ui.ESCENARIOS), format_func=ui.ESCENARIOS.get, key="esc_traza")
     with c[2]:
         sem = st.number_input("Semilla", 0, 2**31 - 1, p.i("exp.semilla"), key="sem_traza")
-    if st.button("Mostrar eventos de una réplica"):
+    if st.button("Mostrar traza"):
         r = una_replica(estado.params(esc), est, int(sem), traza=True)
         st.session_state["traza"] = pd.DataFrame(r.traza)
     if "traza" in st.session_state:
         z = st.session_state["traza"].copy()
         z = z.rename(columns={"t": "Mes", "n": "N.°", "evento": "Evento", "detalle": "Qué pasó", "estado": "Estado", "cuenta": "Cuenta", "W": "Patrimonio"})
-        st.dataframe(z[["Mes", "N.°", "Evento", "Qué pasó", "Estado", "Cuenta", "Patrimonio"]], hide_index=True, width="stretch", height=420)
+        st.dataframe(z[["Mes", "N.°", "Evento", "Qué pasó", "Estado", "Cuenta", "Patrimonio"]], hide_index=True, width="stretch", height=360)
+        st.caption(f"{len(z)} eventos; se muestran con desplazamiento.")
 
 with t2:
-    st.write("Cada escenario cambia parámetros del modelo; la tabla se genera con los valores vigentes. El escenario base usa las "
-             "condiciones estimadas con los datos. El adverso combina condiciones desfavorables. El de estrés fuerza una crisis "
-             "de 12 a 24 meses que empieza en un momento aleatorio, con caída del ETF y del inmueble y recortes de la TPM.")
+    c = st.columns(3)
+    for col, (t, n, d) in zip(c, (("Base", "Condiciones estimadas", "Parámetros estimados con los datos."),
+                                  ("Adverso", "Condiciones desfavorables", "Combina varios parámetros en contra."),
+                                  ("Estrés", "Crisis forzada", "12 a 24 meses desde un momento aleatorio."))):
+        with col:
+            ui.tarjeta(t, n, d)
+    st.write("")
     filas = []
     for k, t in p.tabla.items():
         if t.adverso is None and t.estres is None:
             continue
         filas.append({"Parámetro": t.nombre, "Base": str(t.base), "Adverso": str(t.adverso) if t.adverso is not None else "igual",
                       "Estrés": str(t.estres) if t.estres is not None else "igual"})
-    st.dataframe(pd.DataFrame(filas), hide_index=True, width="stretch", height=520)
-    st.caption("«Igual» indica que el escenario usa el valor base. En el escenario de estrés, los valores propios rigen solo mientras dura la crisis.")
+    st.dataframe(pd.DataFrame(filas), hide_index=True, width="stretch", height=420)
+    st.caption("«Igual»: usa el valor base. En estrés, los valores propios rigen solo mientras dura la crisis.")
 
 with t3:
-    st.markdown("##### Verificación: ¿está bien implementado?")
-    st.write("Pruebas automáticas sobre la ejecución de eventos y la actualización de estados, el reloj y la programación, los "
-             "cálculos financieros, los generadores aleatorios, las reglas de decisión y casos controlados con resultados conocidos.")
-    if st.button("Ejecutar pruebas"):
-        with st.spinner("Corriendo pruebas..."):
-            r = subprocess.run([sys.executable, "-m", "pytest", "-q", "--no-header", str(RAIZ / "tests")], capture_output=True,
-                               text=True, cwd=str(RAIZ))
-        st.session_state["pytest"] = (r.returncode, r.stdout[-1500:])
-    if "pytest" in st.session_state:
-        rc, out = st.session_state["pytest"]
-        (st.success if rc == 0 else st.error)("Todas las pruebas pasaron." if rc == 0 else "Hay pruebas que fallan.")
-        st.code(out)
-    st.markdown("##### Validación: ¿representa bien el fenómeno?")
-    st.write("Compara trayectorias simuladas con lo observado: inflación, TPM, rendimiento del ETF, valorización, vacancia y estados "
-             "de la economía. «Reproduce insumos» verifica que los generadores devuelvan los datos con que se estimaron; "
-             "«Contraste» compara con información que el modelo no usó.")
+    st.markdown("##### Verificación")
+    st.caption("Pruebas automáticas incluidas en el repositorio (carpeta tests).")
+    TESTS = [("test_events.py", "Reloj, programación y ejecución de eventos"),
+             ("test_finance.py", "Cálculos financieros"),
+             ("test_markov_y_generadores.py", "Cadena de Markov y generadores aleatorios"),
+             ("test_reproducibility.py", "Reproducibilidad con semilla"),
+             ("test_strategies_y_liquidez.py", "Estrategias, reglas de decisión y liquidez")]
+    filas_t = []
+    for f, que in TESTS:
+        ruta = RAIZ / "tests" / f
+        n_t = sum(1 for linea in ruta.read_text(encoding="utf-8").splitlines() if linea.startswith("def test")) if ruta.exists() else None
+        filas_t.append({"Archivo": f, "Qué verifica": que, "Pruebas": n_t})
+    st.dataframe(pd.DataFrame(filas_t), hide_index=True, width="stretch")
+    st.markdown("##### Validación")
+    st.caption("«Reproduce insumos»: los generadores devuelven los datos con que se estimaron. «Contraste»: se compara con información que el modelo no usó.")
     n_v = st.number_input("Réplicas de validación", 50, 5000, 300, 50)
     if st.button("Validar"):
         with st.spinner("Simulando..."):
@@ -85,6 +96,3 @@ with t3:
         v = st.session_state["val"].rename(columns={"proceso": "Proceso", "medida": "Medida", "tipo": "Tipo", "simulado": "Simulado",
                                                     "observado": "Observado", "referencia": "Referencia", "lectura": "Lectura"})
         st.dataframe(v.astype(str), hide_index=True, width="stretch")
-    st.markdown("##### Sensibilidad")
-    st.write("El análisis de sensibilidad (inflación, rendimiento del ETF, tasas, valorización inmobiliaria y vacancia, entre otros) "
-             "está en la página Sensibilidad y capital-meta, pestaña Tornado.")

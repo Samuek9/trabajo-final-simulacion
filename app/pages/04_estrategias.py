@@ -1,24 +1,25 @@
-import plotly.graph_objects as go
 import streamlit as st
 
-from components import charts, estado, ui
+from components import estado, ui
 
 p = estado.params()
 T = p.tabla
-ACTIVOS = ("Cuenta", "CDT", "ETF", "Inmueble")
-COL_ACTIVOS = ("#7FA7C9", "#2F6B9A", "#C0612B", "#3C8D5A")
+ACTIVOS = ui.ACTIVOS
 
 st.title("Estrategias")
-st.write("Pesos iniciales de cada estrategia. Cada fila debe sumar 100 %. E1, E2 y E3 compran y mantienen: "
-         "solo venden para cubrir liquidez y renuevan el CDT por el mismo capital. E4 empieza como E2 y una vez al año "
-         "acomoda cuenta, CDT y ETF al estado de la economía; el inmueble no lo toca.")
+ui.subtitulo("Reparto inicial entre cuenta, CDT, ETF e inmueble. E1, E2 y E3 mantienen sus pesos; E4 los ajusta según el estado de la economía.")
+
+DESC = {"E1": "Conserva el capital y prioriza la liquidez. No compra inmueble.",
+        "E2": "Reparte entre los cuatro activos para que ninguno domine.",
+        "E3": "Busca crecimiento: concentra el capital en inmueble y ETF.",
+        "E4": "Parte del reparto de E2 y rebalancea cuenta, CDT y ETF según el estado de la economía."}
 
 
 def texto(xs: list[float]) -> str:
     return ";".join(f"{x:g}" for x in xs)
 
 
-def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> list[float] | None:
+def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> None:
     actual = p.lista(clave)
     cols = st.columns(len(etiquetas))
     nuevos = []
@@ -27,65 +28,57 @@ def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> list[float] 
             nuevos.append(st.number_input(f"{et} (%)", 0.0, 100.0, round(v * 100, 2), 1.0, key=f"{k}_{i}") / 100)
     suma = sum(nuevos)
     if abs(suma - 1) > 1e-6:
-        st.error(f"Suma {suma * 100:.2f} %. Ajusta para que dé 100 %.")
-        return None
+        st.error(f"Suma {suma * 100:.2f} %; debe ser 100 %.")
+        return
     if any(abs(a - b) > 1e-9 for a, b in zip(nuevos, actual)):
         estado.fijar(clave, texto(nuevos))
         st.rerun()
-    return nuevos
 
 
-for e in ("E1", "E2", "E3", "E4"):
-    st.markdown(f"<div class='franja' style='border-color:{ui.COLORES[e]}'><b>{ui.NOMBRES[e]}</b>"
-                f"{' (inicio)' if e == 'E4' else ''}</div>", unsafe_allow_html=True)
-    editor_pesos(f"{e}.pesos", ACTIVOS, f"pesos_{e}")
+cols = st.columns(2)
+for i, e in enumerate(("E1", "E2", "E3", "E4")):
+    with cols[i % 2]:
+        st.markdown(f"<div class='franja' style='border-color:{ui.COLORES[e]}'><b>{ui.NOMBRES[e]}</b>"
+                    f"{' · dinámica' if e == 'E4' else ''}</div>", unsafe_allow_html=True)
+        ui.barra_composicion(p.lista(f"{e}.pesos"))
+        st.caption(DESC[e])
 
-st.markdown("### Cómo funciona la dinámica de E4")
+with st.expander("Editar pesos iniciales"):
+    for e in ("E1", "E2", "E3", "E4"):
+        st.markdown(f"**{ui.NOMBRES[e]}**")
+        editor_pesos(f"{e}.pesos", ACTIVOS, f"pesos_{e}")
+
+st.markdown("##### Regla de rebalanceo de E4")
 cada_m, banda_p = p.i("E4.cada"), p.f("E4.banda")
-st.markdown(
-    f"1. **Cada {cada_m} meses** E4 revisa su portafolio financiero (cuenta, CDT y ETF; el inmueble no se toca).\n"
-    "2. **Lee el estado de la economía** vigente en ese momento: expansión, normal o crisis.\n"
-    "3. **Compara** el peso actual de cada activo con el objetivo de ese estado (tabla de abajo).\n"
-    f"4. **Si algún activo se aleja más de {banda_p * 100:g} puntos** del objetivo, vende y compra hasta alcanzarlo; si no, no hace nada.\n"
-    "5. Las compras de ETF que salgan del CDT esperan a que el CDT venza, para no pagar el castigo por venta anticipada.\n\n"
-    "Por eso E4 cambia de composición durante la simulación: en expansión sube el ETF, y en crisis lo reduce y se refugia en "
-    "cuenta y CDT. E1, E2 y E3 mantienen sus pesos iniciales.")
-st.markdown("**Objetivo por estado de la economía** (% del portafolio financiero; es lo que usted configura abajo)")
+r = st.columns(3)
+with r[0]:
+    ui.tarjeta("Revisión", f"cada {cada_m} meses", "cuenta, CDT y ETF; el inmueble no se toca")
+with r[1]:
+    ui.tarjeta("Banda de tolerancia", f"{banda_p * 100:g} puntos", "rebalancea si un activo se aleja más")
+with r[2]:
+    ui.tarjeta("Referencia", "Estado de la economía", "expansión, normal o crisis")
+st.write("")
+st.markdown("**Objetivo por estado** (% del portafolio financiero)")
 st.dataframe({"Estado": ["Expansión", "Normal", "Crisis"],
               **{a: [f"{p.lista(f'E4.obj_{L}')[i] * 100:g} %" for L in "ENC"] for i, a in enumerate(ACTIVOS[:3])}},
              hide_index=True, width="stretch")
-for L, nombre in (("E", "Expansión"), ("N", "Normal"), ("C", "Crisis")):
-    st.markdown(f"**Objetivo en {nombre.lower()}** (cuenta, CDT y ETF del portafolio financiero)")
-    editor_pesos(f"E4.obj_{L}", ACTIVOS[:3], f"obj_{L}")
+st.caption("Las compras de ETF financiadas con CDT esperan a su vencimiento para evitar el castigo por venta anticipada.")
 
-c1, c2 = st.columns(2)
-with c1:
-    banda = st.number_input("Banda de tolerancia (puntos porcentuales)", 0.0, 50.0, p.f("E4.banda") * 100, 0.5)
-    st.caption(ui.pie_parametro(T["E4.banda"]))
-    if abs(banda / 100 - p.f("E4.banda")) > 1e-12:
-        estado.fijar("E4.banda", banda / 100)
-with c2:
-    cada = st.number_input("Revisa cada ... meses", 1, 60, p.i("E4.cada"), 1)
-    st.caption(ui.pie_parametro(T["E4.cada"]))
-    if cada != p.i("E4.cada"):
-        estado.fijar("E4.cada", int(cada))
+with st.expander("Editar regla de E4"):
+    for L, nombre in (("E", "Expansión"), ("N", "Normal"), ("C", "Crisis")):
+        st.markdown(f"**Objetivo en {nombre.lower()}**")
+        editor_pesos(f"E4.obj_{L}", ACTIVOS[:3], f"obj_{L}")
+    c1, c2 = st.columns(2)
+    with c1:
+        banda = st.number_input("Banda de tolerancia (puntos porcentuales)", 0.0, 50.0, p.f("E4.banda") * 100, 0.5,
+                                help=ui.pie_parametro(T["E4.banda"]))
+        if abs(banda / 100 - p.f("E4.banda")) > 1e-12:
+            estado.fijar("E4.banda", banda / 100)
+    with c2:
+        cada = st.number_input("Revisión cada … meses", 1, 60, p.i("E4.cada"), 1, help=ui.pie_parametro(T["E4.cada"]))
+        if cada != p.i("E4.cada"):
+            estado.fijar("E4.cada", int(cada))
 
 if st.button("Restablecer valores iniciales"):
     estado.restablecer(("E1.", "E2.", "E3.", "E4."))
     st.rerun()
-
-p = estado.params()
-fig = go.Figure()
-nombres = [ui.NOMBRES[e] for e in ("E1", "E2", "E3", "E4")] + [f"E4 objetivo {n}" for n in ("expansión", "normal", "crisis")]
-for i, (activo, color) in enumerate(zip(ACTIVOS, COL_ACTIVOS)):
-    xs = [p.lista(f"{e}.pesos")[i] * 100 for e in ("E1", "E2", "E3", "E4")]
-    inm = p.lista("E4.pesos")[3]
-    for L in "ENC":
-        obj = p.lista(f"E4.obj_{L}")
-        xs.append(obj[i] * (1 - inm) * 100 if i < 3 else inm * 100)
-    fig.add_trace(go.Bar(y=nombres, x=xs, name=activo, orientation="h", marker_color=color,
-                         hovertemplate="%{x:.1f} %<extra>" + activo + "</extra>"))
-fig.update_layout(barmode="stack", title="Reparto del capital (%)", xaxis_title="% del patrimonio", height=380,
-                  yaxis=dict(autorange="reversed"), **{k: v for k, v in charts.LAYOUT.items() if k != "hovermode"})
-st.plotly_chart(fig, width="stretch", config=charts.CONFIG)
-st.caption("Las filas de E4 objetivo suponen que el inmueble conserva su peso inicial; en la simulación su peso cambia con la valorización.")

@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -11,8 +12,8 @@ st.title("Sensibilidad y capital-meta")
 NUC = os.cpu_count() or 1
 res_sesion = st.session_state.get("resultados", {})
 if not res_sesion:
-    st.info("Primero configure el inversionista y las estrategias y ejecute la simulación en Experimento: estos análisis usan "
-            "esa misma configuración, escenarios y estrategias.")
+    st.info("Estos análisis usan la configuración y las estrategias de la última ejecución. Ejecute una simulación en Experimento.")
+    st.page_link("pages/05_experimento.py", label="Ir al experimento")
     st.stop()
 
 escs = list(res_sesion)
@@ -20,16 +21,34 @@ EST = list(next(iter(res_sesion.values()))["exp"].estrategias)
 n_base = next(iter(res_sesion.values()))["exp"].n
 p = estado.params()
 
-t1, t2, t3 = st.tabs(["Capital-meta", "Tornado", "Escenarios"])
+t1, t2, t3 = st.tabs(["Capital-meta", "Sensibilidad de parámetros", "Escenarios"])
 
 with t1:
-    CAPS, METAS = capital_goal.malla(p)
-    st.write("Capital inicial × meta financiera × estrategia → probabilidad de cumplimiento. La malla se arma sola a partir del capital "
-             f"({ui.cop(p.f('inv.capital'))}) y la meta ({ui.cop(p.f('inv.meta_real'))}) que usted ingresó, con capitales de "
-             f"{ui.cop(min(CAPS))} a {ui.cop(max(CAPS))} y metas de {ui.cop(min(METAS))} a {ui.cop(max(METAS))}. "
-             "El capital necesario es el que da la probabilidad objetivo, interpolando entre capitales.")
+    ui.subtitulo("Probabilidad de alcanzar la meta según el capital inicial, la meta y la estrategia.")
+    CAP0, META0 = capital_goal.malla(p)
+    sufijo = f"{p.f('inv.capital'):.0f}_{p.f('inv.meta_real'):.0f}"
+    st.markdown("##### Rangos del análisis")
+    g = st.columns(3)
+    with g[0]:
+        cap_lo = st.number_input("Capital desde (millones)", 1.0, 100_000.0, float(min(CAP0) / 1e6), 10.0, key=f"cap_lo_{sufijo}")
+    with g[1]:
+        cap_hi = st.number_input("Capital hasta (millones)", 1.0, 100_000.0, float(max(CAP0) / 1e6), 10.0, key=f"cap_hi_{sufijo}")
+    with g[2]:
+        n_cap = st.number_input("Número de capitales", 2, 12, len(CAP0), 1, key=f"n_cap_{sufijo}")
+    g = st.columns(3)
+    with g[0]:
+        meta_lo = st.number_input("Meta desde (millones)", 1.0, 100_000.0, float(min(META0) / 1e6), 10.0, key=f"meta_lo_{sufijo}")
+    with g[1]:
+        meta_hi = st.number_input("Meta hasta (millones)", 1.0, 100_000.0, float(max(META0) / 1e6), 10.0, key=f"meta_hi_{sufijo}")
+    with g[2]:
+        n_meta = st.number_input("Número de metas", 2, 12, len(META0), 1, key=f"n_meta_{sufijo}")
+    if cap_hi <= cap_lo or meta_hi <= meta_lo:
+        st.error("El valor «hasta» debe ser mayor que «desde».")
+        st.stop()
+    CAPS = [round(x) * 1e6 for x in np.linspace(cap_lo, cap_hi, int(n_cap))]
+    METAS = [round(x) * 1e6 for x in np.linspace(meta_lo, meta_hi, int(n_meta))]
     n_cm = st.number_input("Réplicas por celda", 50, 20_000, max(50, min(int(n_base), 500)), 50, key="n_cm",
-                           help="Cada celda corre todas las réplicas; la malla tiene 7 capitales.")
+                           help="Cada capital se simula con estas réplicas; las metas se evalúan sobre el mismo resultado.")
     st.caption(f"{len(CAPS)} capitales × {len(escs)} escenario(s) × {len(EST)} estrategia(s) × {int(n_cm):,} réplicas.".replace(",", "."))
     if st.button("Calcular capital-meta", type="primary"):
         barra = st.progress(0.0)
@@ -55,12 +74,10 @@ with t1:
             filas.append(fila)
         st.markdown(f"**Capital necesario para {objetivo * 100:.0f} % de probabilidad**")
         st.dataframe(pd.DataFrame(filas), hide_index=True, width="stretch")
-        st.caption("«Fuera del rango» quiere decir que ni el capital más alto de la malla alcanza la probabilidad, o que el más bajo ya la supera.")
+        st.caption("«Fuera del rango»: ningún capital del rango alcanza la probabilidad objetivo, o el más bajo ya la supera.")
 
 with t2:
-    st.write("Cada barra mueve un factor a un valor bajo y uno alto y deja todo lo demás en los valores que usted ingresó. Las barras "
-             "más largas son las fuentes de incertidumbre que más pesan en el resultado: inflación, rendimiento del ETF, tasas, "
-             "valorización del inmueble y vacancia, entre otras.")
+    ui.subtitulo("Efecto de llevar cada factor a un valor bajo y a uno alto, con los demás en la configuración actual.")
     c = st.columns(3)
     with c[0]:
         n_t = st.number_input("Réplicas por punto", 50, 20_000, max(50, min(int(n_base), 400)), 50, key="n_t")
@@ -80,7 +97,7 @@ with t2:
 
 with t3:
     if len(res_sesion) < 2:
-        st.info("Ejecute al menos dos escenarios en Experimento para compararlos.")
+        st.info("Se necesitan al menos dos escenarios ejecutados en Experimento.")
     else:
         res = pd.concat([d["resumen"] for d in res_sesion.values()], ignore_index=True)
         medidas = {"p_meta": "Probabilidad de meta (%)", "p_iliquidez": "Probabilidad de iliquidez (%)",

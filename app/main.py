@@ -11,7 +11,7 @@ APP = Path(__file__).resolve().parent
 sys.path.insert(0, str(APP.parent / "src"))
 sys.path.insert(0, str(APP))
 
-st.set_page_config(page_title="Investment Lab", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Investment Lab", layout="wide")
 
 from components import estado, ui  # noqa: E402
 
@@ -35,7 +35,7 @@ paginas = {
 
 with st.sidebar:
     p = estado.params()
-    st.markdown("**Configuración actual**")
+    st.markdown("##### Configuración actual")
     st.caption(f"Capital {ui.cop(p.f('inv.capital'))} · {p.i('inv.horizonte') // 12} años · "
                f"meta {ui.cop(p.f('inv.meta_real'))} · liquidez mínima {ui.pct(p.f('inv.liquidez_min'), 0)}")
     n = len(estado.cambios())

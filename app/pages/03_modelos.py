@@ -1,14 +1,12 @@
 import pandas as pd
 import streamlit as st
 
-from components import estado
+from components import estado, ui
 
 p = estado.params("base")
 
 st.title("Modelos y economía")
-st.write("Cada proceso aleatorio se modela con un solo modelo, el que quedó elegido con las pruebas de hipótesis sobre los datos. "
-         "Sus parámetros están estimados con esos datos, se muestran aquí solo para consulta y no se pueden modificar: lo que se "
-         "configura en el simulador son las decisiones y la situación del inversionista (páginas Inversionista y Estrategias).")
+ui.subtitulo("Modelo seleccionado para cada proceso aleatorio. Los parámetros estimados son de consulta; el inversionista y las estrategias se configuran en sus páginas.")
 
 
 def pc(x, d=2):
@@ -65,15 +63,15 @@ MODELOS = [
      f"λ = {n(p.f('liq.tasa_E'), 4)} / {n(p.f('liq.tasa_N'), 4)} / {n(p.f('liq.tasa_C'), 4)} por mes; mediana = {pc(p.f('liq.mediana_pct'), 1)} del capital; "
      f"σ del logaritmo = {n(p.f('liq.sigma'), 1)}. Son supuestos del inversionista y se ajustan en la página Inversionista."),
 ]
-filas = []
-for fila in MODELOS:
-    if len(fila) == 4:
-        filas.append(fila)
-    else:
-        filas.append((fila[0], fila[1], fila[2], fila[3]))
-st.dataframe(pd.DataFrame(filas, columns=["Proceso", "Datos", "Fórmula del modelo", "Parámetros (solo lectura)"]),
-             hide_index=True, width="stretch",
-             column_config={"Proceso": st.column_config.TextColumn(width="small"), "Datos": st.column_config.TextColumn(width="small"),
-                            "Fórmula del modelo": st.column_config.TextColumn(width="large"),
-                            "Parámetros (solo lectura)": st.column_config.TextColumn(width="large")})
-st.caption("El detalle de las pruebas que respaldan cada elección está en el informe y en el libro de datos del proyecto.")
+CORTO = ["Cadena de Markov, 3 estados", "AR(1) en logaritmos", "Logit ordenado", "Proporcional a la TPM", "TPM + margen lineal",
+         "t de Student", "AR(1) anual", "Lineal con tope legal", "Bernoulli + gamma", "Poisson + lognormal"]
+filas = [(f[0], f[1], CORTO[i], f[3]) for i, f in enumerate(MODELOS)]
+st.dataframe(pd.DataFrame(filas, columns=["Proceso", "Datos", "Modelo", "Parámetros estimados"]), hide_index=True, width="stretch",
+             column_config={"Proceso": st.column_config.TextColumn(width="medium"), "Datos": st.column_config.TextColumn(width="medium"),
+                            "Modelo": st.column_config.TextColumn(width="small"),
+                            "Parámetros estimados": st.column_config.TextColumn(width="large")})
+st.markdown("##### Especificación de cada modelo")
+for f in MODELOS:
+    with st.expander(f[0]):
+        st.markdown(f[2])
+st.caption("Las pruebas estadísticas que respaldan cada elección están en el informe y en el libro de datos del proyecto.")

@@ -77,3 +77,13 @@ Se retiraron del libro las hojas «Validación del simulador», «Resultados, es
 - Sensibilidad y capital-meta: la malla de capital-meta sale del capital y la meta ingresados, con los escenarios y estrategias ya ejecutados; se quitaron los resultados guardados y la pestaña de modelos alternativos.
 - Nueva página «Simulación, escenarios y validación»: eventos discretos y variables de estado con traza de una réplica, tabla de qué cambia cada escenario, pruebas automáticas y validación.
 - Word sin cambios.
+
+## Rediseño de la interfaz (app)
+
+- Inicio reducido a configuración actual y cuatro estrategias con barras de composición; Estrategias muestra el reparto en barras y la regla de E4 en tarjetas, con la edición en desplegables.
+- Modelos y economía: tabla compacta (proceso, datos, modelo, parámetros) y la especificación de cada modelo en desplegables.
+- Réplicas y semilla viven solo en Experimento (antes estaban duplicadas en Inversionista); allí también las réplicas sugeridas.
+- Capital-meta: los rangos de capital y meta, y el número de puntos de cada uno, los define el inversionista (los valores iniciales salen de su capital y su meta).
+- Verificación: se quitó el botón que ejecutaba pytest desde la app; se muestra la lista de pruebas por archivo con su número. Se quitó el texto que remitía al Tornado.
+- Eventos discretos: reloj, lista de eventos y variables de estado agrupadas; escenarios en tarjetas.
+- Sin cambios en el motor, parámetros, semillas ni indicadores.
