@@ -98,8 +98,12 @@ def main(procesos: int) -> None:
         cm.append(capital_goal.matriz(cargar(esc), caps, metas, ESTRATEGIAS, n=500, semilla=semilla, procesos=procesos))
     cm = pd.concat(cm, ignore_index=True)
     cm.to_csv(SALIDA / "capital_meta.csv", index=False)
+    # Banda del capital necesario: dónde cruzan 80 % los extremos del IC de Wilson de cada punto de la malla.
+    cm_hi, cm_lo = cm.assign(p_meta=cm.hi), cm.assign(p_meta=cm.lo)
     necesario = [{"escenario": esc, "estrategia": e, "meta": m,
                   "capital_80": capital_goal.capital_necesario(cm[cm.escenario == esc], m, e, 0.8),
+                  "capital_80_lo": capital_goal.capital_necesario(cm_hi[cm_hi.escenario == esc], m, e, 0.8),
+                  "capital_80_hi": capital_goal.capital_necesario(cm_lo[cm_lo.escenario == esc], m, e, 0.8),
                   "capital_50": capital_goal.capital_necesario(cm[cm.escenario == esc], m, e, 0.5)}
                  for esc in ("base", "estres") for e in ESTRATEGIAS for m in metas]
     pd.DataFrame(necesario).to_csv(SALIDA / "capital_necesario.csv", index=False)
@@ -109,6 +113,8 @@ def main(procesos: int) -> None:
     sensitivity.tornado(base, ESTRATEGIAS, n=400, semilla=semilla, procesos=procesos).to_csv(SALIDA / "tornado.csv", index=False)
     sensitivity.sensibilidad_modelos(base, ESTRATEGIAS, n=400, semilla=semilla, procesos=procesos).to_csv(
         SALIDA / "sensibilidad_modelos.csv", index=False)
+    sensitivity.interaccion(base, ESTRATEGIAS, n=400, semilla=semilla, procesos=procesos).to_csv(
+        SALIDA / "interaccion.csv", index=False)
     print("sensibilidad lista", flush=True)
 
     # 6. Validación.

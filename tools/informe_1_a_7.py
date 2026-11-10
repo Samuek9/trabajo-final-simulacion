@@ -424,8 +424,8 @@ def actualizar(w, P, c, pc) -> list[str]:
                     "dice la Ley 820, y no se prueba si los arriendos realmente suben como el IPC.", "")
 
     def vacancia():
-        val = pd.read_csv(RAIZ / "outputs" / "resultados" / "validacion.csv")
-        vac = float(val[val.proceso == "Vacancia"].simulado.iloc[0])
+        res = pd.read_csv(RAIZ / "outputs" / "resultados" / "resumen.csv").set_index(["escenario", "estrategia"])
+        vac = float(res.loc[("base", "E2"), "tiempo_vacante_media"])
         w.p(f"Validación. Con estos valores el apartamento pasa {pc(vac, 1)} del tiempo desocupado en la simulación, más que el "
             "0,6 % que reporta Ciencuadras para Medellín. Lo dejamos así a propósito: preferimos un modelo que exagere la vacancia "
             "a uno que la ignore. La Lonja reporta 121 días en oferta antes de arrendar, bastante más que los 46 días de Palomma; "
@@ -465,6 +465,7 @@ def actualizar(w, P, c, pc) -> list[str]:
     k2 = _i(doc, "7.9 Resumen de los modelos elegidos", True)
     refs = [_texto(el) for el in _cuerpo(doc)[k + 1:k2] if _texto(el).strip()]
     _borrar(doc, k, k2)
+    correcciones_auditoria(w, P, c, pc)
     return [r for r in refs_etf + refs if not r.startswith("Aptología")]
 
 
@@ -486,3 +487,115 @@ def _renumerar(doc, desde: str, hasta: str, seccion: str) -> None:
         nuevo = re.sub(r"\b(Tabla|Figura) (\d+)\b(?![.,]\d)", lambda m: mapa.get((m.group(1), m.group(2)), m.group(0)), p.text)
         if nuevo != p.text:
             _poner(p, nuevo)
+
+
+def correcciones_auditoria(w, P, c, pc) -> None:
+    """Cambios de la auditoría final (9 de noviembre de 2026) sobre el texto de los puntos 1 a 7."""
+    doc = w.doc
+    res = RAIZ / "outputs" / "resultados"
+    val = pd.read_csv(res / "validacion.csv")
+    cm = pd.read_csv(res / "capital_meta.csv")
+    n = P.i("exp.replicas")
+
+    # §4: lo que de verdad se corrió.
+    t = _tabla(doc, "Parámetro | Valor base")
+    caps, metas = sorted(cm.capital.unique()), sorted(cm.meta.unique())
+    _celdas(_fila(t, "Capital inicial"), {2: f"${c(caps[0] / 1e6)} a ${c(caps[-1] / 1e6)} millones (sección 17)"})
+    _celdas(_fila(t, "Horizonte"), {2: "Fijo en el experimento; se puede cambiar en la aplicación"})
+    _celdas(_fila(t, "Meta financiera"), {2: f"${c(metas[0] / 1e6)} a ${c(metas[-1] / 1e6)} millones (sección 17)"})
+    _celdas(_fila(t, "Liquidez mínima"), {2: "3 % y 10 % en la sensibilidad (sección 16.3)"})
+    _celdas(_fila(t, "Réplicas por estrategia"), {1: c(n)})
+
+    # §5.2: una sola cita para la retención del CDT (la misma del Excel).
+    reemplazar(doc, "Decreto 1625 de 2016, art. 1.2.4.2.32 (tarifa ajustada por el Decreto 2418 de 2013), citado en el Concepto DIAN "
+                    "3325 de 2024 [L1]",
+               "4 % fijado por el Decreto 2418 de 2013, compilado en el Decreto 1625 de 2016 y mantenido por el Decreto 572 de 2025 "
+               "(Ministerio de Hacienda y Crédito Público, 2013, 2016, 2025)")
+    reemplazar(doc, " [L1]", "")
+
+    # §5.4: no hay venta ordinaria en el modelo; el inmueble se valora neto al final.
+    t = next(x for x in doc.tables if x.rows[0].cells[0].text.strip() == "Regla" and "Precio de compra" in
+             " ".join(f.cells[0].text for f in x.rows))
+    for f in t.rows:
+        nombre = f.cells[0].text.strip()
+        if nombre == "Venta ordinaria":
+            _celdas(f, {0: "Valor al final del horizonte",
+                        1: "Precio de mercado menos los costos de venta: comisión 3 % más IVA, notaría 0,27 % y retención en la "
+                           "fuente de 1 % (4,84 % en total). El modelo no hace una venta ordinaria antes del final",
+                        2: "Comisión publicada; Lonja de Medellín (2025): 225 días para vender vivienda usada"})
+        elif nombre == "Venta urgente":
+            _celdas(f, {1: "Se decide cuando el efectivo, el ETF y los CDT no alcanzan; el dinero llega entre 4 y 7 meses después "
+                           "(uniforme). Descuento de 10 % (sensibilidad 5 % a 20 %) más los costos de venta",
+                        2: "Plazo: Lonja de Medellín (2025), 225 días; descuento: supuesto"})
+        elif nombre == "Precio de compra":
+            _celdas(f, {1: "$300.000.000 en E2 y E4 (50 m², $6,0 M/m²). El valor es proporcional al capital: E3, que pone 55 %, "
+                           "compra uno de $385 millones (unos 64 m²) con las mismas reglas"})
+    reemplazar(doc, "Tarda de 4 a 7 meses en venderse", "Venta urgente: el dinero llega de 4 a 7 meses después")
+
+    # §7.1: inflación mensual y normalidad según la prueba.
+    reemplazar(doc, "• Cada mes los precios suben una doceava parte de esa inflación, y con eso se calcula el patrimonio real.",
+               "• Entre un diciembre y el siguiente la inflación anual cambia en línea recta, y cada mes el índice de precios sube "
+               "lo que corresponde a la inflación anual de ese momento. Con ese índice se calcula el patrimonio real.")
+    t = _tabla(doc, "Pregunta | Resultado")
+    _celdas(_fila(t, "¿La inflación sigue una distribución normal?"),
+            {1: "Jarque-Bera (con asimetría y curtosis muestrales): p = 0,002; Shapiro-Wilk: p = 0,057; Lilliefors: p = 0,29 "
+                "(2001 a 2025, n = 25)",
+             2: "Depende de la prueba. Jarque-Bera rechaza la normal y las otras dos no, porque con 25 datos tienen poca potencia. "
+                "La asimetría hacia arriba sí se ve (1,21), y por eso no usamos la normal."})
+    _celdas(_fila(t, "¿Sigue una distribución lognormal?"), {1: "Jarque-Bera: p = 0,82; Shapiro-Wilk: p = 0,81"})
+
+    # §7.2.7: el tope sale de la validación.
+    tope = float(val[val.medida.str.startswith("Réplicas con la TPM en el tope")].simulado.iloc[0])
+    med = float(val[val.medida.str.startswith("TPM mediana")].simulado.iloc[0])
+    reemplazar(doc, "Con el logit la TPM toca el tope solo en 0,4 % de las réplicas y su mediana al año 10 es 7,25 %.",
+               f"Con el logit la TPM termina en el tope de 15 % en {pc(tope, 1)} de las réplicas y su mediana al año 10 es "
+               f"{c(med, 2)} %.")
+
+    # §7.3: IC de α por entidad (las 19 tasas no son independientes).
+    t = _tabla(doc, "Concepto | Valor")
+    _celdas(_fila(t, "Intervalo de confianza"), {0: "Intervalo de confianza de 95 % por entidad (t con 3 grados de libertad)",
+                                                1: "0,755 a 1,046"})
+    reemplazar(doc, "así que no se rechaza que α sea constante.",
+               "así que no se rechaza que α sea constante. Como las 19 tasas vienen de cuatro cuentas, el intervalo de α se calcula "
+               "con el promedio de cada cuenta y no con las 19 tasas como si fueran independientes; por eso es ancho.")
+    reemplazar(doc, "publicadas en El Tiempo, El Colombiano y Rankia.",
+               "publicadas en El Tiempo, El Colombiano y Rankia y recopiladas en la hoja TPM_Cuenta (Equipo del trabajo, 2026b).")
+
+    # §7.4.10: el estado no mueve la TPM.
+    reemplazar(doc, "La tasa depende del estado económico a través de la TPM: el estado fija los cambios de la TPM y estos el margen.",
+               "En el modelo la tasa no depende del estado económico. Depende de la TPM, que la Junta mueve según la inflación y "
+               "la brecha de Taylor (7.2.7), y el margen depende del cambio reciente de la TPM.")
+
+    # §7.5: referencias cruzadas viejas, notas internas y muletillas.
+    reemplazar(doc, " La Tabla 7 muestra de dónde sale.", " La explicación está en los subperiodos.")
+    reemplazar(doc, "y lo retomamos en los puntos 9 y 10.", "y por eso la llevamos al análisis de sensibilidad (sección 16.3).")
+    reemplazar(doc, "Conclusión del punto: tratar", "Tratar")
+    reemplazar(doc, "Hay algo importante. Sin esos tres meses", "Sin esos tres meses")
+    reemplazar(doc, "La diferencia no es menor. Para la normal,", "Para la normal,")
+    reemplazar(doc, " Las Figuras 5 a 8 muestran dónde se diferencian.", "")
+    reemplazar(doc, "que compensa con creces el sesgo", "menor que el sesgo")
+    reemplazar(doc, " La anotamos como una observación para discutir con el resto del equipo.", "")
+    reemplazar(doc, "como sugiere la Tabla 9", "como muestran los meses atípicos")
+    reemplazar(doc, "Como la asimetría no es significativa (p = 0,14), ajustamos",
+               "Aunque los datos son asimétricos, la razón de verosimilitud entre la t asimétrica y la t simétrica no es significativa "
+               "(p = 0,14): el parámetro de asimetría no mejora el ajuste lo suficiente. Por eso ajustamos")
+    t = _tabla(doc, "Estadístico | Valor | Estadístico | Valor")
+    _celdas(_fila(t, "Jarque-Bera"), {1: "361,7 (< 0,001)"})
+    t = _tabla(doc, "Prueba (nivel 5 %) | Estadístico")
+    _celdas(_fila(t, "Varianza igual en los tres estados"),
+            {0: "Varianza igual en los tres estados del PIB, umbral de 1 % (Levene centrado en la media; con la mediana p = 0,008)"})
+
+    # §7.6.10: umbral del contraste por estados.
+    reemplazar(doc, "6,9 % con PIB débil (menos de 1,5 %)", "6,9 % con PIB débil (menos de 1 %)")
+
+    # §7.7.2: la tabla usa la duración del parámetro.
+    t = _tabla(doc, "Estado | p | D (meses)")
+    for f in t.rows[1:]:
+        letra = {"Expansión": "E", "Normal": "N", "Crisis": "C"}.get(f.cells[0].text.strip())
+        if letra:
+            p_, d_ = P.f(f"vac.p_{letra}"), P.f(f"vac.media_{letra}")
+            _celdas(f, {1: pc(p_, 0), 2: c(d_, 1), 3: pc(p_ * d_ / (12 + p_ * d_), 2)})
+    pe, de = P.f("vac.p_E"), P.f("vac.media_E")
+    reemplazar(doc, "El 0,62 % de expansión coincide con el 0,6 % que reporta Ciencuadras para Medellín en 2026.",
+               f"El {pc(pe * de / (12 + pe * de), 2)} de expansión queda cerca del 0,6 % que reporta Ciencuadras (2026) para "
+               "Medellín.")

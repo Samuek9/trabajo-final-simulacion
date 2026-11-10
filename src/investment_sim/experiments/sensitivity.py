@@ -59,7 +59,40 @@ def factores(p: Params) -> list[dict]:
         {"factor": "Probabilidad de crisis (Normal → Crisis × 0,5 / × 2)", "fuente": "Estados económicos",
          "bajo": {"markov.N_C": p.f("markov.N_C") * 0.5, "markov.N_N": p.f("markov.N_N") + p.f("markov.N_C") * 0.5},
          "alto": {"markov.N_C": p.f("markov.N_C") * 2, "markov.N_N": p.f("markov.N_N") - p.f("markov.N_C")}},
+        {"factor": "Liquidez mínima en la cuenta (3 % / 10 %)", "fuente": "Inversionista",
+         "bajo": {"inv.liquidez_min": 0.03}, "alto": {"inv.liquidez_min": 0.10}},
+        {"factor": "Descuento por venta urgente (5 % / 20 %)", "fuente": "Inmueble",
+         "bajo": {"inm.descuento_urgente": 0.05}, "alto": {"inm.descuento_urgente": 0.20}},
+        {"factor": "Castigo del CDT en la venta anticipada (0 / 2 puntos)", "fuente": "Tasas de interés",
+         "bajo": {"cdt.castigo": 0.0}, "alto": {"cdt.castigo": 0.02}},
+        {"factor": "Administración del edificio ($165.000 / $245.000)", "fuente": "Inmueble",
+         "bajo": {"inm.ph": 165_000}, "alto": {"inm.ph": 245_000}},
     ]
+
+
+def interaccion(p: Params, estrategias=("E1", "E2", "E3", "E4"), n: int = 400, semilla: int | None = None,
+                procesos: int = 1) -> pd.DataFrame:
+    """Diseño 2 × 2: nivel de la inflación (3,5 % / 6,5 %) × frecuencia de necesidades (× 0,5 / × 1,5).
+
+    La interacción es (alta-alta − alta-baja) − (baja-alta − baja-baja) sobre P(meta): si es
+    cercana a cero, los efectos se suman y el tornado de un factor a la vez basta.
+    """
+    phi = p.f("inf.phi")
+    lt = ["liq.tasa_E", "liq.tasa_N", "liq.tasa_C"]
+    res = {}
+    for ni, pi in (("baja", 3.5), ("alta", 6.5)):
+        for nl, k in (("baja", 0.5), ("alta", 1.5)):
+            cambios = {"inf.c": (1 - phi) * np.log(pi), **_escala(p, lt, k)}
+            res[(ni, nl)] = _medir(p.con_dict(cambios), estrategias, n, semilla, procesos)
+    filas = []
+    for e in estrategias:
+        bb, ba = res[("baja", "baja")].loc[e, "p_meta"], res[("baja", "alta")].loc[e, "p_meta"]
+        ab, aa = res[("alta", "baja")].loc[e, "p_meta"], res[("alta", "alta")].loc[e, "p_meta"]
+        filas.append({"estrategia": e, "inf_baja_liq_baja": bb, "inf_baja_liq_alta": ba,
+                      "inf_alta_liq_baja": ab, "inf_alta_liq_alta": aa,
+                      "efecto_inflacion": (ab + aa - bb - ba) / 2, "efecto_liquidez": (ba + aa - bb - ab) / 2,
+                      "interaccion": (aa - ab) - (ba - bb)})
+    return pd.DataFrame(filas)
 
 
 def modelos_alternativos() -> list[dict]:

@@ -72,7 +72,7 @@ FILAS = [
 
     # ---------------- Cuenta remunerada (7.3) ----------------
     ("P060", "cta.alfa", "Cuenta", "Tasa de la cuenta = α × TPM", 0.8978, 0.80, X, "fracción", "Estimado", "19 tasas de 4 cuentas digitales (Nu, Pibank, Lulo, RappiPay) en 5 fechas, dic-2023 a oct-2026; IC 95 % por entidad 0,755 a 1,046. Ualá se excluye: es un depósito de bajo monto con tope cercano a $10 M. En las otras 4 no se encontró tope de saldo (comparadores, oct-2026); adverso 0,80", "TPM_Cuenta, 7.3"),
-    ("P061", "imp.retencion", "Costos", "Retención en la fuente sobre intereses del CDT", 0.04, X, X, "fracción", "Verificado", "4 % para CDT y CDAT (Decreto 572 de 2025, DUR 1625 de 2016 art. 1.2.4.2.83)", "5.2"),
+    ("P061", "imp.retencion", "Costos", "Retención en la fuente sobre intereses del CDT", 0.04, X, X, "fracción", "Verificado", "4 % fijado por el Decreto 2418 de 2013, compilado en el Decreto 1625 de 2016 y mantenido por el Decreto 572 de 2025, que lo extendió a los CDAT (su artículo 1 no fue suspendido por el Consejo de Estado)", "5.2"),
     ("P066", "imp.retencion_cuenta", "Costos", "Retención en la fuente sobre intereses de la cuenta de ahorros", 0.07, X, X, "fracción", "Verificado", "7 %, tarifa general de rendimientos financieros (DUR 1625 de 2016 art. 1.2.4.2.5); se cobra sobre todo el interés porque el del día supera la base mínima (art. 1.2.4.2.87)", "5.2"),
     ("P062", "imp.gmf", "Costos", "Gravamen a los movimientos financieros (4x1000)", 0.004, X, X, "fracción", "Verificado", "Estatuto Tributario, art. 871", "5.1"),
     ("P063", "imp.gmf_exencion", "Costos", "Retiros mensuales exentos del 4x1000 (350 UVT)", 350 * 52_374, X, X, "COP por mes", "Verificado", "E.T. art. 879; UVT 2026 = $52.374 (Resolución DIAN 000238 del 15 de diciembre de 2025)", "5.1"),
@@ -130,6 +130,7 @@ FILAS = [
     ("P135", "val.sd_N", "Valorización", "Desviación en normal", 0.02152, X, X, "ln anual", "Estimado", "Solo con val.modelo = estado (alternativa). IPVNBR Medellín", "MARKOV"),
     ("P136", "val.sd_C", "Valorización", "Desviación en crisis", 0.02152, X, X, "ln anual", "Estimado", "Solo con val.modelo = estado (alternativa). IPVNBR Medellín", "MARKOV"),
     ("P137", "val.ar1", "Valorización", "AR(1) del IPVU: media; φ; σ", "0.0755;0.676;0.0236", "0.0555;0.676;0.0236", "-0.05129;0;0.0236", "lista", "Estimado", "IPVU nominal 2001-2025 (n = 25, máxima verosimilitud); adverso: media −2 puntos; estrés: −5 % anual mientras dura la crisis", "INM_Valoriz, 7.6"),
+    ("P138", "val.r0", "Valorización", "Valorización del año anterior al inicio (r0)", 0.0809, X, X, "ln anual", "Estimado", "IPVU 2025: ln(1 + variación) = 0,0809; con él arranca el AR(1)", "INM_Valoriz, 7.6"),
 
     # ---------------- Vacancia (7.7) ----------------
     ("P140", "vac.p_E", "Vacancia", "Probabilidad de no renovar en expansión", 0.05, 0.075, X, "probabilidad", "Supuesto", "Sin datos de no renovación; escenario a sensibilidad (Ciencuadras 2026 reporta 0,6 % de vacancia, no la tasa de no renovación); adverso × 1,5", "7.7"),

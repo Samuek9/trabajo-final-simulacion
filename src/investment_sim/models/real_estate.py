@@ -8,11 +8,11 @@ def valorizacion_log(estado: str, z: float, r_anterior: float | None, p) -> floa
     """r = ln(V nuevo / V anterior) del año.
 
     estado: r ~ Normal(μ(S), σ(S)) (punto 8).
-    ar1:    r = μ + φ·(r anterior − μ) + σ·Z (IPVU, alternativa de 7.6).
+    ar1:    r = μ + φ·(r anterior − μ) + σ·Z (IPVU, 7.6); el primer año parte de r0 (2025).
     """
     if p.s("val.modelo") == "ar1":
         mu, phi, sd = p.lista("val.ar1")
-        prev = mu if r_anterior is None else r_anterior
+        prev = p.f("val.r0") if r_anterior is None else r_anterior
         return mu + phi * (prev - mu) + sd * z
     letra = _L[estado]
     return p.f(f"val.mu_{letra}") + p.f(f"val.sd_{letra}") * z

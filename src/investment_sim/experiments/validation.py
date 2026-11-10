@@ -35,8 +35,10 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
     tr = r.trayectorias["E3"]
     filas = []
 
-    def fila(proceso, medida, simulado, observado, referencia, comentario=""):
-        filas.append({"proceso": proceso, "medida": medida, "simulado": simulado, "observado": observado,
+    def fila(proceso, medida, simulado, observado, referencia, comentario="", tipo="Reproduce insumos"):
+        # "Reproduce insumos": se compara con los mismos datos con que se estimó el proceso (verifica los
+        # generadores). "Contraste": se compara con algo que el modelo no usó al estimarse (validación).
+        filas.append({"proceso": proceso, "medida": medida, "tipo": tipo, "simulado": simulado, "observado": observado,
                       "referencia": referencia, "lectura": comentario})
 
     # Inflación de diciembre
@@ -56,17 +58,19 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
     real = (tpm - tr["inflacion"])[:, 12::12]
     hist = pd.read_csv(CRUDOS / "junta_decisiones_2001_2026.csv")
     real_obs = (hist.tpm - hist.inf).to_numpy(float)
-    fila("TPM", "TPM mediana en el año 10 (%)", np.median(tpm[:, -1]), np.median(hist.tpm), "BanRep 2001-2026")
+    fila("TPM", "TPM mediana en el año 10 (%)", np.median(tpm[:, -1]), np.median(hist.tpm), "BanRep 2001-2026",
+         tipo="Contraste")
     fila("TPM", "Tasa real media: TPM − inflación (puntos)", real.mean(), real_obs.mean(), "BanRep y DANE 2001-2026",
-         "El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio.")
+         "El modelo parte de una tasa real de 6 puntos (12,25 % con inflación de 6,3 %) y la baja despacio.",
+         tipo="Contraste")
     tardia = (tpm - tr["inflacion"])[:, 61:]
     pi_tardia = float(np.median(tr["inflacion"][:, 61:]))
     fila("TPM", "Tasa real media en los años 6 a 10 (puntos)", tardia.mean(), real_obs.mean(), "BanRep y DANE 2001-2026",
          "Sin el arranque la brecha se reduce. Con la inflación simulada de esos años ("
          + f"{pi_tardia:.1f} %), la regla de Taylor del modelo pide {1 + 0.5 * (pi_tardia - 3):.1f} puntos; "
-         .replace(".", ",") + "la tasa todavía va bajando hacia ahí.")
+         .replace(".", ",") + "la tasa todavía va bajando hacia ahí.", tipo="Contraste")
     fila("TPM", "Réplicas con la TPM en el tope de 15 % al año 10", float((tpm[:, -1] >= p.f("tpm.max") - 1e-9).mean()), 0.0,
-         "Máximo histórico desde 2001: 13,25 %")
+         "Máximo histórico desde 2001: 13,25 %", tipo="Contraste")
 
     # ETF: rendimientos que genera el modelo sobre los estados simulados.
     estados = tr["estado"][:, 1:]
@@ -78,10 +82,11 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
     fila("ETF", "Desviación mensual (todos los estados)", float(g.std()), float(obs_g.std()), "BlackRock NAV 2011-2026")
     fila("ETF", "Desviación mensual en crisis", float(g[estados == 2].std()), 0.08783, "Hoja MARKOV (24 meses)")
     fila("ETF", "Asimetría", float(stats.skew(g.ravel())), float(stats.skew(obs_g)), "BlackRock NAV 2011-2026",
-         "La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.")
-    fila("ETF", "Curtosis en exceso", float(stats.kurtosis(g.ravel())), float(stats.kurtosis(obs_g)), "BlackRock NAV 2011-2026")
+         "La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.", tipo="Contraste")
+    fila("ETF", "Curtosis en exceso", float(stats.kurtosis(g.ravel())), float(stats.kurtosis(obs_g)), "BlackRock NAV 2011-2026",
+         tipo="Contraste")
     fila("ETF", "Peor mes en 10 años (mediana de las réplicas)", float(np.median(g.min(axis=1))), float(obs_g.min()),
-         "Marzo de 2020: −31 % en logaritmo")
+         "Marzo de 2020: −31 % en logaritmo", tipo="Contraste")
 
     # Estados económicos
     est = tr["estado"][:, 3::3]
@@ -90,7 +95,7 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
              [0.366, 0.488, 0.146][k], "DANE PIB 2006-2026")
     dur_c = [d for f in tr["estado"] for d in _duraciones(f, 2)]
     fila("Estados", "Duración media de una crisis (trimestres)", float(np.mean(dur_c)) if dur_c else np.nan, 4.0,
-         "DANE PIB 2006-2026", "Las rachas que tocan el final del horizonte quedan truncadas.")
+         "DANE PIB 2006-2026", "Las rachas que tocan el final del horizonte quedan truncadas.", tipo="Contraste")
 
     # Inmueble
     inm = tr["inmueble"]
@@ -98,14 +103,14 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
         rv = np.log(inm[:, 24::12] / inm[:, 12:-1:12])
     rv = rv[np.isfinite(rv)]
     ipvu = serie("ipvu")
-    fila("Valorización", "Valorización nominal media (ln anual)", float(rv.mean()), 0.0832, "IPVNBR Medellín, normal y crisis",
-         "Expansión: 0,119. El IPVU nacional da 0,0755.")
-    fila("Valorización", "Desviación anual", float(rv.std()), 0.0336, "IPVU 2001-2025")
-    ocup = tr["ocupado"][:, 1:]
-    con_inm = inm[:, 1:] > 0
-    fila("Vacancia", "Fracción del tiempo desocupado", float(1 - ocup[con_inm].mean()), 0.006,
+    r_obs = ipvu[ipvu.fecha >= 2001].rn.to_numpy(float)
+    fila("Valorización", "Valorización nominal media (ln anual)", float(rv.mean()), float(r_obs.mean()), "IPVU 2001-2025",
+         "El primer año parte de la variación de 2025 (0,0809) y se acerca a la media del AR(1).")
+    fila("Valorización", "Desviación anual", float(rv.std()), float(r_obs.std(ddof=1)), "IPVU 2001-2025")
+    # Tiempo desocupado medido en continuo, el mismo indicador de resumen.csv.
+    fila("Vacancia", "Fracción del tiempo desocupado", float(r.tabla.tiempo_vacante.mean()), 0.006,
          "Ciencuadras 2026: 0,6 % de vacancia en Medellín",
-         "El modelo es más conservador a propósito: 10 % de no renovación en estado normal.")
+         "El modelo es más conservador a propósito: 10 % de no renovación en estado normal.", tipo="Contraste")
     return pd.DataFrame(filas)
 
 

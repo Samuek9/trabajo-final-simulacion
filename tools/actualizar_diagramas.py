@@ -170,7 +170,7 @@ def png(pdf: Path, salida: Path, pagina: int = 0, dpi: int = 150) -> None:
 def main() -> None:
     doc = fitz.open(ORIGEN / "diagrama_eventos.pdf")
     falta = reemplazar(doc[0], EVENTOS)
-    doc.subset_fonts()
+    # Sin subset_fonts(): quitaba el glifo del espacio de las fuentes originales del PDF.
     doc.save(DESTINO / "diagrama_eventos.pdf", garbage=3, deflate=True)
     print("eventos, sin encontrar:", falta)
     png(DESTINO / "diagrama_eventos.pdf", DESTINO / "diagrama_eventos.png", dpi=110)
@@ -180,7 +180,7 @@ def main() -> None:
         falta = reemplazar(page, [(a, b) for p, a, b in FLUJO if p == k], centrado=True)
         if falta:
             print("flujo, página", k + 1, "sin encontrar:", falta)
-    doc.subset_fonts()
+    # Sin subset_fonts(): quitaba el glifo del espacio de las fuentes originales del PDF.
     doc.save(DESTINO / "diagrama_de_flujo_completo.pdf", garbage=3, deflate=True)
     for k in range(len(doc)):
         png(DESTINO / "diagrama_de_flujo_completo.pdf", DESTINO / f"flujo_pagina_{k + 1}.png", k, dpi=110)

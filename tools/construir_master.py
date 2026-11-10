@@ -126,7 +126,7 @@ FUENTES = [
     ["F09", "Índice de arrendamientos (IPC de arriendos)", "DANE", "dane.gov.co", "2010-2025", "Reajuste del canon (5.4.3)"],
     ["F10", "Vacancia de arriendos en Medellín", "Ciencuadras", "ciencuadras.com", "2026", "Validación de la vacancia"],
     ["F11", "Ley 820 de 2003 (tope del reajuste del canon)", "Congreso de Colombia", "secretariasenado.gov.co", "", "Canon"],
-    ["F12", "Estatuto Tributario: GMF y retención en la fuente", "DIAN", "dian.gov.co", "2026", "Impuestos"],
+    ["F12", "Estatuto Tributario (GMF) y Decretos 2418 de 2013, 1625 de 2016 y 572 de 2025 (retención en la fuente)", "DIAN / MinHacienda", "normograma.dian.gov.co", "2026", "Impuestos"],
     ["F13", "Valor de la UVT 2026: Resolución 000238 del 15 de diciembre de 2025", "DIAN", "dian.gov.co", "2026", "Exención del 4x1000"],
     ["F14", "Estrategias de inversión.docx", "Equipo", "", "nov. 2026", "Punto 11"],
     ["F15", "Escenarios.docx", "Equipo", "", "nov. 2026", "Punto 13"],
@@ -255,7 +255,7 @@ def decisiones(ws) -> None:
         ["D03", "Canon", "Referencia: modelo DANE con tope. Alternativa: todo el IPC (diagrama)", "Los datos muestran reajustes por debajo del IPC", "Cerrada"],
         ["D04", "ETF", "Referencia: t por estado (equipo). Alternativa: Jones-Faddy", "Conecta el ETF con el estado económico", "Cerrada"],
         ["D05", "Valorización", "Referencia: AR(1) del IPVU. Alternativa: normal por estado con el IPVNBR de Medellín", "El inmueble es usado y el IPVNBR mide vivienda nueva; el estado no cambia la valorización (Welch, p = 0,275)", "Cerrada; con la alternativa la P(meta) sube 9 a 15 puntos"],
-        ["D06", "Vacancia", "5/10/30 % de no renovar y 1/1,5/6 meses de duración media", "Simula 3 % del tiempo vacante contra 0,6 % de Ciencuadras", "Cerrada"],
+        ["D06", "Vacancia", "5/10/30 % de no renovar y 1/1,5/6 meses de duración media", "Simula 2,5 % del tiempo vacante (medido en continuo) contra 0,6 % de Ciencuadras", "Cerrada"],
         ["D07", "Estrés", "Recortes de TPM de 0,5 a 2 puntos durante la crisis forzada", "No hay dato; es un supuesto", "Cerrada"],
         ["D08", "Impuestos", "UVT 2026 = 52.374 para la exención del 4x1000", "Resolución DIAN 000238 del 15 de diciembre de 2025", "Cerrada"],
         ["D09", "Reparaciones", "Apagadas (frecuencia 0)", "Sin datos de costo ni frecuencia", "Pendiente"],
@@ -291,10 +291,12 @@ def tpm_logit(ws) -> None:
 
 def validacion(ws) -> None:
     v = pd.read_csv(RES / "validacion.csv")
-    f = titulo(ws, "Validación (punto 16)", "Corrida de 500 réplicas con los parámetros de referencia frente a los datos de cada proceso.")
-    tabla(ws, f, ["Proceso", "Medida", "Simulado", "Observado", "Referencia", "Lectura"],
-          [[r.proceso, r.medida, _num(r.simulado), _num(r.observado), r.referencia, r.lectura] for r in v.itertuples()],
-          [14, 48, 14, 14, 40, 70])
+    f = titulo(ws, "Validación (punto 16)", "Corrida de 500 réplicas con los parámetros de referencia frente a los datos de cada "
+               "proceso. Tipo: 'Reproduce insumos' compara con los mismos datos con que se estimó el proceso (verifica el "
+               "generador); 'Contraste' compara con algo que el modelo no usó al estimarse (validación).")
+    tabla(ws, f, ["Proceso", "Medida", "Tipo", "Simulado", "Observado", "Referencia", "Lectura"],
+          [[r.proceso, r.medida, r.tipo, _num(r.simulado), _num(r.observado), r.referencia, r.lectura] for r in v.itertuples()],
+          [14, 48, 18, 14, 14, 40, 70])
 
 
 def _num(x):

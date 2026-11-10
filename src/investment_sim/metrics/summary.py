@@ -117,7 +117,9 @@ def pareada(tabla: pd.DataFrame, a: str, b: str, col: str = "W_real") -> dict[st
     m, lo, hi = ic_media(d)
     var_ind = x.var(ddof=1) + y.var(ddof=1)
     var_par = np.var(d, ddof=1)
-    return {"a": a, "b": b, "variable": col, "n": len(d), "diferencia": m, "lo": lo, "hi": hi,
+    sd = np.std(d, ddof=1)
+    p_valor = float(2 * stats.t.sf(abs(m) / (sd / np.sqrt(len(d))), len(d) - 1)) if sd > 0 else (0.0 if m != 0 else 1.0)
+    return {"a": a, "b": b, "variable": col, "n": len(d), "diferencia": m, "lo": lo, "hi": hi, "p_valor": p_valor,
             "significativa": bool(lo > 0 or hi < 0),
             "reduccion_varianza": float(1 - var_par / var_ind) if var_ind > 0 else np.nan}
 

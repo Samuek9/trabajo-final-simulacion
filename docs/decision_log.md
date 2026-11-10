@@ -10,12 +10,12 @@ El Word de los puntos 1 a 7 y el diagrama de flujo del equipo no siempre usaban 
 |---|---|---|---|
 | Estados económicos | Markov del equipo (crisis si el PIB crece menos de 1 %, expansión si más de 4 %) | ninguna | Es la del diagrama y la hoja MARKOV |
 | ETF | t de Student con ν = 5 y volatilidad por estado | Jones-Faddy sin estados | La del equipo conecta el ETF con la economía; Jones-Faddy recoge mejor la asimetría (−1,12 en los datos) |
-| Valorización | Normal del logaritmo por estado (IPVNBR Medellín) | AR(1) del IPVU nacional | La del equipo es de Medellín y depende del estado |
+| Valorización | AR(1) del IPVU nacional (vivienda usada), arranca en la variación de 2025 | Normal del logaritmo por estado (IPVNBR Medellín, vivienda nueva) | El inmueble es usado; con el IPVU el estado no cambia la valorización (Welch, p = 0,275) |
 | Margen del CDT | M5: TPM + a + b·ΔTPM + residuo observado | Normal por fase de la TPM | M5 se estimó con 18 años de datos semanales y reproduce la reacción del margen a los cambios de tasa. Los valores por fase del diagrama (2,68 / 0,86 / 0,16) eran de una versión anterior |
 | Reajuste del canon | Modelo DANE con tope en el IPC previo (Ley 820) | Sube todo el IPC | El diagrama asume que siempre sube el IPC completo; los datos muestran que en promedio sube menos |
 | Junta del Banco | Logit ordenado con tendencia de la inflación y brecha de Taylor | Tabla por tendencia de 7.2 | Ver la entrada siguiente |
 
-Efecto de cambiar cada uno por su alternativa (400 réplicas, puntos de probabilidad de meta, E1 / E2 / E3 / E4): CDT por fase +1,0 / +0,3 / −0,5 / 0,0; canon con todo el IPC 0,0 / +2,5 / +1,8 / +1,3; Jones-Faddy −0,5 / +0,3 / −1,0 / +1,3; AR(1) del IPVU 0,0 / −13,7 / −18,5 / −12,5; tabla de la Junta +47,8 / +26,8 / +11,8 / +19,3. Las dos últimas cambian la conclusión y van en la discusión del informe.
+Efecto de cambiar cada uno por su alternativa (corrida del 9 de noviembre de 2026, 400 réplicas, puntos de probabilidad de meta, E1 / E2 / E3 / E4): CDT por fase +0,2 / 0,0 / +0,3 / +0,5; canon con todo el IPC 0,0 / +0,8 / +0,3 / +1,5; Jones-Faddy −0,8 / +2,2 / +3,8 / +3,2; IPVNBR por estado 0,0 / +10,2 / +14,3 / +8,3; tabla de la Junta +51,8 / +29,2 / +14,3 / +24,0; logit 2017-2026 −0,3 / +1,0 / −0,3 / +0,8; vacancia de 4 meses 0,0 / 0,0 / −0,5 / 0,0; sin necesidades de liquidez +15,2 / +30,2 / +27,8 / +27,7. La tabla de la Junta, el IPVNBR y quitar las necesidades cambian la conclusión y van en la discusión del informe.
 
 ## Junta del Banco de la República
 
@@ -26,7 +26,7 @@ Con el logit corregido la TPM mediana al año 10 queda en 7,25 % y 0,8 % de las 
 ## Supuestos del equipo que quedaron como parámetros
 
 - Necesidades de liquidez: una cada 24 meses en expansión y normal, una cada 12 en crisis; monto lognormal con mediana de 20 millones en pesos de hoy y σ = 0,8. Es el factor que más mueve el resultado después de la inflación y la valorización.
-- Vacancia: no renovar con probabilidad 5 / 10 / 30 % según el estado; duración gamma con forma 1,1 y media 1 / 1,5 / 6 meses. La validación da 3 % del tiempo desocupado contra 0,6 % de Ciencuadras 2026. Lo dejamos así a propósito, más conservador (aprobado).
+- Vacancia: no renovar con probabilidad 5 / 10 / 30 % según el estado; duración gamma con forma 1,1 y media 1 / 1,5 / 6 meses. La simulación da 2,5 % del tiempo desocupado (medido en continuo) contra 0,6 % de Ciencuadras 2026. Lo dejamos así a propósito, más conservador (aprobado).
 - Estrés: los recortes de la TPM durante la crisis forzada (0,5 / 1 / 1,5 / 2 puntos) no salen de datos; es un supuesto declarado (aprobado).
 
 ## Decisiones de implementación
@@ -62,8 +62,18 @@ Con el logit corregido la TPM mediana al año 10 queda en 7,25 % y 0,8 % de las 
 ## Pendientes
 
 - Reparaciones extraordinarias: apagadas (frecuencia 0). Sin datos de costo ni de frecuencia.
-- Nombres de los integrantes en la portada del informe.
 
 ## Réplicas
 
-El piloto de 200 réplicas pide entre 500 y 704 réplicas para un error relativo de 2 % en el patrimonio real medio. Usamos 1.068, que además da ±3 puntos en el peor caso para la probabilidad de meta. Con 2.400 réplicas de E2 la probabilidad de meta pasa de 37,9 % a 36,5 %, dentro del intervalo de 1.068.
+El piloto de 200 réplicas pide entre 562 y 845 réplicas para un error relativo de 2 % en el patrimonio real medio. Usamos 1.068, que además da ±3 puntos en el peor caso para la probabilidad de meta. Con 2.400 réplicas de E2 la probabilidad de meta pasa de 15,4 % a 15,0 %, dentro del intervalo de 1.068 (13,4 % a 17,7 %).
+
+## Auditoría final independiente (9 de noviembre de 2026)
+
+Veredicto de la primera pasada: aprobado con observaciones. Cambios hechos:
+
+- Código: la valorización arranca en la variación del IPVU de 2025 (P138, r0 = 0,0809), como dice 7.6.9; los costos totales incluyen el descuento y los costos de la venta urgente; el momento de la meta usa el inmueble neto de costos de venta, igual que la meta final.
+- Experimentos: el tornado suma liquidez mínima (3 % / 10 %), descuento de venta urgente (5 % / 20 %), castigo del CDT (0 / 2 puntos) y administración del edificio; diseño 2 × 2 de inflación × necesidades (la interacción es grande porque con inflación alta la meta ya es casi inalcanzable); banda del capital necesario con los extremos del IC de cada punto de la malla; valor p de cada comparación pareada y corrección de Holm.
+- Validación: cada fila dice si reproduce insumos o es un contraste; la valorización se compara con el IPVU; la vacancia se mide en continuo (2,5 %).
+- Informe: el estado económico no mueve la TPM ni la valorización (7.4.10 y 13 corregidos); 1.068 réplicas y rangos realmente corridos en la sección 4; venta urgente de 4 a 7 meses y sin venta ordinaria; arriendo como parte de los ingresos corrientes, no de la ganancia; normalidad de la inflación según la prueba; IC de α por entidad; una sola cita para la retención del CDT; sin notas internas ni referencias cruzadas viejas.
+- Formato APA 7: citas (autor, año), lista de referencias con DOI y sangría francesa, tablas y figuras numeradas 1 a n con título en cursiva arriba y nota, número de página, una sola fuente (Arial) y encabezado repetido en tablas largas. Interlineado sencillo (decisión del equipo para un informe técnico).
+- Diagramas: el Anexo C los reproduce por partes en A3 horizontal con el texto a 7 puntos o más. Se corrigió un error de la edición anterior de los PDF que quitaba los espacios del texto original.

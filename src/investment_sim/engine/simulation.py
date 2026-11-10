@@ -658,7 +658,9 @@ class Simulacion:
             s.pico_real = Wr
         if s.pico_real > 0:
             s.caida_max = max(s.caida_max, 1 - Wr / s.pico_real)
-        if s.t_meta is None and Wr >= self.meta:
+        # La meta se mide igual que al final: el inmueble neto de los costos de venta.
+        neto_inm = s.inmueble.valor * p.f("inm.costo_venta") if s.inmueble.tiene else 0.0
+        if s.t_meta is None and (W - neto_inm) / s.indice >= self.meta:
             s.t_meta = s.t
         iliquido = s.deuda > TOL or s.cuenta < self.liq_min * W - 1000.0
         if iliquido:
@@ -764,7 +766,8 @@ class Simulacion:
             "rent_inmueble": rent_inm,
             "tiempo_vacante": a["meses_vacante"] / a["meses_con_inmueble"] if a["meses_con_inmueble"] else float("nan"),
             "perdida_venta_urgente": a["descuento_urgente"] + a["costo_venta"],
-            "costos_totales": a["comision_etf"] + a["gmf"] + a["retencion"] + a["intereses_perdidos"] + a["costo_compra"] + a["comision_inmobiliaria"],
+            "costos_totales": a["comision_etf"] + a["gmf"] + a["retencion"] + a["intereses_perdidos"] + a["costo_compra"] + a["comision_inmobiliaria"]
+                              + a["descuento_urgente"] + a["costo_venta"],
             "estado_final": float(markov.ESTADOS.index(s.estado_eco)),
             "tpm_final": s.tpm, "inflacion_final": self.pi_actual(s.t),
         }
