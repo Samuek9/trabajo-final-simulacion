@@ -1,0 +1,367 @@
+{
+ "fecha": "2026-11-10 14:05",
+ "total": 60,
+ "pasaron": 60,
+ "pruebas": [
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_lista_ordena_por_tiempo_prioridad_y_secuencia",
+   "estado": "pasó",
+   "segundos": 0.112
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_empate_total_respeta_orden_de_llegada",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_evento_cancelado_no_se_procesa",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_prioridades_siguen_el_diagrama",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_reloj_nunca_retrocede_y_termina_en_H",
+   "estado": "pasó",
+   "segundos": 0.395
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_cierres_de_mes_son_exactamente_H",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_eventos_periodicos_en_su_calendario",
+   "estado": "pasó",
+   "segundos": 0.016
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_inmueble_vendido_cancela_sus_eventos",
+   "estado": "pasó",
+   "segundos": 0.008
+  },
+  {
+   "archivo": "test_events.py",
+   "prueba": "test_horizonte_corto_y_largo",
+   "estado": "pasó",
+   "segundos": 0.024
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_mundo_quieto_conserva_el_patrimonio[E1]",
+   "estado": "pasó",
+   "segundos": 0.006
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_mundo_quieto_conserva_el_patrimonio[E2]",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_mundo_quieto_conserva_el_patrimonio[E3]",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_mundo_quieto_conserva_el_patrimonio[E4]",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_inflacion_cero_real_igual_a_nominal",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_cuenta_sola_crece_al_interes_compuesto",
+   "estado": "pasó",
+   "segundos": 0.006
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_cdt_paga_tpm_mas_margen_cada_anio",
+   "estado": "pasó",
+   "segundos": 0.006
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_etf_sin_volatilidad_crece_exp_mu",
+   "estado": "pasó",
+   "segundos": 0.005
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_comision_del_etf_se_cobra_al_comprar",
+   "estado": "pasó",
+   "segundos": 0.005
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_inmueble_siempre_ocupado_cobra_todos_los_arriendos",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_costos_de_compra_y_venta",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_4x1000_sobre_lo_que_pasa_la_exencion",
+   "estado": "pasó",
+   "segundos": 0.005
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_renovar_un_cdt_no_paga_4x1000",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_venta_anticipada_de_cdt_formula",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_canon_respeta_tope_e_ipc",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_patrimonio_nominal_y_real_consistentes",
+   "estado": "pasó",
+   "segundos": 0.008
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_capital_fijo_o_proporcional",
+   "estado": "pasó",
+   "segundos": 0.003
+  },
+  {
+   "archivo": "test_finance.py",
+   "prueba": "test_subir_la_constante_del_cdt_sube_el_margen",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_filas_de_la_matriz_suman_uno[base]",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_filas_de_la_matriz_suman_uno[adverso]",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_filas_de_la_matriz_suman_uno[estres]",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_matriz_invalida_se_rechaza",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_frecuencias_simuladas_igualan_la_matriz",
+   "estado": "pasó",
+   "segundos": 0.199
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_estacionaria_parecida_a_lo_observado",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_choques_del_etf_tienen_la_volatilidad_del_estado",
+   "estado": "pasó",
+   "segundos": 0.622
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_jones_faddy_reproduce_media_y_asimetria",
+   "estado": "pasó",
+   "segundos": 0.791
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_inflacion_converge_a_su_nivel",
+   "estado": "pasó",
+   "segundos": 0.02
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_duracion_de_vacancia_tiene_la_media_del_estado",
+   "estado": "pasó",
+   "segundos": 4.329
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_poisson_de_liquidez",
+   "estado": "pasó",
+   "segundos": 0.085
+  },
+  {
+   "archivo": "test_markov_y_generadores.py",
+   "prueba": "test_parametros_fuera_de_dominio",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_misma_semilla_mismo_resultado",
+   "estado": "pasó",
+   "segundos": 0.014
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_semillas_distintas_dan_resultados_distintos",
+   "estado": "pasó",
+   "segundos": 0.014
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_flujos_por_proceso_son_independientes",
+   "estado": "pasó",
+   "segundos": 0.006
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_numeros_comunes_las_estrategias_ven_la_misma_economia",
+   "estado": "pasó",
+   "segundos": 0.129
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_resultado_no_depende_del_numero_de_procesos",
+   "estado": "pasó",
+   "segundos": 2.002
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_numeros_comunes_reducen_la_varianza",
+   "estado": "pasó",
+   "segundos": 0.795
+  },
+  {
+   "archivo": "test_reproducibility.py",
+   "prueba": "test_wilson_dentro_de_cero_y_uno",
+   "estado": "pasó",
+   "segundos": 0.001
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_asignacion_inicial[E1-pesos0]",
+   "estado": "pasó",
+   "segundos": 0.002
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_asignacion_inicial[E2-pesos1]",
+   "estado": "pasó",
+   "segundos": 0.002
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_asignacion_inicial[E3-pesos2]",
+   "estado": "pasó",
+   "segundos": 0.002
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_e4_se_mueve_hacia_el_objetivo_del_estado",
+   "estado": "pasó",
+   "segundos": 0.013
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_e4_cambia_con_el_estado",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_sin_liquidez_suficiente_hay_iliquidez_y_deuda",
+   "estado": "pasó",
+   "segundos": 0.006
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_orden_de_cobertura_etf_antes_que_cdt",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_patrimonio_alto_con_iliquidez",
+   "estado": "pasó",
+   "segundos": 0.166
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_caida_extrema_del_etf",
+   "estado": "pasó",
+   "segundos": 0.009
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_crisis_persistente",
+   "estado": "pasó",
+   "segundos": 0.008
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_sin_vacancia",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_sin_eventos_extraordinarios",
+   "estado": "pasó",
+   "segundos": 0.007
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_reparaciones_cuando_se_activan",
+   "estado": "pasó",
+   "segundos": 0.008
+  },
+  {
+   "archivo": "test_strategies_y_liquidez.py",
+   "prueba": "test_estres_fija_la_crisis_y_vuelve_a_normal",
+   "estado": "pasó",
+   "segundos": 0.009
+  }
+ ]
+}

@@ -91,3 +91,10 @@ Se retiraron del libro las hojas «Validación del simulador», «Resultados, es
 ## Inspección visual en navegador (Edge, 1440, 1024 y 390 px)
 
 Corregido tras la revisión: signos de pesos leídos como fórmula en la barra lateral, tabla de modelos con texto cortado, orden de estrategias en pantalla estrecha, columnas de la tabla de eventos y de validación, números sin formato en la tabla de validación, grupo repetido en la tabla de indicadores, espacio entre secciones. Sin desbordamiento horizontal en ninguna página y recorrido completo sin errores. Capturas en `docs/entrega/capturas_app/`.
+
+## Evidencia de verificación y últimos ajustes de presentación
+
+- `tools/registrar_pruebas.py` corre las pruebas y guarda el resultado por prueba en `data/verificacion_pruebas.json`; la app lo muestra (aprobadas, fecha, resultado de cada prueba). Se vuelve a generar con ese script cuando cambie el código.
+- Gráficos de Resultados revisados en 390 px: sin desbordamiento; el título del gráfico de riesgo se acortó y el tamaño de los puntos se explica debajo.
+- Indicadores completos: los 31 indicadores existen en el resumen del simulador; la tabla muestra los cinco grupos completos, con columnas anchas.
+- Capital-meta: se midió el tiempo (7 capitales × 4 estrategias, 4 procesos: 38 s con 500 réplicas y 72 s con 1.000) y la página muestra una estimación antes de calcular, con aviso si pasa de 10 minutos.

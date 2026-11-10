@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -76,27 +77,34 @@ with t2:
 
 with t3:
     st.markdown("##### Verificación")
-    st.caption("Pruebas automáticas incluidas en el repositorio (carpeta tests).")
-    TESTS = [("test_events.py", "Reloj, programación y ejecución de eventos"),
-             ("test_finance.py", "Cálculos financieros"),
-             ("test_markov_y_generadores.py", "Cadena de Markov y generadores aleatorios"),
-             ("test_reproducibility.py", "Reproducibilidad con semilla"),
-             ("test_strategies_y_liquidez.py", "Estrategias, reglas de decisión y liquidez")]
-    filas_t = []
-    for f, que in TESTS:
-        ruta = RAIZ / "tests" / f
-        n_t = sum(1 for linea in ruta.read_text(encoding="utf-8").splitlines() if linea.startswith("def test")) if ruta.exists() else None
-        filas_t.append({"Archivo": f, "Qué verifica": que, "Pruebas": n_t})
-    st.dataframe(pd.DataFrame(filas_t), hide_index=True, width="stretch",
-                 column_config={"Pruebas": st.column_config.NumberColumn(width="small", format="%d")})
-    with st.expander("Detalle de las pruebas"):
-        for f, _ in TESTS:
-            ruta = RAIZ / "tests" / f
-            if ruta.exists():
-                nombres = [linea[4:].split("(")[0].replace("_", " ").capitalize()
-                           for linea in ruta.read_text(encoding="utf-8").splitlines() if linea.startswith("def test")]
-                st.markdown(f"**{f}**")
-                st.markdown(chr(10).join(f"- {x}" for x in nombres))
+    QUE = {"test_events.py": "Reloj, programación y ejecución de eventos", "test_finance.py": "Cálculos financieros",
+           "test_markov_y_generadores.py": "Cadena de Markov y generadores aleatorios",
+           "test_reproducibility.py": "Reproducibilidad con semilla",
+           "test_strategies_y_liquidez.py": "Estrategias, reglas de decisión y liquidez"}
+    ruta = RAIZ / "data" / "verificacion_pruebas.json"
+    if not ruta.exists():
+        st.info("No hay un registro de pruebas. Se genera con: python tools/registrar_pruebas.py")
+    else:
+        reg = json.loads(ruta.read_text(encoding="utf-8"))
+        pr = pd.DataFrame(reg["pruebas"])
+        c = st.columns(3)
+        with c[0]:
+            ui.tarjeta("Pruebas aprobadas", f"{reg['pasaron']} de {reg['total']}", "resultado de la última corrida")
+        with c[1]:
+            ui.tarjeta("Fecha de la corrida", reg["fecha"])
+        with c[2]:
+            ui.tarjeta("Pruebas que fallan", str(reg["total"] - reg["pasaron"]))
+        st.write("")
+        res_f = pr.groupby("archivo").agg(Pruebas=("prueba", "size"), Aprobadas=("estado", lambda x: int((x == "pasó").sum()))).reset_index()
+        res_f.insert(1, "Qué verifica", res_f["archivo"].map(QUE))
+        res_f = res_f.rename(columns={"archivo": "Archivo"})
+        st.dataframe(res_f, hide_index=True, width="stretch",
+                     column_config={"Pruebas": st.column_config.NumberColumn(width="small", format="%d"),
+                                    "Aprobadas": st.column_config.NumberColumn(width="small", format="%d")})
+        with st.expander("Resultado de cada prueba"):
+            det = pr.assign(Prueba=pr["prueba"].str.removeprefix("test_").str.replace("_", " ").str.capitalize())
+            st.dataframe(det[["archivo", "Prueba", "estado"]].rename(columns={"archivo": "Archivo", "estado": "Resultado"}),
+                         hide_index=True, width="stretch", height=420)
     st.markdown("##### Validación")
     st.caption("«Reproduce insumos»: los generadores devuelven los datos con que se estimaron. «Contraste»: se compara con información que el modelo no usó.")
     n_v = st.number_input("Réplicas de validación", 50, 5000, 300, 50)

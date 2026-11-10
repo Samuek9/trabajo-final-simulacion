@@ -92,7 +92,7 @@ def riesgo_rentabilidad(res: pd.DataFrame) -> go.Figure:
                                  error_y=dict(type="data", symmetric=False, array=[(r["p_meta_hi"] - r["p_meta"]) * 100],
                                               arrayminus=[(r["p_meta"] - r["p_meta_lo"]) * 100]),
                                  hovertemplate=f"{NOMBRES[e]}<br>Meta: %{{y:.1f}} %<br>Iliquidez: %{{x:.1f}} %<extra></extra>"))
-    fig.update_layout(title="Meta frente a iliquidez (tamaño = caída máxima mediana)",
+    fig.update_layout(title="Meta frente a iliquidez",
                       xaxis_title="Probabilidad de algún episodio de iliquidez (%)",
                       yaxis_title="Probabilidad de alcanzar la meta (%)", **{k: v for k, v in LAYOUT.items() if k != "hovermode"})
     return fig

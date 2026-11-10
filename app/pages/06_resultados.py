@@ -54,11 +54,12 @@ with t2:
     st.plotly_chart(charts.distribucion_final(d["tabla"], "W_real", meta), width="stretch", config=charts.CONFIG)
 with t3:
     st.plotly_chart(charts.riesgo_rentabilidad(d["resumen"]), width="stretch", config=charts.CONFIG)
+    st.caption("El tamaño de cada punto es la pérdida máxima mediana; las barras verticales son el IC 95 % de la probabilidad de meta.")
 with t4:
     st.caption("Grupos 1 a 3: indicadores mínimos del enunciado. Grupos 4 y 5: adicionales.")
     pct1, n1 = ui.pct, (lambda x: ui.num(x, 1))
     grupos = {
-        "1. Patrimonio y rentabilidad": {
+        "1 Patrimonio y rentabilidad": {
             "Patrimonio nominal medio": ("W_nominal_media", ui.cop), "Patrimonio real medio": ("W_real_media", ui.cop),
             "Patrimonio real, percentil 5": ("W_real_p5", ui.cop), "Patrimonio real, percentil 25": ("W_real_p25", ui.cop),
             "Patrimonio real, percentil 50": ("W_real_p50", ui.cop), "Patrimonio real, percentil 75": ("W_real_p75", ui.cop),
@@ -68,22 +69,22 @@ with t4:
             "Patrimonio nominal, percentil 95": ("W_nominal_p95", ui.cop),
             "Rentabilidad real anual media": ("rent_real_media", ui.pct), "Rentabilidad nominal anual media": ("rent_nominal_media", ui.pct),
             "Variabilidad: desviación del patrimonio real": ("W_real_sd", ui.cop)},
-        "2. Riesgo y meta": {
+        "2 Riesgo y meta": {
             "Pérdida máxima durante la trayectoria (mediana)": ("caida_max_p50", ui.pct),
             "Pérdida máxima durante la trayectoria (percentil 95)": ("caida_max_p95", ui.pct),
             "Probabilidad de terminar con patrimonio real inferior al inicial": ("p_perdida_real", ui.pct),
             "Probabilidad de alcanzar la meta": ("p_meta", ui.pct),
             "Momento de primer cumplimiento de la meta (años, mediana, si la alcanza)": ("t_meta_p50_anios", n1)},
-        "3. Liquidez": {
+        "3 Liquidez": {
             "Probabilidad de algún episodio de iliquidez": ("p_iliquidez", ui.pct),
             "Episodios de iliquidez por réplica (frecuencia media)": ("episodios_iliquidez_media", lambda x: ui.num(x, 3)),
             "Duración de un episodio de iliquidez (meses, media)": ("duracion_iliquidez_media", n1),
             "Meses en iliquidez por réplica (media)": ("meses_iliquidez_media", lambda x: ui.num(x, 2))},
-        "4. Adicionales de riesgo": {
+        "4 Riesgo adicional": {
             "CVaR 5 % (media del peor 5 % del patrimonio real)": ("cvar5_W_real", ui.cop),
             "Probabilidad de venta urgente del inmueble": ("p_venta_urgente", ui.pct),
             "Probabilidad de insolvencia": ("p_insolvencia", ui.pct)},
-        "5. Adicionales de desempeño": {
+        "5 Desempeño adicional": {
             "Necesidades de liquidez (media)": ("n_necesidades_media", lambda x: ui.num(x, 2)),
             "Costos totales (media)": ("costos_totales_media", ui.cop),
             "Participación del arriendo en los ingresos corrientes": ("participacion_arriendo_media", ui.pct),
@@ -96,7 +97,8 @@ with t4:
     tabla = tabla.reset_index()
     vista = tabla.copy()
     vista["Grupo"] = vista["Grupo"].where(vista["Grupo"] != vista["Grupo"].shift(), "")
-    st.dataframe(vista, width="stretch", hide_index=True, height=640)
+    st.dataframe(vista, width="stretch", hide_index=True, height=(len(vista) + 1) * 35 + 3,
+                 column_config={"Grupo": st.column_config.TextColumn(width=190), "Indicador": st.column_config.TextColumn(width=420)})
     with st.expander("Liquidez frente a patrimonio"):
         st.write("Una estrategia puede tener patrimonio alto e iliquidez: el inmueble vale, pero no se vende rápido. Cada necesidad "
                  "extraordinaria se cubre en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y venta urgente del "

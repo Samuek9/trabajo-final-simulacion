@@ -50,6 +50,9 @@ with t1:
     n_cm = st.number_input("Réplicas por celda", 50, 20_000, max(50, min(int(n_base), 500)), 50, key="n_cm",
                            help="Cada capital se simula con estas réplicas; las metas se evalúan sobre el mismo resultado.")
     st.caption(f"{len(CAPS)} capitales × {len(escs)} escenario(s) × {len(EST)} estrategia(s) × {int(n_cm):,} réplicas.".replace(",", "."))
+    seg = len(CAPS) * len(escs) * len(EST) * int(n_cm) * 0.0026 * 4 / max(1, min(4, NUC))
+    est = f"{seg:.0f} segundos" if seg < 90 else f"{seg / 60:.0f} minutos"
+    (st.warning if seg > 600 else st.caption)(f"Tiempo estimado: {est} (referencia medida con 4 procesos).")
     if st.button("Calcular capital-meta", type="primary"):
         barra = st.progress(0.0)
         partes = []
