@@ -54,10 +54,10 @@ def tarjeta(titulo: str, valor: str, nota: str = "", color: str | None = None) -
 
 
 def pie_parametro(t) -> str:
-    """Texto bajo un control: referencia, estado y fuente del parámetro."""
+    """Texto bajo un control: valor inicial y unidad del parámetro."""
     ref = t.base
     if isinstance(ref, float):
         ref_txt = num(ref, 4) if abs(ref) < 10 else num(ref, 0)
     else:
         ref_txt = str(ref)
-    return f"Valor de referencia: {ref_txt} {t.unidad}"
+    return f"Valor inicial: {ref_txt} {t.unidad}"

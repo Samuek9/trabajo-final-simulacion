@@ -50,4 +50,4 @@ if res:
                  f"{r.segundos:.1f} s, {len(r.cambios)} parámetro(s) cambiado(s).".replace(",", "."))
     st.caption("Abre Resultados en el menú de la izquierda.")
 else:
-    st.info("Todavía no hay resultados en esta sesión. La página Resultados también puede mostrar la corrida del informe.")
+    st.info("Todavía no hay resultados. Ejecute la simulación con la configuración que ingresó.")

@@ -31,13 +31,13 @@ def cambios() -> dict:
 
 def params(escenario: str | None = None) -> Params:
     """Parámetros del escenario con los cambios de la sesión. Si algún cambio es
-    inválido, lo informa y usa los valores de referencia."""
+    inválido, lo informa y usa los valores iniciales."""
     iniciar()
     esc = escenario or st.session_state["escenario"]
     try:
         return cargar(esc, cambios(), tabla=tabla())
     except ParametroInvalido as e:
-        st.error(f"Hay un parámetro inválido: {e}. Se usan los valores de referencia hasta corregirlo.")
+        st.error(f"Hay un parámetro inválido: {e}. Se usan los valores iniciales hasta corregirlo.")
         return cargar(esc, tabla=tabla())
 
 
@@ -46,7 +46,7 @@ def referencia(escenario: str = "base") -> Params:
 
 
 def fijar(clave: str, valor) -> None:
-    """Guarda un cambio solo si difiere de la referencia; si vuelve a la referencia, lo borra."""
+    """Guarda un cambio solo si difiere del valor inicial; si vuelve a él, lo borra."""
     ref = referencia().valores[clave]
     c = cambios()
     igual = (isinstance(ref, (int, float)) and isinstance(valor, (int, float)) and abs(float(ref) - float(valor)) < 1e-12) or ref == valor

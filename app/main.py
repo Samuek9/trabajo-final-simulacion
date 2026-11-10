@@ -29,6 +29,7 @@ paginas = {
     "Análisis": [
         st.Page(str(APP / "pages" / "06_resultados.py"), title="Resultados"),
         st.Page(str(APP / "pages" / "07_sensibilidad.py"), title="Sensibilidad y capital-meta"),
+        st.Page(str(APP / "pages" / "08_verificacion.py"), title="Simulación, escenarios y validación"),
     ],
 }
 
@@ -38,8 +39,8 @@ with st.sidebar:
     st.caption(f"Capital {ui.cop(p.f('inv.capital'))} · {p.i('inv.horizonte') // 12} años · "
                f"meta {ui.cop(p.f('inv.meta_real'))} · liquidez mínima {ui.pct(p.f('inv.liquidez_min'), 0)}")
     n = len(estado.cambios())
-    st.caption(f"{n} parámetro(s) cambiado(s) frente a la referencia" if n else "Todos los parámetros en su valor de referencia")
-    if n and st.button("Volver a la referencia", width="stretch"):
+    st.caption(f"{n} parámetro(s) cambiado(s) frente a los valores iniciales" if n else "Todos los parámetros en su valor inicial")
+    if n and st.button("Restablecer valores iniciales", width="stretch"):
         estado.restablecer()
         st.rerun()
 

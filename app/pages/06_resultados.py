@@ -8,25 +8,15 @@ from components import charts, estado, fuente, ui
 
 st.title("Resultados")
 
-opciones = {}
-if st.session_state.get("resultados"):
-    opciones["sesion"] = "Mi ejecución"
-if fuente.hay_guardados():
-    opciones["informe"] = "Corrida del informe"
-if not opciones:
-    st.info("No hay resultados todavía. Ve a Experimento y ejecuta la simulación.")
+if not st.session_state.get("resultados"):
+    st.info("No hay resultados todavía. Configure el inversionista y las estrategias, y ejecute la simulación en Experimento.")
     st.stop()
 
-c1, c2 = st.columns(2)
-with c1:
-    origen = st.radio("Resultados de", list(opciones), format_func=opciones.get, horizontal=True)
-with c2:
-    escs = fuente.escenarios(origen)
-    esc = st.radio("Escenario", escs, format_func=ui.ESCENARIOS.get, horizontal=True)
-
-d = fuente.datos(origen, esc)
+escs = fuente.escenarios()
+esc = st.radio("Escenario", escs, format_func=ui.ESCENARIOS.get, horizontal=True) if len(escs) > 1 else escs[0]
+d = fuente.datos(esc)
 res = d["resumen"].set_index("estrategia")
-p = d["params"] or estado.referencia(esc)
+p = d["params"]
 meta = p.f("inv.meta_real")
 st.caption(d["nota"] + f" · capital {ui.cop(p.f('inv.capital'))} · meta real {ui.cop(meta)} · {p.i('inv.horizonte') // 12} años")
 
@@ -65,35 +55,52 @@ with t2:
 with t3:
     st.plotly_chart(charts.riesgo_rentabilidad(d["resumen"]), width="stretch", config=charts.CONFIG)
 with t4:
-    filas = {
-        "Probabilidad de meta": ("p_meta", ui.pct),
-        "Años hasta la meta (mediana, si la alcanza)": ("t_meta_p50_anios", lambda x: ui.num(x, 1)),
-        "Patrimonio nominal medio": ("W_nominal_media", ui.cop), "Patrimonio real medio": ("W_real_media", ui.cop),
-        "Variabilidad: desviación del patrimonio real": ("W_real_sd", ui.cop),
-        "Patrimonio real, percentil 5": ("W_real_p5", ui.cop), "Patrimonio real, percentil 25": ("W_real_p25", ui.cop),
-        "Patrimonio real, percentil 50": ("W_real_p50", ui.cop), "Patrimonio real, percentil 75": ("W_real_p75", ui.cop),
-        "Patrimonio real, percentil 95": ("W_real_p95", ui.cop),
-        "Patrimonio nominal, percentil 5": ("W_nominal_p5", ui.cop), "Patrimonio nominal, percentil 25": ("W_nominal_p25", ui.cop),
-        "Patrimonio nominal, percentil 50": ("W_nominal_p50", ui.cop), "Patrimonio nominal, percentil 75": ("W_nominal_p75", ui.cop),
-        "Patrimonio nominal, percentil 95": ("W_nominal_p95", ui.cop),
-        "Rentabilidad real anual media": ("rent_real_media", ui.pct), "Rentabilidad nominal anual media": ("rent_nominal_media", ui.pct),
-        "Probabilidad de terminar con patrimonio real inferior al inicial": ("p_perdida_real", ui.pct),
-        "Pérdida máxima durante la trayectoria (mediana)": ("caida_max_p50", ui.pct),
-        "Pérdida máxima durante la trayectoria (percentil 95)": ("caida_max_p95", ui.pct),
-        "Probabilidad de algún episodio de iliquidez": ("p_iliquidez", ui.pct),
-        "Episodios de iliquidez por réplica (media)": ("episodios_iliquidez_media", lambda x: ui.num(x, 3)),
-        "Duración de un episodio de iliquidez (meses, media)": ("duracion_iliquidez_media", lambda x: ui.num(x, 1)),
-        "Meses en iliquidez por réplica (media)": ("meses_iliquidez_media", lambda x: ui.num(x, 2)),
-        "CVaR 5 % (media del peor 5 % del patrimonio real)": ("cvar5_W_real", ui.cop),
-        "Probabilidad de venta urgente del inmueble": ("p_venta_urgente", ui.pct),
-        "Probabilidad de insolvencia": ("p_insolvencia", ui.pct),
-        "Necesidades de liquidez (media)": ("n_necesidades_media", lambda x: ui.num(x, 2)),
-        "Costos totales (media)": ("costos_totales_media", ui.cop),
-        "Participación del arriendo en el retorno": ("participacion_arriendo_media", ui.pct),
-        "Rebalanceos (media)": ("n_rebalanceos_media", lambda x: ui.num(x, 2)),
+    st.caption("Indicadores del simulador con los datos ingresados. Los grupos 1 a 3 son los indicadores mínimos del enunciado "
+               "(punto 15); los grupos 4 y 5 son indicadores adicionales de riesgo, liquidez y costos.")
+    pct1, n1 = ui.pct, (lambda x: ui.num(x, 1))
+    grupos = {
+        "1. Patrimonio y rentabilidad": {
+            "Patrimonio nominal medio": ("W_nominal_media", ui.cop), "Patrimonio real medio": ("W_real_media", ui.cop),
+            "Patrimonio real, percentil 5": ("W_real_p5", ui.cop), "Patrimonio real, percentil 25": ("W_real_p25", ui.cop),
+            "Patrimonio real, percentil 50": ("W_real_p50", ui.cop), "Patrimonio real, percentil 75": ("W_real_p75", ui.cop),
+            "Patrimonio real, percentil 95": ("W_real_p95", ui.cop),
+            "Patrimonio nominal, percentil 5": ("W_nominal_p5", ui.cop), "Patrimonio nominal, percentil 25": ("W_nominal_p25", ui.cop),
+            "Patrimonio nominal, percentil 50": ("W_nominal_p50", ui.cop), "Patrimonio nominal, percentil 75": ("W_nominal_p75", ui.cop),
+            "Patrimonio nominal, percentil 95": ("W_nominal_p95", ui.cop),
+            "Rentabilidad real anual media": ("rent_real_media", ui.pct), "Rentabilidad nominal anual media": ("rent_nominal_media", ui.pct),
+            "Variabilidad: desviación del patrimonio real": ("W_real_sd", ui.cop)},
+        "2. Riesgo y meta": {
+            "Pérdida máxima durante la trayectoria (mediana)": ("caida_max_p50", ui.pct),
+            "Pérdida máxima durante la trayectoria (percentil 95)": ("caida_max_p95", ui.pct),
+            "Probabilidad de terminar con patrimonio real inferior al inicial": ("p_perdida_real", ui.pct),
+            "Probabilidad de alcanzar la meta": ("p_meta", ui.pct),
+            "Momento de primer cumplimiento de la meta (años, mediana, si la alcanza)": ("t_meta_p50_anios", n1)},
+        "3. Liquidez": {
+            "Probabilidad de algún episodio de iliquidez": ("p_iliquidez", ui.pct),
+            "Episodios de iliquidez por réplica (frecuencia media)": ("episodios_iliquidez_media", lambda x: ui.num(x, 3)),
+            "Duración de un episodio de iliquidez (meses, media)": ("duracion_iliquidez_media", n1),
+            "Meses en iliquidez por réplica (media)": ("meses_iliquidez_media", lambda x: ui.num(x, 2))},
+        "4. Adicionales de riesgo": {
+            "CVaR 5 % (media del peor 5 % del patrimonio real)": ("cvar5_W_real", ui.cop),
+            "Probabilidad de venta urgente del inmueble": ("p_venta_urgente", ui.pct),
+            "Probabilidad de insolvencia": ("p_insolvencia", ui.pct)},
+        "5. Adicionales de desempeño": {
+            "Necesidades de liquidez (media)": ("n_necesidades_media", lambda x: ui.num(x, 2)),
+            "Costos totales (media)": ("costos_totales_media", ui.cop),
+            "Participación del arriendo en los ingresos corrientes": ("participacion_arriendo_media", ui.pct),
+            "Rebalanceos (media)": ("n_rebalanceos_media", lambda x: ui.num(x, 2))},
     }
-    tabla = pd.DataFrame({ui.NOMBRES[e]: {k: f(r[c]) for k, (c, f) in filas.items() if c in r} for e, r in res.iterrows()})
-    st.dataframe(tabla, width="stretch")
+    filas = {(g, k): {ui.NOMBRES[e]: f(r[c]) for e, r in res.iterrows() if c in r}
+             for g, ks in grupos.items() for k, (c, f) in ks.items()}
+    tabla = pd.DataFrame(filas).T
+    tabla.index = pd.MultiIndex.from_tuples(tabla.index, names=["Grupo", "Indicador"])
+    st.dataframe(tabla, width="stretch", height=900)
+    tabla = tabla.reset_index()
+    st.markdown("**Liquidez frente a patrimonio.** Una estrategia puede tener patrimonio alto y aun así quedarse sin efectivo: "
+                "el inmueble vale, pero no se vende rápido. Cuando llega una necesidad extraordinaria, el simulador cubre el monto "
+                "en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y, si no alcanza, venta urgente del inmueble con "
+                "descuento. Lo que no se alcanza a cubrir queda como deuda y es un episodio de iliquidez. Las filas del grupo 3 y "
+                "la probabilidad de venta urgente miden esas consecuencias.")
 with t5:
     pares = d["pares"]
     if pares is not None and len(pares):
@@ -121,7 +128,7 @@ with c[1]:
 with c[2]:
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as xw:
-        tabla.to_excel(xw, sheet_name="Indicadores")
+        tabla.to_excel(xw, sheet_name="Indicadores", index=False)
         d["resumen"].to_excel(xw, sheet_name="Resumen", index=False)
         if d["pares"] is not None and len(d["pares"]):
             d["pares"].to_excel(xw, sheet_name="Pareadas", index=False)
@@ -129,7 +136,7 @@ with c[2]:
     st.download_button("Resumen (Excel)", buf.getvalue(), f"resultados_{esc}.xlsx",
                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 with c[3]:
-    conf = {"escenario": esc, "cambios_frente_a_referencia": dict(p.cambios),
+    conf = {"escenario": esc, "cambios_frente_a_valores_iniciales": dict(p.cambios),
             "valores": {k: (v if isinstance(v, (int, float, str)) else str(v)) for k, v in p.valores.items()}}
     st.download_button("Parámetros usados (JSON)", json.dumps(conf, indent=2, ensure_ascii=False).encode("utf-8"),
                        f"parametros_{esc}.json", "application/json")

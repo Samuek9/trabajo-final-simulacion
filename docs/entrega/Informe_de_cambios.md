@@ -66,3 +66,14 @@ Se retiraron del libro las hojas «Validación del simulador», «Resultados, es
 - Comprobación: las demás hojas son idénticas a la versión anterior, el lector de parámetros del simulador carga los 131 parámetros y las 60 pruebas pasan.
 - Observación: P007 (número de réplicas) figura como «Calculado» (fórmula de precisión del punto 14) pero se puede cambiar como los demás valores de la hoja; no se modificó.
 - Nota técnica: estos textos se aplicaron directamente al libro; si se vuelve a generar con `tools/construir_master.py` y `tools/unir_master.ps1`, habría que trasladarlos a esos scripts.
+
+
+## Aplicación: simulador configurable, sin corridas ni casos guardados
+
+- Inversionista: sin mínimo de 50 millones (ahora 1 millón); el valor del inmueble es «proporcional al capital» o «fijo» sin cifras supuestas; las necesidades de liquidez se rotulan como supuesto; el número de réplicas se sugiere con un piloto de 100 réplicas que usa el capital, horizonte, meta y estrategias ingresados.
+- Modelos y economía: tabla con fórmula y parámetros de cada modelo, solo de lectura, tomados de los valores estimados.
+- Estrategias: la dinámica de E4 se explica paso a paso y con su tabla de objetivos por estado; se quitó «valor de referencia».
+- Resultados: solo muestran la ejecución del usuario (se quitó «Corrida del informe»); la tabla completa se agrupa según el punto 15 y explica liquidez frente a patrimonio.
+- Sensibilidad y capital-meta: la malla de capital-meta sale del capital y la meta ingresados, con los escenarios y estrategias ya ejecutados; se quitaron los resultados guardados y la pestaña de modelos alternativos.
+- Nueva página «Simulación, escenarios y validación»: eventos discretos y variables de estado con traza de una réplica, tabla de qué cambia cada escenario, pruebas automáticas y validación.
+- Word sin cambios.

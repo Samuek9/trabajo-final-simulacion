@@ -26,8 +26,6 @@ def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> list[float] 
         with c:
             nuevos.append(st.number_input(f"{et} (%)", 0.0, 100.0, round(v * 100, 2), 1.0, key=f"{k}_{i}") / 100)
     suma = sum(nuevos)
-    ref = [float(x) for x in str(T[clave].base).split(";")]
-    st.caption(f"Valor de referencia: {' · '.join(f'{x * 100:g}' for x in ref)} %")
     if abs(suma - 1) > 1e-6:
         st.error(f"Suma {suma * 100:.2f} %. Ajusta para que dé 100 %.")
         return None
@@ -42,10 +40,20 @@ for e in ("E1", "E2", "E3", "E4"):
                 f"{' (inicio)' if e == 'E4' else ''}</div>", unsafe_allow_html=True)
     editor_pesos(f"{e}.pesos", ACTIVOS, f"pesos_{e}")
 
-st.markdown("### Reglas de E4")
-st.write("En cada revisión, E4 compara el reparto de su portafolio financiero (lo que no es inmueble) con el objetivo del "
-         "estado vigente. Si algún activo se aleja más que la banda, vende y compra hasta el objetivo. Las compras de ETF "
-         "que salgan del CDT esperan a que el CDT venza para no pagar el castigo por venta anticipada.")
+st.markdown("### Cómo funciona la dinámica de E4")
+cada_m, banda_p = p.i("E4.cada"), p.f("E4.banda")
+st.markdown(
+    f"1. **Cada {cada_m} meses** E4 revisa su portafolio financiero (cuenta, CDT y ETF; el inmueble no se toca).\n"
+    "2. **Lee el estado de la economía** vigente en ese momento: expansión, normal o crisis.\n"
+    "3. **Compara** el peso actual de cada activo con el objetivo de ese estado (tabla de abajo).\n"
+    f"4. **Si algún activo se aleja más de {banda_p * 100:g} puntos** del objetivo, vende y compra hasta alcanzarlo; si no, no hace nada.\n"
+    "5. Las compras de ETF que salgan del CDT esperan a que el CDT venza, para no pagar el castigo por venta anticipada.\n\n"
+    "Por eso E4 cambia de composición durante la simulación: en expansión sube el ETF, y en crisis lo reduce y se refugia en "
+    "cuenta y CDT. E1, E2 y E3 mantienen sus pesos iniciales.")
+st.markdown("**Objetivo por estado de la economía** (% del portafolio financiero; es lo que usted configura abajo)")
+st.dataframe({"Estado": ["Expansión", "Normal", "Crisis"],
+              **{a: [f"{p.lista(f'E4.obj_{L}')[i] * 100:g} %" for L in "ENC"] for i, a in enumerate(ACTIVOS[:3])}},
+             hide_index=True, width="stretch")
 for L, nombre in (("E", "Expansión"), ("N", "Normal"), ("C", "Crisis")):
     st.markdown(f"**Objetivo en {nombre.lower()}** (cuenta, CDT y ETF del portafolio financiero)")
     editor_pesos(f"E4.obj_{L}", ACTIVOS[:3], f"obj_{L}")
@@ -62,7 +70,7 @@ with c2:
     if cada != p.i("E4.cada"):
         estado.fijar("E4.cada", int(cada))
 
-if st.button("Volver a la referencia"):
+if st.button("Restablecer valores iniciales"):
     estado.restablecer(("E1.", "E2.", "E3.", "E4."))
     st.rerun()
 

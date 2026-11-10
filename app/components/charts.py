@@ -131,7 +131,7 @@ def tornado(t: pd.DataFrame, estrategia: str, medida: str = "p_meta") -> go.Figu
     fig = go.Figure()
     fig.add_trace(go.Bar(y=d.factor, x=d.b, orientation="h", name="Valor bajo", marker_color="#9DB9D5"))
     fig.add_trace(go.Bar(y=d.factor, x=d.a, orientation="h", name="Valor alto", marker_color="#1F4E78"))
-    fig.update_layout(barmode="overlay", title=f"{NOMBRES[estrategia]}: cambio frente a la referencia ({unidad})",
+    fig.update_layout(barmode="overlay", title=f"{NOMBRES[estrategia]}: cambio frente a los valores ingresados ({unidad})",
                       xaxis_title=f"Cambio ({unidad})", height=120 + 34 * len(d),
                       **{k: v for k, v in LAYOUT.items() if k != "hovermode"})
     return fig

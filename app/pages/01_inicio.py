@@ -46,7 +46,7 @@ st.markdown(
     "2. **Modelos y economía**: el modelo elegido para cada proceso aleatorio. Sus valores están estimados con datos y son fijos.\n"
     "3. **Estrategias**: pesos iniciales y reglas de E4.\n"
     "4. **Experimento**: escenario, estrategias, réplicas y semilla; luego *Ejecutar*.\n"
-    "5. **Resultados** y **Sensibilidad y capital-meta** para leer lo que pasó y por qué."
+    "5. **Resultados**, **Sensibilidad y capital-meta** y **Simulación, escenarios y validación** para leer lo que pasó y por qué."
 )
 for a in advertencias(p):
     st.info(a)
