@@ -17,11 +17,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from docx import Document
-from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Inches, Mm, Pt, RGBColor
+from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -427,16 +426,13 @@ def seccion_10(w: Informe):
         "programarse en la lista. El texto de las cajas describe los modelos que usa el simulador (Junta, margen del CDT, cuenta, "
         "ETF, valorización, reajuste del canon, tiempo de venta del inmueble y reparación); la estructura y las flechas son las "
         "del diseño original.")
-    w.p("El diagrama completo es grande. Las figuras de esta sección dan la vista general de cada hoja, y el Anexo C reproduce "
-        "cada una por partes, en páginas horizontales, con el texto de las cajas a un tamaño legible. Los PDF vectoriales "
-        "(docs/diagramas) se pueden ampliar sin perder calidad.")
+    w.p("El diagrama es grande y en una página carta solo se ve su estructura. La Figura 10-a lo muestra completo como vista "
+        "general. Para leer el texto de las cajas se entregan con el informe los PDF vectoriales, que se pueden ampliar sin "
+        "perder calidad: diagrama_eventos.pdf (una hoja) y diagrama_de_flujo_completo.pdf (cinco hojas), en la carpeta "
+        "docs/diagramas del repositorio.")
     if (DIAG / "diagrama_eventos.png").exists():
-        w.figura(DIAG / "diagrama_eventos.png", "10", "Diagrama de eventos. Vista general; el detalle está en el Anexo C y en "
+        w.figura(DIAG / "diagrama_eventos.png", "10", "Diagrama de eventos, vista general. El detalle se lee en "
                                                       "docs/diagramas/diagrama_eventos.pdf.")
-    for k in range(1, 6):
-        f = DIAG / f"flujo_pagina_{k}.png"
-        if f.exists():
-            w.figura(f, "10", f"Diagrama de flujo, página {k} de 5. Vista general; el detalle está en el Anexo C.")
 
 
 def seccion_11(w: Informe):
@@ -961,17 +957,6 @@ def anexos(w: Informe):
     w.tabla("B", "Traza de eventos.", ["Mes", "N.º", "Evento", "Qué pasó", "Estado", "Cuenta (M)", "Patrimonio (M)"],
             [[c(x.t, 2), x.n, x.evento, str(x.detalle).translate(str.maketrans(".,", ",.")), x.estado, c(x.cuenta / 1e6, 1), c(x.W / 1e6, 1)]
              for x in t.itertuples()], [0.5, 0.4, 1.3, 2.5, 0.7, 0.7, 0.8], tam=7)
-    # Anexo C: diagramas por partes en A3 horizontal (tools/diagramas_anexo.py).
-    partes = json.loads((DIAG / "anexo" / "partes.json").read_text(encoding="utf-8"))
-    sec = w.doc.add_section(WD_SECTION.NEW_PAGE)
-    sec.orientation = WD_ORIENT.LANDSCAPE
-    sec.page_width, sec.page_height = Mm(420), Mm(297)
-    sec.left_margin = sec.right_margin = sec.top_margin = sec.bottom_margin = Cm(2.5)
-    w.h("Anexo C. Diagramas de eventos y de flujo por partes")
-    w.p("Cada hoja del diagrama se divide en partes que se solapan un poco, para que el texto de las cajas quede legible. Las "
-        "partes se leen por filas, de izquierda a derecha.")
-    for x in partes:
-        w.figura(DIAG / "anexo" / x["archivo"], "C", x["leyenda"], ancho=x["ancho_pulgadas"])
 
 
 def main(origen: Path) -> None:
