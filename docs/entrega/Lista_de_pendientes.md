@@ -6,3 +6,10 @@
 4. Interpolación anual de la inflación entre diciembres, participación del arriendo (44 % y 67 %), indicador de costos totales y primer cumplimiento de la meta: no se encontraron los textos asociados con una búsqueda automática y requieren lectura de las secciones 5, 7.1 y 15.
 5. Fragmentación de la sección 7.5 (hasta cuatro niveles de títulos): decisión editorial del equipo sobre si integrar subapartados, sin quitar análisis.
 6. Cifra de capital-meta (17 % con E3, corrida de 500 réplicas) frente a la corrida principal (19,2 %): están rotuladas como corridas distintas; falta decidir si se aclara con una nota.
+
+
+## Actualización (referencias y revisión visual)
+
+- Cerrado: DOI verificados en Crossref; revisión visual de las 73 páginas; la página 62 no está en blanco.
+- Abierto: la URL de Ciencuadras (informe trimestral I-2025) da 404 desde este equipo; confirmar en un navegador y, si no abre, citar la página del informe en su blog o retirarla.
+- Abierto: los cuatro puntos sin ubicar (inflación entre diciembres, participación del arriendo 44 % y 67 %, indicador de costos totales, primer cumplimiento de la meta).

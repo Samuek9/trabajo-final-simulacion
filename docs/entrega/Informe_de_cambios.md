@@ -34,3 +34,10 @@ Ver `Lista_de_pendientes.md`.
 ## Corrección de «NaN» en el capital necesario para 80 % (revisión visual del PDF)
 
 Al revisar el PDF a tamaño completo aparecía «NaN millones» en cuatro lugares (sección 17, respuesta 4 de la sección 18 y las conclusiones). La causa: la malla de capital llega a 1.000 millones y con E2 la probabilidad de la meta de 1.000 millones es 75,8 % ahí, así que el capital para 80 % queda fuera de la malla y la interpolación devuelve NaN. No se inventó una cifra: el texto ahora dice que ni 1.000 millones bastan (76 %) y que no se extrapola. Cambio en `tools/construir_informe.py` (función `cap_fuera` y frases condicionales); el informe se regeneró (73 páginas) y no quedan «NaN». Los datos y resultados no cambiaron.
+
+
+## Verificación de referencias y revisión visual
+
+- DOI: los 13 DOI de revistas y libros se consultaron en Crossref y coinciden con autor, título, revista, volumen, número, páginas y año de la lista (el del libro de Burnham y Anderson resuelve en Springer). Para McCullagh (1980), Crossref da 109-127 y la lista 109-142, que es la paginación habitual del artículo con su discusión; no se cambió.
+- URL: 21 de 22 responden 200. La del primer informe trimestral de Ciencuadras (2025) devuelve 404 desde este equipo, aunque un buscador la lista; hay que abrirla en un navegador antes de entregar.
+- Revisión visual de las 73 páginas del PDF: sin tablas cortadas ni figuras fuera de margen. Detalles menores: la última página del anexo B tiene solo 7 filas y una URL larga de Fogafín se parte en la lista de referencias.
