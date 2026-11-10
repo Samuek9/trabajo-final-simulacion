@@ -99,10 +99,6 @@ with t4:
     vista["Grupo"] = vista["Grupo"].where(vista["Grupo"] != vista["Grupo"].shift(), "")
     st.dataframe(vista, width="stretch", hide_index=True, height=(len(vista) + 1) * 35 + 3,
                  column_config={"Grupo": st.column_config.TextColumn(width=190), "Indicador": st.column_config.TextColumn(width=420)})
-    with st.expander("Liquidez frente a patrimonio"):
-        st.write("Una estrategia puede tener patrimonio alto e iliquidez: el inmueble vale, pero no se vende rápido. Cada necesidad "
-                 "extraordinaria se cubre en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y venta urgente del "
-                 "inmueble con descuento. Lo no cubierto queda como deuda y cuenta como episodio de iliquidez.")
 with t5:
     pares = d["pares"]
     if pares is not None and len(pares):
