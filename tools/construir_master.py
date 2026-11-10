@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT, datos", "CDT, modelo", "INM", "PIB, estados", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "CDT, datos", "CDT, modelo", "INM", "PIB, estados", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -83,7 +83,9 @@ def leeme(ws) -> None:
         ["PARAMETROS", "Capital, horizonte, meta, liquidez mínima, réplicas, estrategias y necesidades de liquidez: lo que se puede cambiar"],
         ["Inflación", "Evolución de la inflación frente a la meta y serie mensual"],
         ["Inflación, modelo", "Pruebas, estimación y validación del modelo de la inflación"],
-        ["TPM_Cuenta", "TPM y tasa de la cuenta remunerada"],
+        ["TPM, datos", "Decisiones de la Junta del Banco de la República, 2021 a 2026"],
+        ["TPM, modelo", "Logit ordenado de las decisiones: pruebas, coeficientes, tamaños y validación"],
+        ["Cuenta, modelo", "Tasa de la cuenta digital como proporción de la TPM"],
         ["CDT, datos", "Evolución del CDT a 360 días y la TPM, y serie semanal"],
         ["CDT, modelo", "Pruebas, modelos candidatos, estimación, validación y efecto sobre el inversionista"],
         ["ETF, datos", "Evolución del NAV del ICOLCAP y serie mensual de rendimientos"],
@@ -96,7 +98,7 @@ def leeme(ws) -> None:
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
-        ["INF, ETF, CDT y PIB (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF, CDT y PIB leen de ellas"],
+        ["INF, ETF, CDT, PIB, TPM_Cuenta y TPM_Logit (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF, CDT, PIB, TPM y Cuenta leen de ellas"],
         ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")
@@ -251,7 +253,7 @@ def modelos(ws) -> None:
          "La inflación nunca es negativa y sus saltos son hacia arriba (lognormal), y un año depende del anterior. "
          "Pronosticada un año adelante cae en la banda de 90 % en 8 de 10 años de 2016 a 2025",
          f"Nivel 3,5 % o 6,5 %: E2 entre {_tor('Nivel de la inflación')}. Sin memoria o con φ = 0,6: E2 entre {_tor('Memoria')}",
-         ids("inf."), "INF"],
+         ids("inf."), "Inflación, modelo"],
         ["Decisión de la Junta (TPM)", "202 decisiones de 2001 a 2026 (52 subidas, 48 bajadas, 102 sin cambio)",
          "Tabla por tendencia de la inflación (7.2); logit ordenado solo con la tendencia; logit con tendencia y brecha de Taylor",
          "Agregar la brecha de Taylor mejora el ajuste (razón de verosimilitud 6,88; p = 0,009; AIC de 336,4 a 331,5). "
@@ -261,14 +263,14 @@ def modelos(ws) -> None:
          "Con la tabla la TPM llega al tope de 15 % en cerca de la mitad de las réplicas, algo que nunca pasó (máximo 13,25 %). "
          "El logit reproduce las decisiones observadas",
          f"Tabla por tendencia: {_sm('Junta: tabla')}. Logit solo con 2017-2026: {_sm('Junta: logit')}",
-         ids("junta.", "tpm."), "TPM_Logit, TPM_Cuenta"],
+         ids("junta.", "tpm."), "TPM, modelo"],
         ["Tasa de la cuenta", "19 tasas de 4 cuentas digitales en 5 fechas (dic-2023 a oct-2026)",
          "Proporción fija de la TPM (α)",
          "α no depende del nivel de la TPM (correlación −0,26; p = 0,29). IC de α por entidad: 0,755 a 1,046",
          "Tasa de la cuenta = 0,898 × TPM, retención de 7 %",
          "Las cuentas digitales siguen a la TPM con una proporción estable",
          f"α = 0,80 o 0,95: E2 entre {_tor('Tasa de la cuenta')}",
-         ids("cta."), "TPM_Cuenta"],
+         ids("cta."), "Cuenta, modelo"],
         ["Margen del CDT sobre la TPM", "CDT a 360 días y TPM, semanal, 2008 a 2026",
          "Margen fijo, margen por fase de la TPM y modelos con el cambio reciente de la TPM (M2 a M6)",
          "El coeficiente del cambio de la TPM en 13 semanas es significativo (errores HAC). Los residuos no son normales "
@@ -277,7 +279,7 @@ def modelos(ws) -> None:
          "Es el único que recoge que el margen se abre cuando la TPM sube y se cierra cuando baja, aunque fuera de muestra no "
          "predice mejor que el margen fijo. Los residuos se sortean de los datos porque no son normales",
          f"Margen por fase: {_sm('CDT')}. Constante ± 0,5 puntos: E2 entre {_tor('Margen del CDT')}",
-         ids("cdt."), "CDT"],
+         ids("cdt."), "CDT, modelo"],
         ["Rendimiento del ETF", "NAV del iShares COLCAP, 182 meses (2011 a 2026)",
          "Normal, logística, Laplace, t, t con la media muestral, t asimétrica de Jones-Faddy y otros (8 modelos)",
          "Normalidad rechazada (Jarque-Bera 361,7). Sin memoria (Ljung-Box p ≥ 0,16) ni efecto ARCH (p = 0,997). Por estado: "
@@ -286,7 +288,7 @@ def modelos(ws) -> None:
          "Tiene colas pesadas, no tiene memoria y permite que el estado de la economía mueva el riesgo. "
          "La Jones-Faddy ajusta mejor la asimetría pero no tiene estados",
          f"Jones-Faddy: {_sm('ETF')}. Media 0 o 0,86 %: E2 entre {_tor('Rendimiento medio del ETF')}",
-         ids("etf."), "ETF, MARKOV_ETF"],
+         ids("etf."), "ETF, modelo, MARKOV_ETF"],
         ["Valorización del inmueble", "Índice de precios de la vivienda usada (IPVU), 2001 a 2025",
          "Normal independiente, AR(1) y normal por estado con el índice de vivienda nueva de Medellín (IPVNBR)",
          "Variación normal (Jarque-Bera p = 0,92). φ significativo (t = 4,5; p < 0,001) y residuos sin autocorrelación "
@@ -321,7 +323,7 @@ def modelos(ws) -> None:
          "Las crisis duran varios trimestres seguidos. En el largo plazo la cadena pasa 32 / 52 / 16 % del tiempo en cada "
          "estado, frente a 37 / 49 / 15 % observado",
          f"Probabilidad de entrar en crisis × 0,5 o × 2: E2 entre {_tor('Probabilidad de crisis')}",
-         ids("markov.", "eco."), "MARKOV, MARKOV_PIB, PIB"],
+         ids("markov.", "eco."), "MARKOV, MARKOV_PIB, PIB, estados"],
         ["Necesidades de liquidez", "Sin datos de monto. La IEFIC del DANE (2017-2018) solo sirve de referencia para la frecuencia",
          "Proceso de Poisson con monto lognormal",
          "Sin pruebas posibles por falta de datos de monto. La IEFIC sugiere un gasto mayor que el ingreso cada 16 a 23 meses",
@@ -441,7 +443,7 @@ AUDITORIA = [
     ["A06", "PARAMETROS", "Reparaciones (P160 a P162)", "Sin datos de costo ni frecuencia.", "Dato faltante", "Media", "Salen de la vista y del informe; quedan apagadas en MODELO", "Resuelto"],
     ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
     ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
-    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan TPM, inmueble y Markov", "Parcial"],
+    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan inmueble y Markov", "Parcial"],
     ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
     ["A11", "PIB", "Nota de crisis y conteo desde 2011", "Decía que crisis es crecimiento negativo y contaba 4 trimestres de crisis desde 2011, pero los umbrales vigentes son 1 % y 4 % (12 trimestres de crisis desde 2006).", "Inconsistencia", "Media", "La hoja PIB, estados recalcula el conteo con fórmula y describe la regla con los umbrales vigentes; la hoja original queda oculta sin cambios", "Resuelto"],
 ]

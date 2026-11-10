@@ -968,8 +968,355 @@ try {
     $co.Border.LineStyle = -4142
     $p.Range("A1").Select()
 
+    # ------------------------------------------------ TPM, datos
+    $th = Nueva-Hoja $dest "TPM, datos"
+    Titulo $th "Tasa de política monetaria" "Decisiones de la Junta del Banco de la República, 46 reuniones de enero de 2021 a septiembre de 2026"
+    $th.Range("A4").Value2 = "TPM tras la última reunión"
+    $th.Range("B4").Value2 = "Reuniones observadas"
+    $th.Range("C4").Value2 = "Reuniones sin cambio"
+    $th.Range("A5").Formula = "=TPM_Cuenta!T50"
+    $th.Range("B5").Formula = "=TPM_Cuenta!B20"
+    $th.Range("C5").Formula = "=TPM_Cuenta!C14"
+    $th.Range("A6").Formula = "=TPM_Cuenta!Q50"
+    $th.Range("A6").NumberFormat = 'mmmm "de" yyyy'
+    $th.Range("B6").Value2 = "Ocho por año"
+    $th.Range("C6").Value2 = "Proporción del total"
+    foreach ($z in @("A4", "B4", "C4")) { $th.Range($z).Font.Color = $gris }
+    $th.Range("A5").NumberFormatLocal = "0,00 %"
+    $th.Range("B5").NumberFormatLocal = "0"
+    $th.Range("C5").NumberFormatLocal = "0 %"
+    foreach ($z in @("A5", "B5", "C5")) {
+        $x = $th.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    foreach ($z in @("A6", "B6", "C6")) { $th.Range($z).Font.Size = 9; $th.Range($z).Font.Color = $gris; $th.Range($z).HorizontalAlignment = -4131 }
+    $th.Rows.Item(5).RowHeight = 28
+    foreach ($k in 1..7) { $th.Columns.Item($k).ColumnWidth = @(22, 20, 20, 20, 20, 22, 4)[$k - 1] }
+
+    Seccion $th 8 "Nivel de la TPM"
+    $th.Range("A9").Value2 = "TPM vigente después de cada reunión."
+    $th.Range("A9").Font.Color = $gris
+    Seccion $th 29 "Cambio en cada reunión"
+    $th.Range("A30").Value2 = "Puntos porcentuales que sube o baja la Junta. Casi siempre en múltiplos de 0,25."
+    $th.Range("A30").Font.Color = $gris
+
+    Seccion $th 51 "Reuniones de la Junta"
+    Encabezado $th 52 1 6 @("Mes", "TPM antes", "TPM después", "Cambio (pp)", "Decisión", "Tendencia de la inflación")
+    $th.Range("A53:A98").Formula = "=TPM_Cuenta!Q5"
+    $th.Range("B53:B98").Formula = "=TPM_Cuenta!S5"
+    $th.Range("C53:C98").Formula = "=TPM_Cuenta!T5"
+    $th.Range("D53:D98").Formula = "=TPM_Cuenta!U5"
+    $th.Range("E53:E98").Formula = "=TPM_Cuenta!V5"
+    $th.Range("F53:F98").Formula = "=TPM_Cuenta!Z5"
+    $th.Range("A53:A98").NumberFormat = "mmm-yyyy"
+    $th.Range("A53:A98").HorizontalAlignment = -4131
+    $th.Range("B53:C98").NumberFormatLocal = "0,00 %"
+    $th.Range("D53:D98").NumberFormatLocal = "0,00"
+    $th.Range("B53:D98").HorizontalAlignment = -4152
+    $th.Range("B52:D52").HorizontalAlignment = -4152
+    $th.Range("E52:F98").IndentLevel = 1
+    $th.Range("A52:F98").AutoFilter() | Out-Null
+    Nota $th 100 "Fuente: Banco de la República. Las primeras reuniones se reconstruyen con el IBR overnight; el resto sigue el calendario de decisiones de la Junta. La tendencia usa la inflación del DANE."
+
+    $izq = $th.Range("A10").Left; $ancho = $th.Range("G10").Left - $izq
+    foreach ($par in @(@(10, 28, 4, "C53:C98", "0%", 1), @(31, 49, 51, "D53:D98", "0,0", 0))) {
+        $arr = $th.Range("A" + $par[0]).Top; $alto = $th.Range("A" + $par[1]).Top - $arr
+        $co = $th.ChartObjects().Add($izq, $arr, $ancho, $alto)
+        $g = $co.Chart
+        $g.ChartType = $par[2]
+        while ($g.SeriesCollection().Count -gt 0) { $g.SeriesCollection(1).Delete() | Out-Null }
+        $a1 = $g.SeriesCollection().NewSeries()
+        $a1.Name = "Serie"
+        $a1.Values = $th.Range($par[3])
+        $a1.XValues = $th.Range("A53:A98")
+        if ($par[2] -eq 4) { $a1.Format.Line.ForeColor.RGB = $azul; $a1.Format.Line.Weight = 2 }
+        else { $a1.Format.Fill.ForeColor.RGB = $azul; $g.ChartGroups(1).GapWidth = 60 }
+        $g.HasLegend = $false
+        $ejeX = $g.Axes(1)
+        $ejeX.CategoryType = 3
+        $ejeX.BaseUnit = 1
+        $ejeX.MajorUnitScale = 2
+        $ejeX.MajorUnit = 1
+        $ejeX.TickLabels.NumberFormat = "yyyy"
+        $ejeX.TickLabelPosition = -4134
+        $ejeY = $g.Axes(2)
+        $ejeY.TickLabels.NumberFormat = $par[4]
+        $ejeY.MajorGridlines.Format.Line.ForeColor.RGB = 0xE0E0E0
+        $g.HasTitle = $true
+        $g.HasTitle = $false
+        $co.Border.LineStyle = -4142
+    }
+    $th.Range("A1").Select()
+
+    # ------------------------------------------------ TPM, modelo
+    $tm = Nueva-Hoja $dest "TPM, modelo"
+    Titulo $tm "TPM: modelo de las decisiones de la Junta" "Logit ordenado con la tendencia de la inflación y la brecha de Taylor, decisiones de 2001 a 2026"
+    foreach ($k in 1..12) { $tm.Columns.Item($k).ColumnWidth = @(52, 12, 10, 16, 14, 12, 3, 30, 11, 13, 13, 17)[$k - 1] }
+    $tm.Range("H4").Value2 = "Decisiones desde 2001"
+    $tm.Range("J4").Value2 = "b tendencia"
+    $tm.Range("K4").Value2 = "b Taylor"
+    $tm.Range("H5").Formula = "=TPM_Logit!B13"
+    $tm.Range("J5").Formula = "=TPM_Logit!B6"
+    $tm.Range("K5").Formula = "=TPM_Logit!B7"
+    foreach ($z in @("H4", "J4", "K4")) { $tm.Range($z).Font.Color = $gris }
+    foreach ($z in @("H5", "J5", "K5")) {
+        $x = $tm.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    $tm.Range("H5").NumberFormatLocal = "0"
+    $tm.Range("J5").NumberFormatLocal = "0,00"
+    $tm.Range("K5").NumberFormatLocal = "0,00"
+    $tm.Rows.Item(5).RowHeight = 28
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    # Evidencia
+    Bloque $tm 8 1 4 "Evidencia estadística"
+    Cabecera $tm 9 1 @("Prueba y contraste", "Estadístico", "p", "Decisión") @(1, 2)
+    $pr = @(
+        @("Chi-cuadrado: los cambios de la TPM siguen una normal", "=TPM_Cuenta!C45", "=TPM_Cuenta!C47"),
+        @("Chi-cuadrado: la decisión es independiente de la tendencia", "=TPM_Cuenta!C65", "=TPM_Cuenta!C67"),
+        @("t de Welch: subidas y bajadas tienen el mismo tamaño", "=TPM_Cuenta!C93", "=TPM_Cuenta!C95"),
+        @("Razón de verosimilitud: la brecha de Taylor no mejora el logit", "=TPM_Logit!B12", "=TPM_Logit!C12")
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 10 + $k
+        $tm.Cells.Item($r, 1).Value2 = $pr[$k][0]
+        $tm.Cells.Item($r, 2).Formula = $pr[$k][1]
+        $tm.Cells.Item($r, 3).Formula = $pr[$k][2]
+        $tm.Cells.Item($r, 4).Formula = "=IF(C$r<TPM_Cuenta!`$C`$5,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $tm.Range("B10:B13").NumberFormatLocal = "0,000"
+    $tm.Range("C10:C13").NumberFormatLocal = $pfmt
+    $tm.Range("D9:D13").IndentLevel = 1
+    $tm.Range("A14").Value2 = "Significancia de 5 %. En la prueba de independencia varias casillas esperadas tienen menos de 5 reuniones: el p es aproximado."
+    $tm.Range("A14").Font.Size = 9; $tm.Range("A14").Font.Color = $gris
+
+    # Coeficientes
+    Bloque $tm 17 1 6 "Coeficientes del logit ordenado"
+    Cabecera $tm 18 1 @("Coeficiente", "Valor", "p", "Significado", "", "") @(1, 2)
+    $tm.Range("D18").IndentLevel = 1
+    $co1 = @(
+        @("b tendencia", "=TPM_Logit!B6", "=TPM_Logit!C6", "Inflación al alza: más probable subir"),
+        @("b Taylor", "=TPM_Logit!B7", "=TPM_Logit!C7", "TPM sobre la regla: menos probable subir"),
+        @("k1", "=TPM_Logit!B8", "", "Umbral para bajar la tasa"),
+        @("k2", "=TPM_Logit!B9", "", "Umbral para subirla")
+    )
+    for ($k = 0; $k -lt $co1.Count; $k++) {
+        $r = 19 + $k
+        $tm.Cells.Item($r, 1).Value2 = $co1[$k][0]
+        $tm.Cells.Item($r, 2).Formula = $co1[$k][1]
+        if ($co1[$k][2] -ne "") { $tm.Cells.Item($r, 3).Formula = $co1[$k][2] }
+        $tm.Cells.Item($r, 4).Value2 = $co1[$k][3]
+    }
+    $tm.Range("B19:B22").NumberFormatLocal = "0,000"
+    $tm.Range("C19:C22").NumberFormatLocal = $pfmt
+    $tm.Range("D19:D22").IndentLevel = 1
+
+    # Tamaño del paso
+    Bloque $tm 25 1 3 "Tamaño del paso cuando la Junta mueve la tasa"
+    Cabecera $tm 26 1 @("Tamaño (pp)", "Si sube", "Si baja") @(1, 2)
+    $tam = @(0.25, 0.5, 0.75, 1, 1.5, 1.75, 2)
+    for ($k = 0; $k -lt $tam.Count; $k++) {
+        $r = 27 + $k
+        $tm.Cells.Item($r, 1).Formula = "=" + $tam[$k].ToString([Globalization.CultureInfo]::InvariantCulture)
+        $tm.Cells.Item($r, 2).Formula = "=SUMIFS(TPM_Logit!`$C`$18:`$C`$29,TPM_Logit!`$A`$18:`$A`$29,""Subida"",TPM_Logit!`$B`$18:`$B`$29,`$A$r)"
+        $tm.Cells.Item($r, 3).Formula = "=SUMIFS(TPM_Logit!`$C`$18:`$C`$29,TPM_Logit!`$A`$18:`$A`$29,""Bajada"",TPM_Logit!`$B`$18:`$B`$29,`$A$r)"
+    }
+    $tm.Range("A27:A33").NumberFormatLocal = "0,00"
+    $tm.Range("A27:A33").HorizontalAlignment = -4131
+    $tm.Range("B27:C33").NumberFormatLocal = "0,0 %"
+    $tm.Range("A34").Value2 = "Probabilidad de cada tamaño, dado que la Junta sube o baja. Estimada con 52 subidas y 48 bajadas."
+    $tm.Range("A34").Font.Size = 9; $tm.Range("A34").Font.Color = $gris
+
+    # Tendencia
+    Bloque $tm 36 1 5 "Decisiones de 2021 a 2026 según la tendencia de la inflación"
+    Cabecera $tm 37 1 @("Tendencia de la inflación", "Reuniones", "P(baja)", "P(mantiene)", "P(sube)") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 38 + $k; $o = 74 + $k; $n = 55 + $k
+        $tm.Cells.Item($r, 1).Formula = "=TPM_Cuenta!A$o"
+        $tm.Cells.Item($r, 2).Formula = "=TPM_Cuenta!E$n"
+        $tm.Cells.Item($r, 3).Formula = "=TPM_Cuenta!B$o"
+        $tm.Cells.Item($r, 4).Formula = "=TPM_Cuenta!C$o"
+        $tm.Cells.Item($r, 5).Formula = "=TPM_Cuenta!D$o"
+    }
+    $tm.Range("B38:B40").NumberFormatLocal = "0"
+    $tm.Range("C38:E40").NumberFormatLocal = "0 %"
+    $tm.Range("A41").Value2 = "Frecuencias de las 46 reuniones. Con esta tabla la TPM simulada tiende al tope en horizontes largos."
+    $tm.Range("A41").Font.Size = 9; $tm.Range("A41").Font.Color = $gris
+
+    # Normalidad
+    Bloque $tm 43 1 3 "Cambios de la TPM frente a la normal"
+    Cabecera $tm 44 1 @("Grupo de reuniones", "Observadas", "Esperadas") @(1, 2)
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 45 + $k; $o = 41 + $k
+        $tm.Cells.Item($r, 1).Formula = "=TPM_Cuenta!A$o"
+        $tm.Cells.Item($r, 2).Formula = "=TPM_Cuenta!D$o"
+        $tm.Cells.Item($r, 3).Formula = "=TPM_Cuenta!E$o"
+    }
+    $tm.Range("B45:B48").NumberFormatLocal = "0"
+    $tm.Range("C45:C48").NumberFormatLocal = "0,0"
+    $tm.Range("A49").Value2 = "Hay muchas más reuniones sin cambio de las que prevé la normal."
+    $tm.Range("A49").Font.Size = 9; $tm.Range("A49").Font.Color = $gris
+
+    # Especificación
+    Bloque $tm 8 8 12 "Especificación"
+    $tm.Range("H9").Value2 = "P(baja) = F(k₁ − x),   P(sube) = 1 − F(k₂ − x),   x = b_tend · tendencia + b_Taylor · brecha"
+    $tm.Range("H9").Font.Italic = $true
+    Cabecera $tm 10 8 @("Elemento", "Valor", "Significado", "", "") @(1)
+    $tm.Range("J10").IndentLevel = 1
+    $esp = @(
+        @("F", "", "Función logística"),
+        @("Tendencia", "3 meses", "Cambio de la inflación anual"),
+        @("Brecha de Taylor", "", "TPM − (r* + π + 0,5 (π − meta))"),
+        @("Reuniones por año", "8", "Calendario de la Junta"),
+        @("TPM mínima", "=TPM_Cuenta!C7", "Límite inferior en la simulación"),
+        @("TPM máxima", "=TPM_Cuenta!C8", "Límite superior en la simulación"),
+        @("AIC solo con tendencia", "=TPM_Logit!B10", "Modelo sin brecha de Taylor"),
+        @("AIC con brecha de Taylor", "=TPM_Logit!B11", "Modelo elegido")
+    )
+    for ($k = 0; $k -lt $esp.Count; $k++) {
+        $r = 11 + $k
+        $tm.Cells.Item($r, 8).Value2 = $esp[$k][0]
+        if ($esp[$k][1] -like "=*") { $tm.Cells.Item($r, 9).Formula = $esp[$k][1] } elseif ($esp[$k][1] -ne "") { $tm.Cells.Item($r, 9).Value2 = $esp[$k][1] }
+        $tm.Cells.Item($r, 10).Value2 = $esp[$k][2]
+    }
+    $tm.Range("I11:I18").HorizontalAlignment = -4152
+    $tm.Range("I15:I16").NumberFormatLocal = "0,00 %"
+    $tm.Range("I17:I18").NumberFormatLocal = "0,0"
+    $tm.Range("J11:J18").IndentLevel = 1
+
+    # Validación
+    Bloque $tm 21 8 12 "Validación del simulador"
+    Cabecera $tm 22 8 @("Medida", "", "", "Simulado", "Observado") @(3, 4)
+    $val = @(
+        @("TPM mediana en el año 10 (%)", 8, "0,00"),
+        @("Tasa real media (puntos)", 9, "0,00"),
+        @("Tasa real media, años 6 a 10 (puntos)", 10, "0,00"),
+        @("Réplicas con la TPM en el tope de 15 %", 11, "0,0 %")
+    )
+    for ($k = 0; $k -lt $val.Count; $k++) {
+        $r = 23 + $k; $o = $val[$k][1]
+        $tm.Cells.Item($r, 8).Value2 = $val[$k][0]
+        $tm.Cells.Item($r, 11).Formula = "=VALIDACION!D$o"
+        $tm.Cells.Item($r, 12).Formula = "=VALIDACION!E$o"
+        $tm.Range($tm.Cells.Item($r, 11), $tm.Cells.Item($r, 12)).NumberFormatLocal = $val[$k][2]
+    }
+    $tm.Range("K23:L26").HorizontalAlignment = -4152
+    $tm.Range("H27").Value2 = "500 réplicas con los parámetros de referencia, frente a la historia desde 2001."
+    $tm.Range("H28").Formula = '="Con la tabla por tendencia, "&TEXT(TPM_Cuenta!C110*100,"0")&" % de las reuniones de 2021 a 2026 cayó en la banda de 90 %."'
+    $tm.Range("H27:H28").Font.Size = 9; $tm.Range("H27:H28").Font.Color = $gris
+
+    # Lectura
+    Bloque $tm 31 8 12 "Lectura"
+    $lec = $tm.Range("H32:L46")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $tm.Range("H32").Value2 = "La Junta sube la tasa cuando la inflación sube y, en la muestra de 2021 a 2026, nunca la subió cuando bajaba; la independencia entre decisión y tendencia se rechaza con claridad, aunque algunas casillas tienen pocas reuniones. El logit ordenado agrega la brecha de Taylor, que mejora el ajuste, y se estima con 25 años de decisiones en lugar de 46 reuniones. Las subidas son más grandes que las bajadas, y por eso sus tamaños se sortean por separado. Como limitación, la tasa real simulada queda por encima de la histórica: el modelo mantiene la TPM alta más tiempo del observado."
+    $tm.Range("A8:A49").EntireRow.RowHeight = 15
+    $tm.Range("A1").Select()
+
+    # ------------------------------------------------ Cuenta, modelo
+    $cm = Nueva-Hoja $dest "Cuenta, modelo"
+    Titulo $cm "Cuenta digital: tasa en función de la TPM" "La cuenta paga una proporción fija de la TPM: r = α · TPM"
+    foreach ($k in 1..11) { $cm.Columns.Item($k).ColumnWidth = @(46, 12, 12, 16, 22, 3, 28, 11, 13, 13, 17)[$k - 1] }
+    $cm.Range("G4").Value2 = "α, proporción de la TPM"
+    $cm.Range("I4").Value2 = "Margen de error"
+    $cm.Range("J4").Value2 = "Tasas observadas"
+    $cm.Range("G5").Formula = "=TPM_Cuenta!AD7"
+    $cm.Range("I5").Formula = "=TPM_Cuenta!AD13"
+    $cm.Range("J5").Formula = "=TPM_Cuenta!AD6"
+    foreach ($z in @("G4", "I4", "J4")) { $cm.Range($z).Font.Color = $gris }
+    foreach ($z in @("G5", "I5", "J5")) {
+        $x = $cm.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    $cm.Range("G5").NumberFormatLocal = "0,000"
+    $cm.Range("I5").NumberFormatLocal = "0,000"
+    $cm.Range("J5").NumberFormatLocal = "0"
+    $cm.Rows.Item(5).RowHeight = 28
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    Bloque $cm 8 1 5 "Estimación de α"
+    Cabecera $cm 9 1 @("Concepto", "Valor", "Cómo se calcula", "", "") @(1)
+    $cm.Range("C9").IndentLevel = 1
+    $est = @(
+        @("Número de tasas (n)", "=TPM_Cuenta!AD6", "0", "4 cuentas digitales en 5 fechas"),
+        @("α = promedio de tasa ÷ TPM", "=TPM_Cuenta!AD7", "0,000", "Promedio de las razones individuales"),
+        @("Desviación de las razones (s)", "=TPM_Cuenta!AD11", "0,000", "Cuánto varían las cuentas entre sí"),
+        @("t crítico (95 %)", "=TPM_Cuenta!AD12", "0,000", "t de Student con n − 1 grados"),
+        @("Margen de error", "=TPM_Cuenta!AD13", "0,000", "t · s ÷ √n"),
+        @("Límite inferior", "=TPM_Cuenta!AD14", "0,000", "α − margen de error"),
+        @("Límite superior", "=TPM_Cuenta!AD15", "0,000", "α + margen de error")
+    )
+    for ($k = 0; $k -lt $est.Count; $k++) {
+        $r = 10 + $k
+        $cm.Cells.Item($r, 1).Value2 = $est[$k][0]
+        $cm.Cells.Item($r, 2).Formula = $est[$k][1]
+        $cm.Cells.Item($r, 2).NumberFormatLocal = $est[$k][2]
+        $cm.Cells.Item($r, 3).Value2 = $est[$k][3]
+    }
+    $cm.Range("C10:C16").IndentLevel = 1
+
+    Bloque $cm 19 1 5 "¿Depende α del nivel de la TPM?"
+    Cabecera $cm 20 1 @("Concepto", "Valor", "Cómo se calcula", "", "") @(1)
+    $cm.Range("C20").IndentLevel = 1
+    $cm.Range("A21").Value2 = "Correlación entre α individual y TPM"
+    $cm.Range("B21").Formula = "=TPM_Cuenta!AD21"
+    $cm.Range("C21").Value2 = "H₀: la razón no depende de la TPM (correlación igual a 0)"
+    $cm.Range("A22").Value2 = "Estadístico t"
+    $cm.Range("B22").Formula = "=TPM_Cuenta!AD22"
+    $cm.Range("C22").Value2 = "r · √(n − 2) ÷ √(1 − r²)"
+    $cm.Range("A23").Value2 = "Valor p"
+    $cm.Range("B23").Formula = "=TPM_Cuenta!AD23"
+    $cm.Range("C23").Formula = '=IF(B23<TPM_Cuenta!$C$5,"Rechaza H₀","No rechaza H₀")'
+    $cm.Range("B21:B22").NumberFormatLocal = "0,000"
+    $cm.Range("B23").NumberFormatLocal = $pfmt
+    $cm.Range("C21:C23").IndentLevel = 1
+    $cm.Range("A24").Value2 = "Significancia de 5 %. No rechazar H₀ no demuestra que α sea constante."
+    $cm.Range("A24").Font.Size = 9; $cm.Range("A24").Font.Color = $gris
+
+    Bloque $cm 26 1 3 "Cómo lo usa el simulador"
+    Cabecera $cm 27 1 @("TPM", "Cuenta (E.A.)", "Tasa mensual") @(1, 2)
+    for ($k = 0; $k -lt 5; $k++) {
+        $r = 28 + $k; $o = 28 + $k
+        $cm.Cells.Item($r, 1).Formula = "=TPM_Cuenta!AC$o"
+        $cm.Cells.Item($r, 2).Formula = "=TPM_Cuenta!AD$o"
+        $cm.Cells.Item($r, 3).Formula = "=TPM_Cuenta!AE$o"
+    }
+    $cm.Range("A28:A32").NumberFormatLocal = "0,00 %"
+    $cm.Range("A28:A32").HorizontalAlignment = -4131
+    $cm.Range("B28:B32").NumberFormatLocal = "0,00 %"
+    $cm.Range("C28:C32").NumberFormatLocal = "0,000 %"
+    $cm.Range("A33").Value2 = "Cada vez que cambia la TPM, la tasa de la cuenta se recalcula con r = α · TPM; la tasa mensual es (1 + r)^(1/12) − 1."
+    $cm.Range("A33").Font.Size = 9; $cm.Range("A33").Font.Color = $gris
+
+    Bloque $cm 8 7 11 "Tasas observadas"
+    Cabecera $cm 9 7 @("Fecha", "Cuenta", "TPM", "Tasa (E.A.)", "α individual") @(2, 3, 4)
+    for ($k = 0; $k -lt 24; $k++) {
+        $r = 10 + $k; $o = 5 + $k
+        $cm.Cells.Item($r, 7).Formula = "=TPM_Cuenta!AR$o"
+        $cm.Cells.Item($r, 8).Formula = "=TPM_Cuenta!AS$o"
+        $cm.Cells.Item($r, 9).Formula = "=TPM_Cuenta!AT$o"
+        $cm.Cells.Item($r, 10).Formula = "=IF(TPM_Cuenta!AU$o="""","""",TPM_Cuenta!AU$o)"
+        $cm.Cells.Item($r, 11).Formula = "=IF(TPM_Cuenta!AV$o="""","""",TPM_Cuenta!AV$o)"
+    }
+    $cm.Range("I10:J33").NumberFormatLocal = "0,00 %"
+    $cm.Range("K10:K33").NumberFormatLocal = "0,000"
+    $cm.Range("I10:K33").HorizontalAlignment = -4152
+    $cm.Range("H10:H33").IndentLevel = 1
+    $cm.Range("H9").IndentLevel = 1
+    $cm.Range("G34").Value2 = "Ualá se excluye: es un depósito de bajo monto con tope cercano a 10 millones."
+    $cm.Range("G34").Font.Size = 9; $cm.Range("G34").Font.Color = $gris
+
+    Bloque $cm 36 1 11 "Lectura"
+    $lec = $cm.Range("A37:K39")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $cm.Range("A37").Value2 = "Las cuentas digitales pagan en promedio cerca de nueve décimas de la TPM, y la razón de cada cuenta no muestra una relación significativa con el nivel de la tasa, por lo que una proporción fija describe razonablemente los datos. La estimación descansa en pocas observaciones: cuatro cuentas, cinco fechas y una tasa pagada que cada entidad fija a su criterio."
+    $cm.Range("A8:A39").EntireRow.RowHeight = 15
+    $cm.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
@@ -978,6 +1325,8 @@ try {
     $dest.Worksheets.Item("ETF").Visible = 0
     $dest.Worksheets.Item("CDT").Visible = 0
     $dest.Worksheets.Item("PIB").Visible = 0
+    $dest.Worksheets.Item("TPM_Cuenta").Visible = 0
+    $dest.Worksheets.Item("TPM_Logit").Visible = 0
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()
