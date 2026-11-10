@@ -15,7 +15,7 @@ ETF,Peor mes en 10 años (mediana de las réplicas),Contraste,-0.162876425688985
 Estados,Proporción del tiempo en Expansión,Reproduce insumos,0.30535,0.366,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Normal,Reproduce insumos,0.5381,0.488,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Crisis,Reproduce insumos,0.15655,0.146,DANE PIB 2006-2026,
-Estados,Duración media de una crisis (trimestres),Contraste,3.6076923076923078,4.0,DANE PIB 2006-2026,Las rachas que tocan el final del horizonte quedan truncadas.
+Estados,Duración media de una crisis (trimestres),Reproduce insumos,3.6076923076923078,4.0,DANE PIB 2006-2026,"El 4,0 observado es 1 / (1 − 0,75), la misma matriz; las rachas que tocan el final del horizonte quedan truncadas."
 Valorización,Valorización nominal media (ln anual),Reproduce insumos,0.07645645592205139,0.07680845591752625,IPVU 2001-2025,"El primer año parte de la variación de 2025 (0,0809) y se acerca a la media del AR(1)."
 Valorización,Desviación anual,Reproduce insumos,0.030951645265150287,0.033513644145387066,IPVU 2001-2025,
 Vacancia,Fracción del tiempo desocupado,Contraste,0.0273767896035069,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.

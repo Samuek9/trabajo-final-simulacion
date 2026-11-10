@@ -599,3 +599,62 @@ def correcciones_auditoria(w, P, c, pc) -> None:
     reemplazar(doc, "El 0,62 % de expansión coincide con el 0,6 % que reporta Ciencuadras para Medellín en 2026.",
                f"El {pc(pe * de / (12 + pe * de), 2)} de expansión queda cerca del 0,6 % que reporta Ciencuadras (2026) para "
                "Medellín.")
+
+    # ---------------- segunda auditoría
+    sm = pd.read_csv(res / "sensibilidad_modelos.csv")
+    g = sm[sm.modelo.str.startswith("Junta: logit")]
+    dmax = float((g.alt_p_meta - g.ref_p_meta).abs().max() * 100)
+    reemplazar(doc, "pero los resultados del simulador cambian menos de un punto (sección 16.3).",
+               f"pero la probabilidad de meta cambia a lo sumo {c(dmax, 1)} puntos (sección 16.3).")
+    # Sensibilidades: el texto dice solo lo que se corrió.
+    reemplazar(doc, "Se analiza la sensibilidad sin memoria y con memoria de 60 %.",
+               "En la sensibilidad (sección 16.3) se prueba sin memoria y con memoria de 60 %, con el mismo nivel de largo plazo.")
+    reemplazar(doc, "se analiza la sensibilidad con un nivel normal de 3 %.",
+               "en la sensibilidad (sección 16.3) el nivel normal baja a 3,5 % y sube a 6,5 %.")
+    reemplazar(doc, "La sensibilidad duplica la desviación de ε y usa la alternativa M6, que agrega el nivel de la TPM (coeficiente −0,09; p = 0,014; R² sube a 0,35).",
+               "En la sensibilidad movemos la constante del margen medio punto arriba y abajo y probamos el margen por fase como "
+               "modelo alternativo. El modelo M6, que agrega el nivel de la TPM (coeficiente −0,09; p = 0,014; R² sube a 0,35), no "
+               "lo usamos: agrega un parámetro y no lo evaluamos fuera de muestra.")
+    reemplazar(doc, "pero son pocos episodios independientes; queda como sensibilidad.",
+               "pero son pocos episodios independientes, así que el modelo no lo usa.")
+    reemplazar(doc, "6 meses (crisis, con sensibilidad de 4 a 9).",
+               "6 meses (crisis); en la sensibilidad las duraciones se multiplican por 0,5 y por 2.")
+    # Redacción de 7.5.
+    reemplazar(doc, "p-valores", "valores p")
+    reemplazar(doc, "p-valor", "valor p")
+    reemplazar(doc, " Todas las cifras que aparecen aquí salen de los archivos descargados y de los scripts que acompañan el documento. "
+                    "Ninguna se fijó a mano.", " Los datos y los cálculos de esta sección están en la hoja ETF del Excel.")
+    reemplazar(doc, "Un cuidado de método: las tablas usuales", "Las tablas usuales")
+    reemplazar(doc, "En diez años la diferencia no es pequeña: con la media histórica", "En diez años, con la media histórica")
+    reemplazar(doc, "Juntando lo anterior, la dependencia", "La dependencia")
+    reemplazar(doc, "Esta subsección completa el análisis con las pruebas de hipótesis que pide el enunciado, compara el modelo "
+                    "elegido con una t de Student simple y revisa la dependencia",
+               "Aquí van las pruebas de hipótesis que pide el enunciado, la comparación del modelo elegido con una t de Student "
+               "simple y la dependencia")
+    reemplazar(doc, "La lectura es la de los apartados anteriores. ", "")
+    reemplazar(doc, "(marzo de 2020, junio de 2022 y uno más)", "(marzo de 2020, junio de 2022 y enero de 2026)")
+    reemplazar(doc, "en el planteamiento del proyecto)", "en las reglas del ETF de la sección 5.3)")
+    reemplazar(doc, "candidata que aparecía en el plan inicial del proyecto", "candidata que propusimos al empezar el estudio")
+
+    # 7.9: por qué se eligió cada modelo (lo que hay que poder defender en la sustentación).
+    t = _tabla(doc, "Proceso | Modelo para el simulador")
+    razones = {
+        "Inflación": "Siempre positiva, con saltos hacia arriba y memoria de un año a otro",
+        "TPM": "Reproduce las decisiones observadas; la tabla lleva la TPM a un tope que nunca tuvo",
+        "Cuenta": "α no depende del nivel de la TPM (p = 0,29)",
+        "CDT": "El margen se abre cuando la TPM sube; residuos no normales, por eso se sortean de los datos",
+        "ETF": "Colas pesadas, sin memoria, y el estado mueve su volatilidad (punto 8)",
+        "Valoriz": "El IPVU mide vivienda usada; años seguidos parecidos (φ significativo); no depende del estado",
+        "Vacancia": "La gamma reproduce la curva de Palomma; la probabilidad de no renovar es supuesto",
+        "Estado de la economía": "El estado depende del trimestre anterior (χ² = 81,8; p < 0,001)",
+        "Necesidades": "Sin datos: supuesto, por eso se muestran resultados con y sin ellas",
+    }
+    tbl = t._tbl
+    grid = tbl.find(qn("w:tblGrid"))
+    if grid is not None and len(grid) == len(t.rows[0].cells):
+        grid.append(copy.deepcopy(grid[-1]))
+    for k, fila in enumerate(t.rows):
+        nueva = copy.deepcopy(fila.cells[-1]._tc)
+        fila._tr.append(nueva)
+        texto = "Por qué" if k == 0 else next((v for clave, v in razones.items() if fila.cells[0].text.strip().startswith(clave)), "")
+        _poner(fila.cells[-1].paragraphs[0], texto or " ")

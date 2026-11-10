@@ -8,7 +8,7 @@ docs/decision_log.md.
 Columnas: id, clave, grupo, nombre, base, adverso, estres, unidad, estado, fuente, soporte.
 adverso / estres = None significa "igual que la base". En estrés el valor aplica solo
 mientras dura la crisis forzada.
-Estados: Configurable, Verificado, Estimado, Calibrado, Supuesto, Pendiente.
+Estados: Configurable, Verificado, Estimado, Calibrado, Supuesto, Apagado.
 """
 
 X = None  # igual que la base
@@ -81,7 +81,7 @@ FILAS = [
     ("P070", "cdt.plazo", "CDT", "Plazo del CDT", 12, X, X, "meses", "Configurable", "Equipo", "5.2"),
     ("P071", "cdt.modelo", "CDT", "Modelo del margen: m5 (TPM + a + b·ΔTPM + ε) o fase", "m5", X, X, "texto", "Estimado", "Selección de 7.4", "7.4"),
     ("P072", "cdt.a", "CDT", "M5: constante a", 1.0596008700709776, X, X, "puntos", "Estimado", "BanRep CDT 360 y TPM, 982 semanas 2008-2026", "CDT, 7.4"),
-    ("P073", "cdt.b", "CDT", "M5: pendiente b sobre ΔTPM de 3 meses", 0.6718857912760832, X, X, "coeficiente", "Estimado", "BanRep, 982 semanas (p = 0,021 con HAC)", "CDT, 7.4"),
+    ("P073", "cdt.b", "CDT", "M5: coeficiente b sobre ΔTPM de 3 meses", 0.6718857912760832, X, X, "coeficiente", "Estimado", "BanRep, 982 semanas (p = 0,021 con HAC)", "CDT, 7.4"),
     ("P074", "cdt.residuos", "CDT", "M5: cómo se sortea ε", "empirico", X, X, "texto", "Estimado", "Residuos observados (data/raw/cdt_semanal_2008.csv)", "7.4"),
     ("P075", "cdt.t_nu", "CDT", "M5 alternativo: ε ~ t, grados de libertad", 3.530694440831547, X, X, "ν", "Estimado", "Ajuste de máxima verosimilitud", "7.4"),
     ("P076", "cdt.t_escala", "CDT", "M5 alternativo: escala de ε", 0.6582663941647997, X, X, "puntos", "Estimado", "Ajuste de máxima verosimilitud", "7.4"),
@@ -118,7 +118,7 @@ FILAS = [
     ("P121", "inm.tope_canon", "Inmueble", "Tope del canon", 0.01, X, X, "fracción mensual del valor", "Verificado", "Ley 820 de 2003, art. 18", "5.4"),
     ("P122", "inm.reajuste_modelo", "Inmueble", "Reajuste del canon: dane (a + b·IPC previo + ε) o ipc (todo el IPC)", "dane", X, X, "texto", "Estimado", "IPC de arriendo del DANE 2010-2025", "5.4.3"),
     ("P123", "inm.reajuste_a", "Inmueble", "Reajuste DANE: constante a", 1.6784667368428081, X, X, "puntos", "Estimado", "DANE, 16 años", "INM_Arriendo"),
-    ("P124", "inm.reajuste_b", "Inmueble", "Reajuste DANE: pendiente b sobre el IPC previo", 0.47782486531386226, X, X, "coeficiente", "Estimado", "DANE, 16 años (R² = 0,71)", "INM_Arriendo"),
+    ("P124", "inm.reajuste_b", "Inmueble", "Reajuste DANE: coeficiente b sobre el IPC previo", 0.47782486531386226, X, X, "coeficiente", "Estimado", "DANE, 16 años (R² = 0,71)", "INM_Arriendo"),
     ("P125", "inm.reajuste_sigma", "Inmueble", "Reajuste DANE: σ de ε", 0.9409701223606414, X, X, "puntos", "Estimado", "DANE, 16 años", "INM_Arriendo"),
 
     # ---------------- Valorización (7.6 y punto 8) ----------------
@@ -150,9 +150,9 @@ FILAS = [
     ("P155", "liq.mult_monto", "Liquidez", "Multiplicador del monto", 1.0, X, 2.0, "veces", "Supuesto", "Estrés: monto × 2", "Punto 13"),
 
     # ---------------- Reparaciones (evento 10) ----------------
-    ("P160", "rep.tasa", "Reparación", "Reparaciones extraordinarias por mes", 0.0, X, X, "eventos por mes", "Pendiente", "Sin datos: el evento existe pero está apagado", "Diagrama, evento 10"),
-    ("P161", "rep.mediana", "Reparación", "Mediana del costo (pesos de hoy)", 0.0, X, X, "COP", "Pendiente", "Sin datos", "Diagrama, evento 10"),
-    ("P162", "rep.sigma", "Reparación", "σ del logaritmo del costo", 0.0, X, X, "ln", "Pendiente", "Sin datos", "Diagrama, evento 10"),
+    ("P160", "rep.tasa", "Reparación", "Reparaciones extraordinarias por mes", 0.0, X, X, "eventos por mes", "Apagado", "Sin datos: el evento existe pero está apagado", "Diagrama, evento 10"),
+    ("P161", "rep.mediana", "Reparación", "Mediana del costo (pesos de hoy)", 0.0, X, X, "COP", "Apagado", "Sin datos", "Diagrama, evento 10"),
+    ("P162", "rep.sigma", "Reparación", "σ del logaritmo del costo", 0.0, X, X, "ln", "Apagado", "Sin datos", "Diagrama, evento 10"),
 
     # ---------------- Escenario de estrés (punto 13) ----------------
     ("P170", "estres.activo", "Escenario", "¿Se fuerza una crisis?", 0, X, 1, "0 o 1", "Configurable", "Punto 13", "Punto 13"),

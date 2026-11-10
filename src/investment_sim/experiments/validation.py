@@ -95,7 +95,8 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
              [0.366, 0.488, 0.146][k], "DANE PIB 2006-2026")
     dur_c = [d for f in tr["estado"] for d in _duraciones(f, 2)]
     fila("Estados", "Duración media de una crisis (trimestres)", float(np.mean(dur_c)) if dur_c else np.nan, 4.0,
-         "DANE PIB 2006-2026", "Las rachas que tocan el final del horizonte quedan truncadas.", tipo="Contraste")
+         "DANE PIB 2006-2026", "El 4,0 observado es 1 / (1 − 0,75), la misma matriz; las rachas que tocan el final del "
+         "horizonte quedan truncadas.")
 
     # Inmueble
     inm = tr["inmueble"]

@@ -35,7 +35,7 @@ try {
     foreach ($ws in @($mar.Worksheets)) { if ($nombres.ContainsKey($ws.Name)) { $ws.Name = $nombres[$ws.Name] } }
 
     $nue.Worksheets.Copy($dest.Worksheets.Item(1))
-    $mar.Worksheets.Copy($falta, $dest.Worksheets.Item("DECISIONES"))
+    $mar.Worksheets.Copy($falta, $dest.Worksheets.Item($dest.Worksheets.Count))
     $dest.Worksheets.Item("TPM_Logit").Move($falta, $dest.Worksheets.Item("TPM_Cuenta"))
     $ultima = $dest.Worksheets.Item($dest.Worksheets.Count)
     $dest.Worksheets.Item("VALIDACION").Move($falta, $ultima)
@@ -86,8 +86,33 @@ try {
     $inm.Range("H13").Formula = "=MEDIAN(E5:E$u)"; $inm.Range("H14").Formula = "=MAX(E5:E$u)"
     $inm.Range("H16").Formula = "=12*H13"; $inm.Range("H17").Formula = "=12*H8/H5"
     foreach ($r in @("E5:E$u", "H12:H14", "H16:H17")) { $inm.Range($r).NumberFormat = "0.00%" }
+    # MARKOV: el estado no mueve la valorización en el modelo de referencia (AR(1) del IPVU, sección 7.6).
+    $mk = $dest.Worksheets.Item("MARKOV")
+    $mk.Range("A2").Value2 = "El enunciado no permite suponer que todas las variables son independientes. En una crisis la bolsa se vuelve más volátil, cuesta más arrendar y llegan más gastos imprevistos, todo al mismo tiempo. Para representarlo, la economía pasa por tres estados y cada estado cambia el comportamiento de varias variables a la vez."
+    $mk.Range("A72").Value2 = "Paso 4. ¿Cambia la valorización de la vivienda según el estado? (vivienda nueva de Medellín, IPVNBR)"
+    $mk.Range("A84").Value2 = "Lectura: en expansión la vivienda nueva en Medellín sube cerca de 12,7 % al año; en el resto de los años, cerca de 8,7 %. Pero el inmueble del modelo es usado, y con el índice de vivienda usada (IPVU, hoja INM) el estado no cambia la valorización (Welch, p = 0,275). Por eso el simulador usa el AR(1) del IPVU, igual en los tres estados, y estos valores por estado quedan como alternativa en la sensibilidad."
+    $mk.Range("B90").Value2 = "Valorización anual media (ln), AR(1) del IPVU"
+    $mk.Range("B91").Value2 = "Desviación del choque anual del AR(1)"
+    foreach ($col in @("C", "D", "E")) { $mk.Range("$col" + "90").Value2 = 0.0755; $mk.Range("$col" + "91").Value2 = 0.0236 }
+    $mk.Range("F90").Value2 = "Hoja INM: no cambia con el estado"
+    $mk.Range("F91").Value2 = "Hoja INM: no cambia con el estado"
+    $mk.Range("F92").Value2 = "Supuesto (Ciencuadras 2026 como referencia)"
+    $mk.Range("A99").Value2 = "3. El estado vigente fija la volatilidad del ETF, la probabilidad y la duración de la vacancia, la frecuencia de las necesidades de liquidez y el reparto objetivo de E4."
+    $mk.Range("A100").Value2 = "4. Así, en una crisis el ETF se vuelve más riesgoso, cuesta más arrendar y llegan más gastos imprevistos, todo al mismo tiempo. La valorización, la inflación y la TPM no dependen del estado."
     $mar.Close($false)
     $nue.Close($false)
+    # "Pendiente" en el sentido de coeficiente de una regresión se confunde con "trabajo pendiente".
+    $dest.Worksheets.Item("CDT").Range("A30").Value2 = "H0: el coeficiente del cambio de la TPM en 13 semanas es 0 (errores HAC)"
+    $dest.Worksheets.Item("INM").Range("AM11").Value2 = "AR(1) por MCO: φ (coeficiente)"
+    $dest.Worksheets.Item("INM").Range("AU12").Value2 = "H0: φ = 0 en el AR(1) (t del coeficiente)"
+    $s23 = [string]$dest.Worksheets.Item("INM").Range("S23").Value2
+    $dest.Worksheets.Item("INM").Range("S23").Value2 = $s23.Replace("Pendiente con errores robustos", "Coeficiente con errores robustos")
+    # Menos hojas: las fuentes de Markov ya están en FUENTES.
+    $dest.Worksheets.Item("MARKOV_Fuentes").Delete()
+    # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "INF", "TPM_Cuenta", "TPM_Logit", "CDT", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO")
+    $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
+    for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }

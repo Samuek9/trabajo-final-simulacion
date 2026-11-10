@@ -70,6 +70,7 @@ EVENTOS = [
 
 # Diagrama de flujo: (página, texto viejo, texto nuevo). El texto va centrado en su caja.
 FLUJO = [
+    (0, "Diagrama de flujo del simulador — 1. Ciclo principal", "Diagrama de flujo del simulador: 1. Ciclo principal"),
     (1, "volatilidad del ETF, valorización", "volatilidad del ETF, pesos de E4,"),
     (1, "del inmueble, vacancia, frecuencia", "vacancia, frecuencia"),
     (1, "Tendencia = inflación de hoy −", "x = 1,647·tendencia − 0,202·brecha"),

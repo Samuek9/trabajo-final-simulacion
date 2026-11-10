@@ -16,9 +16,9 @@ COLUMNAS = ["ID", "Clave", "Grupo", "Parámetro", "Base", "Adverso", "Estrés", 
 ANCHOS = [7, 24, 13, 52, 16, 14, 14, 20, 12, 52, 18]
 COLOR_ESTADO = {
     "Configurable": "FFF2CC", "Verificado": "D9EAD3", "Estimado": "D9EAD3", "Calibrado": "FCE5CD",
-    "Supuesto": "FCE5CD", "Pendiente": "F4CCCC", "Calculado": "DDEBF7",
+    "Supuesto": "FCE5CD", "Apagado": "F4CCCC", "Calculado": "DDEBF7",
 }
-AZUL = "1F4E78"
+AZUL = "404040"  # gris oscuro: encabezados sobrios
 
 
 def escribir(ws) -> None:
@@ -27,7 +27,7 @@ def escribir(ws) -> None:
     ws["A2"] = ("Esta hoja es la única fuente de valores del simulador: el código la lee al iniciar. "
                 "Adverso y Estrés vacíos = igual que la base; en Estrés el valor rige solo mientras dura la crisis forzada. "
                 "Estado: Verificado (dato con fuente), Estimado (sale de los datos), Calibrado (ajustado a una referencia), "
-                "Supuesto (decisión del equipo), Pendiente (sin datos), Configurable (lo elige el usuario).")
+                "Supuesto (decisión del equipo), Apagado (sin datos, el proceso no se usa), Configurable (lo elige el usuario).")
     ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
     ws.merge_cells("A2:K2")
     ws.row_dimensions[2].height = 48

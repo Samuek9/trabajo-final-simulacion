@@ -22,6 +22,7 @@ def _escala(p: Params, claves: list[str], factor: float) -> dict:
 def factores(p: Params) -> list[dict]:
     """Variaciones del tornado: nombre, fuente de incertidumbre y cambios bajo / alto."""
     phi = p.f("inf.phi")
+    lp = np.exp(p.f("inf.c") / (1 - phi))  # nivel de largo plazo actual de la inflación (%)
     nivel = lambda x: (1 - phi) * np.log(x)  # noqa: E731  constante para un nivel de inflación
     vol = ["etf.vol_E", "etf.vol_N", "etf.vol_C"]
     mu_v, phi_v, sig_v = p.lista("val.ar1")
@@ -32,6 +33,8 @@ def factores(p: Params) -> list[dict]:
     return [
         {"factor": "Nivel de la inflación (3,5 % / 6,5 %)", "fuente": "Inflación",
          "bajo": {"inf.c": nivel(3.5)}, "alto": {"inf.c": nivel(6.5)}},
+        {"factor": "Memoria de la inflación (φ = 0 / 0,6, mismo nivel)", "fuente": "Inflación",
+         "bajo": {"inf.phi": 0.0, "inf.c": np.log(lp)}, "alto": {"inf.phi": 0.6, "inf.c": 0.4 * np.log(lp)}},
         {"factor": "Volatilidad de la inflación (σ × 0,5 / × 1,5)", "fuente": "Inflación",
          "bajo": {"inf.sigma": p.f("inf.sigma") * 0.5}, "alto": {"inf.sigma": p.f("inf.sigma") * 1.5}},
         {"factor": "Rendimiento medio del ETF (0 / 0,86 % mensual)", "fuente": "Renta variable",
@@ -65,6 +68,8 @@ def factores(p: Params) -> list[dict]:
          "bajo": {"inm.descuento_urgente": 0.05}, "alto": {"inm.descuento_urgente": 0.20}},
         {"factor": "Castigo del CDT en la venta anticipada (0 / 2 puntos)", "fuente": "Tasas de interés",
          "bajo": {"cdt.castigo": 0.0}, "alto": {"cdt.castigo": 0.02}},
+        {"factor": "Mantenimiento del inmueble (0,2 % / 0,5 % anual)", "fuente": "Inmueble",
+         "bajo": {"inm.mantenimiento": 0.002}, "alto": {"inm.mantenimiento": 0.005}},
         {"factor": "Administración del edificio ($165.000 / $245.000)", "fuente": "Inmueble",
          "bajo": {"inm.ph": 165_000}, "alto": {"inm.ph": 245_000}},
     ]

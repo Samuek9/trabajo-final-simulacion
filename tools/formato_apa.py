@@ -33,7 +33,7 @@ REFERENCIAS = [
     ("Concejo de Medellín, 2023", "Concejo de Medellín. (2023). *Acuerdo 093 de 2023, por medio del cual se expide el Estatuto Tributario del Distrito de Medellín*. https://www.medellin.gov.co/normograma/docs/astrea/docs/A_CONMED_0093_2023.htm"),
     ("Congreso de Colombia, 2003", "Congreso de Colombia. (2003, 10 de julio). *Ley 820 de 2003, por la cual se expide el régimen de arrendamiento de vivienda urbana*. http://www.secretariasenado.gov.co/senado/basedoc/ley_0820_2003.html"),
     ("Cont, 2001", "Cont, R. (2001). Empirical properties of asset returns: Stylized facts and statistical issues. *Quantitative Finance, 1*(2), 223-236. https://doi.org/10.1080/713665670"),
-    ("CuantoMeCuesta, s. f.", "CuantoMeCuesta. (s. f.). *Gastos de comprar vivienda en Colombia*. https://cuantomecuesta.com/co/comprar-vivienda/"),
+    ("CuantoMeCuesta, 2026", "CuantoMeCuesta. (2026). *¿Cuánto cuesta comprar vivienda en Colombia? Gastos de escrituración 2026*. https://cuantomecuesta.com/co/comprar-vivienda/"),
     ("DANE, 2019", "Departamento Administrativo Nacional de Estadística [DANE]. (2019). *Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) 2017 y 2018* [Microdatos, catálogo 626]. Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co"),
     ("DANE, 2024", "Departamento Administrativo Nacional de Estadística [DANE]. (2024). *Encuesta Nacional de Calidad de Vida (ECV) 2023*. https://www.dane.gov.co/index.php/estadisticas-por-tema/salud/calidad-de-vida-ecv"),
     ("DANE, 2026a", "Departamento Administrativo Nacional de Estadística [DANE]. (2026a). *Índice de Precios al Consumidor: series históricas y anexos* [Conjunto de datos]. https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc"),
@@ -45,17 +45,17 @@ REFERENCIAS = [
     ("Fogafín, 2025", "Fondo de Garantías de Instituciones Financieras [Fogafín]. (2025). *ABC del proceso de pago del seguro de depósitos*. https://www.fogafin.gov.co/sites/default/files/2025-12/ABC%20del%20proceso%20de%20pago%20del%20seguro%20de%20dep%C3%B3sitos.pdf"),
     ("Hamilton, 1989", "Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357-384. https://doi.org/10.2307/1912559"),
     ("Harris et al., 2020", "Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., Wieser, E., Taylor, J., Berg, S., Smith, N. J., Kern, R., Picus, M., Hoyer, S., van Kerkwijk, M. H., Brett, M., Haldane, A., Fernández del Río, J., Wiebe, M., Peterson, P., . . . Oliphant, T. E. (2020). Array programming with NumPy. *Nature, 585*(7825), 357-362. https://doi.org/10.1038/s41586-020-2649-2"),
-    ("HaceCuentas, 2026", "HaceCuentas. (2026). *Calculadora de gastos notariales y de registro de una compraventa en 2026*. https://hacecuentas.com/co/calculadora-gastos-notariales-registro-compraventa-2026"),
+    ("HaceCuentas, 2026", "HaceCuentas. (2026). *Comprar vivienda en Colombia 2026: cuota, gastos y registro*. https://hacecuentas.com/co/calculadora-gastos-notariales-registro-compraventa-2026"),
     ("Jones y Faddy, 2003", "Jones, M. C. y Faddy, M. J. (2003). A skew extension of the t-distribution, with applications. *Journal of the Royal Statistical Society: Series B, 65*(1), 159-174. https://doi.org/10.1111/1467-9868.00378"),
     ("Kass y Raftery, 1995", "Kass, R. E. y Raftery, A. E. (1995). Bayes factors. *Journal of the American Statistical Association, 90*(430), 773-795. https://doi.org/10.1080/01621459.1995.10476572"),
     ("La Lonja de Propiedad Raíz de Medellín y Antioquia, 2025", "La Lonja de Propiedad Raíz de Medellín y Antioquia. (2025). *Mercado inmobiliario residencial* (Edición 275). https://lonja.org.co/wp-content/uploads/documentos-afiliados/275-Mercado-inmobiliario-residencial.pdf"),
     ("Law, 2015", "Law, A. M. (2015). *Simulation modeling and analysis* (5.ª ed.). McGraw-Hill."),
     ("Lilliefors, 1967", "Lilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with mean and variance unknown. *Journal of the American Statistical Association, 62*(318), 399-402. https://doi.org/10.1080/01621459.1967.10482916"),
     ("McCullagh, 1980", "McCullagh, P. (1980). Regression models for ordinal data. *Journal of the Royal Statistical Society: Series B, 42*(2), 109-142. https://doi.org/10.1111/j.2517-6161.1980.tb01109.x"),
-    ("Metrocuadrado, 2024", "Metrocuadrado. (2024). *Gastos notariales de venta y compra del inmueble en 2024*. https://www.metrocuadrado.com/noticias/guia-de-compra/gastos-notariales-de-venta-y-compra-del-inmueble-en-2024-4709/"),
-    ("Ministerio de Hacienda y Crédito Público, 2013", "Ministerio de Hacienda y Crédito Público. (2013). *Decreto 2418 de 2013, por el cual se reglamenta parcialmente el Estatuto Tributario*. https://normograma.dian.gov.co/dian/compilacion/docs/decreto_2418_2013.htm"),
+    ("Metrocuadrado, 2026", "Metrocuadrado. (2026, 6 de enero). *Gastos notariales de venta y compra del inmueble en 2026*. https://www.metrocuadrado.com/noticias/guia-de-compra/gastos-notariales-de-venta-y-compra-del-inmueble-en-2024-4709/"),
+    ("Ministerio de Hacienda y Crédito Público, 2013", "Ministerio de Hacienda y Crédito Público. (2013). *Decreto 2418 de 2013, por el cual se reglamenta parcialmente la Ley 1607 de 2012*. https://normograma.dian.gov.co/dian/compilacion/docs/decreto_2418_2013.htm"),
     ("Ministerio de Hacienda y Crédito Público, 2016", "Ministerio de Hacienda y Crédito Público. (2016). *Decreto 1625 de 2016, Decreto Único Reglamentario en materia tributaria*. https://normograma.dian.gov.co/dian/compilacion/docs/decreto_1625_2016.htm"),
-    ("Ministerio de Hacienda y Crédito Público, 2025", "Ministerio de Hacienda y Crédito Público. (2025, 28 de mayo). *Decreto 0572 de 2025, por el cual se modifican las tarifas de retención en la fuente*. https://normograma.dian.gov.co/dian/compilacion/docs/decreto_0572_2025.htm"),
+    ("Ministerio de Hacienda y Crédito Público, 2025", "Ministerio de Hacienda y Crédito Público. (2025, 28 de mayo). *Decreto 0572 de 2025* [Modifica tarifas de autorretención y bases mínimas para practicar retención en la fuente]. https://normograma.dian.gov.co/dian/compilacion/docs/decreto_0572_2025.htm"),
     ("MSCI, 2023", "MSCI. (2023). *MSCI COLCAP Index methodology*. MSCI Inc."),
     ("Noticias Caracol, 2026", "Noticias Caracol. (2026, enero). *Esto le paga Davivienda por invertir 1 millón en un CDT en enero de 2026*. https://www.noticiascaracol.com/economia/esto-le-paga-davivienda-por-invertir-1-millon-en-un-cdt-en-enero-de-2026-nuevas-tasas-so35"),
     ("OneEstimate, 2026", "OneEstimate. (2026). *Precios de pintura y acabados por m² en Colombia 2026*. https://oneestimate.ai/es/blog/precio-m2-pintura-acabados-colombia-2026"),
@@ -78,7 +78,7 @@ CITAS = [
     ("una regla de Taylor, TPM", "una regla de Taylor (1993), TPM"),
     ("una prueba de Brant aproximada", "una prueba de Brant (1990) aproximada"),
     ("con la lógica de Lilliefors:", "con la lógica de Lilliefors (1967):"),
-    ("las tablas usuales de KS y AD suponen", "las tablas usuales de KS y AD (Stephens, 1974) suponen"),
+    ("Las tablas usuales de KS y AD suponen", "Las tablas usuales de KS y AD (Stephens, 1974) suponen"),
     ("en la escala de Kass y Raftery", "en la escala de Kass y Raftery (1995)"),
     ("es la t asimétrica de Jones y Faddy con", "es la t asimétrica de Jones y Faddy (2003) con"),
     ("las ponen unos pocos meses de choque.", "las ponen unos pocos meses de choque, algo habitual en los rendimientos de activos (Cont, 2001)."),
@@ -88,7 +88,7 @@ CITAS = [
     ("intervalo de Wilson, que no se sale de 0 y 1.", "intervalo de Wilson (1927), que no se sale de 0 y 1."),
     ("no se modela el riesgo de impago ni el tope de Fogafín.", "no se modela el riesgo de impago ni el tope del seguro de depósitos (Fogafín, 2025)."),
     ("Fogafín cubre hasta $50 millones por persona y por entidad.", "Fogafín cubre hasta $50 millones por persona y por entidad (Fogafín, 2025)."),
-    ("Verificado (CuantoMeCuesta, HaceCuentas y Metrocuadrado, 2026)", "Verificado (CuantoMeCuesta, s. f.; HaceCuentas, 2026; Metrocuadrado, 2024)"),
+    ("Verificado (CuantoMeCuesta, HaceCuentas y Metrocuadrado, 2026)", "Verificado (CuantoMeCuesta, 2026; HaceCuentas, 2026; Metrocuadrado, 2026)"),
     ("en la serie de Yahoo", "en la serie de Yahoo Finance (2026)"),
     ("Noticias Caracol (enero de 2026) y El País (septiembre de 2026)", "Noticias Caracol (2026) y El País (2026)"),
     ("DANE, Encuesta de Calidad de Vida 2023", "Encuesta Nacional de Calidad de Vida 2023 (DANE, 2024)"),
@@ -461,3 +461,202 @@ def revisar(doc) -> dict:
         if not re.search(re.escape(corto.replace("La Lonja", "Lonja")) + r"[^()]{0,60}\(?" + re.escape(anio), texto, re.I) and clave not in texto:
             sin_cita.append(clave)
     return {"referencias_sin_cita": sin_cita}
+
+
+# ---------------------------------------------------------------- estilo APA (sin colores)
+NOTAS_SUELTAS = ("El RMSE es el error típico", "El valor p de KPSS", "Valores empíricos:", "Kruskal-Wallis para el ciclo de tasas")
+
+
+def _quitar(el, etiqueta: str) -> None:
+    for x in list(el.iter(qn(etiqueta))):
+        x.getparent().remove(x)
+
+
+def _borde(padre, lado: str, valor: str, tam: int = 8) -> None:
+    b = padre.find(qn(f"w:{lado}"))
+    if b is None:
+        b = OxmlElement(f"w:{lado}")
+        padre.append(b)
+    b.set(qn("w:val"), valor)
+    if valor != "nil":
+        b.set(qn("w:sz"), str(tam))
+        b.set(qn("w:space"), "0")
+        b.set(qn("w:color"), "000000")
+
+
+def estilo(doc) -> None:
+    """Títulos en negro con los niveles de APA 7 y tablas con solo líneas horizontales, sin colores."""
+    niveles = {"Heading 1": (WD_ALIGN_PARAGRAPH.CENTER, False, 14), "Heading 2": (WD_ALIGN_PARAGRAPH.LEFT, False, 12),
+               "Heading 3": (WD_ALIGN_PARAGRAPH.LEFT, True, 11), "Title": (WD_ALIGN_PARAGRAPH.CENTER, False, 16)}
+    for nombre, (alin, cursiva, tam) in niveles.items():
+        try:
+            st = doc.styles[nombre]
+        except KeyError:
+            continue
+        rpr = st.element.get_or_add_rPr()
+        _quitar(rpr, "w:color")
+        st.font.bold = True
+        st.font.italic = cursiva
+        st.font.size = Pt(tam)
+        st.paragraph_format.alignment = alin
+        ppr = st.element.get_or_add_pPr()
+        _quitar(ppr, "w:pBdr")
+    # Portada (APA, trabajo de estudiantes): todo centrado hasta la fecha.
+    for p in doc.paragraphs[:6]:
+        p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        _quitar(p._p, "w:pBdr")
+        if p.text.startswith("Noviembre"):
+            break
+    # Ningún texto con color ni sombreado: todo en negro.
+    for r in doc.element.body.iter(qn("w:rPr")):
+        _quitar(r, "w:color")
+        _quitar(r, "w:shd")
+        _quitar(r, "w:highlight")
+    for p in doc.element.body.iter(qn("w:pPr")):
+        _quitar(p, "w:shd")
+    for t in doc.tables:
+        tbl = t._tbl
+        for tc in tbl.iter(qn("w:tcPr")):
+            _quitar(tc, "w:shd")
+            _quitar(tc, "w:tcBorders")
+        tblPr = tbl.tblPr
+        bordes = tblPr.find(qn("w:tblBorders"))
+        if bordes is None:
+            bordes = OxmlElement("w:tblBorders")
+            tblPr.append(bordes)
+        for lado, valor in (("top", "single"), ("left", "nil"), ("bottom", "single"), ("right", "nil"),
+                            ("insideH", "nil"), ("insideV", "nil")):
+            _borde(bordes, lado, valor)
+        filas = t.rows
+        if filas:
+            for celda in filas[0].cells:
+                tcPr = celda._tc.get_or_add_tcPr()
+                tb = OxmlElement("w:tcBorders")
+                _borde(tb, "bottom", "single")
+                tcPr.append(tb)
+                for p in celda.paragraphs:
+                    for r in p.runs:
+                        r.bold = True
+        for f in filas:
+            for celda in f.cells:
+                for p in celda.paragraphs:
+                    for r in p.runs:
+                        if r.font.size is None or r.font.size > Pt(9):
+                            r.font.size = Pt(9)
+
+
+def notas_sueltas(doc) -> None:
+    """Las aclaraciones que van debajo de una tabla llevan el rótulo Nota."""
+    for p in doc.paragraphs:
+        if p.text.strip().startswith(NOTAS_SUELTAS):
+            texto = p.text.strip()
+            for r in list(p.runs):
+                r._r.getparent().remove(r._r)
+            a = p.add_run("Nota. ")
+            a.italic, a.font.size = True, Pt(9)
+            b = p.add_run(texto)
+            b.font.size = Pt(9)
+
+
+def signos(doc) -> None:
+    """Un solo signo menos (U+2212) para los números negativos; las referencias no se tocan."""
+    patron = re.compile(r"(?<![\w\d)\]])-(?=\d)")
+    en_refs = False
+    for p in _parrafos(doc):
+        if p.style is not None and p.style.name.startswith("Heading"):
+            en_refs = p.text.strip() == "Referencias"
+        if en_refs:
+            continue
+        for r in p.runs:
+            if "-" in r.text:
+                r.text = patron.sub("−", r.text)
+
+
+def saltos(doc) -> None:
+    """Un párrafo con solo un salto de página se cambia por 'salto antes' en el párrafo siguiente (evita páginas en blanco)."""
+    body = doc.element.body
+    for el in list(body.iterchildren()):
+        if el.tag != qn("w:p") or _texto(el).strip():
+            continue
+        brs = [b for b in el.iter(qn("w:br")) if b.get(qn("w:type")) == "page"]
+        if not brs:
+            continue
+        sig = el.getnext()
+        while sig is not None and sig.tag == qn("w:p") and not _texto(sig).strip() and not _tiene_imagen(sig):
+            sig = sig.getnext()
+        if sig is None or sig.tag != qn("w:p"):
+            continue
+        Paragraph(sig, doc._body).paragraph_format.page_break_before = True
+        body.remove(el)
+
+
+LLAMADA = re.compile(r"\b(Tablas?|Figuras?)\s+(\d+(?:(?:,\s*|\s+[ya]\s+)\d+)*)")
+
+
+def llamadas(doc) -> int:
+    """APA 7: cada tabla y figura se nombra en el texto. A las que no se nombran se les agrega '(Tabla n)' en el párrafo
+    de texto que las introduce (o el que las sigue, si van justo después de un título)."""
+    body = doc.element.body
+    leyenda = re.compile(r"^(Tabla|Figura) (\d+)$")
+    nombradas = {"Tabla": set(), "Figura": set()}
+    for p in _parrafos(doc):
+        t = p.text.strip()
+        if leyenda.match(t):
+            continue
+        for m in LLAMADA.finditer(t):
+            tipo = "Tabla" if m.group(1).startswith("Tabla") else "Figura"
+            nums = [int(x) for x in re.findall(r"\d+", m.group(2))]
+            if " a " in m.group(2) and len(nums) == 2:
+                nums = list(range(nums[0], nums[1] + 1))
+            nombradas[tipo].update(nums)
+    pendientes = {}
+    for el in list(body.iterchildren()):
+        if el.tag != qn("w:p"):
+            continue
+        m = leyenda.match(_texto(el).strip())
+        if not m or int(m.group(2)) in nombradas[m.group(1)]:
+            continue
+        def es_titulo(y):
+            z = y.getprevious()
+            return z is not None and z.tag == qn("w:p") and bool(leyenda.match(_texto(z).strip()))
+
+        # Párrafo de texto anterior (sin leyendas, títulos de tabla o figura, notas ni imágenes).
+        x = el.getprevious()
+        while x is not None and (x.tag != qn("w:p") or not _texto(x).strip() or leyenda.match(_texto(x).strip()) or es_titulo(x)
+                                 or _texto(x).strip().startswith("Nota.") or _tiene_imagen(x)
+                                 or Paragraph(x, doc._body).style.name.startswith("Caption")):
+            if x.tag == qn("w:tbl"):
+                break
+            x = x.getprevious()
+        if x is None or x.tag != qn("w:p") or Paragraph(x, doc._body).style.name.startswith(("Heading", "TOC")):
+            x = el.getnext()
+            while x is not None and (x.tag != qn("w:p") or not _texto(x).strip() or leyenda.match(_texto(x).strip())
+                                     or es_titulo(x) or _texto(x).strip().startswith("Nota.") or _tiene_imagen(x)):
+                x = x.getnext()
+        if x is None:
+            continue
+        pendientes.setdefault(x, []).append((m.group(1), int(m.group(2))))
+    for x, lista in pendientes.items():
+        tablas = [n for t, n in lista if t == "Tabla"]
+        figuras = [n for t, n in lista if t == "Figura"]
+
+        def nombre(tipo, ns):
+            if not ns:
+                return ""
+            if len(ns) == 1:
+                return f"{tipo} {ns[0]}"
+            return f"{tipo}s " + ", ".join(map(str, ns[:-1])) + f" y {ns[-1]}"
+        texto = " y ".join(s for s in (nombre("Tabla", tablas), nombre("Figura", figuras)) if s)
+        p = Paragraph(x, doc._body)
+        runs = [r for r in p.runs if r.text]
+        if not runs:
+            continue
+        ult = runs[-1]
+        t = ult.text.rstrip()
+        if t.endswith(":"):
+            ult.text = t[:-1] + f" ({texto}):"
+        elif t.endswith("."):
+            ult.text = t[:-1] + f" ({texto})."
+        else:
+            ult.text = t + f" ({texto})"
+    return sum(len(v) for v in pendientes.values())

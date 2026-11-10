@@ -54,7 +54,7 @@ Con el logit corregido la TPM mediana al año 10 queda en 7,25 % y 0,8 % de las 
 - Umbral de crisis (A3): PIB < 1 % en todo el libro y en los datos. Con 0 % solo quedarían 4 trimestres de crisis desde 2006 y la de 2009 no contaría.
 - Tornado (N1): el factor de valorización movía las medias de la normal por estado, que con el AR(1) ya no se usan, y su rango era 0. Ahora mueve la media del AR(1) del IPVU (5,55 % / 9,55 %).
 - Cuenta en el libro (M8): la hoja TPM_Cuenta excluye Ualá y da α = 0,8978 con 19 tasas, igual que PARAMETROS.
-- Estados económicos: las limitaciones de la cadena (intervalos amplios con 81 transiciones, persistencia en parte mecánica del crecimiento interanual, crisis simuladas más largas que las observadas) quedan en la hoja DECISIONES (D13).
+- Estados económicos: las limitaciones de la cadena (intervalos amplios con 81 transiciones, persistencia en parte mecánica del crecimiento interanual, crisis simuladas más largas que las observadas) quedan en la sección 8.1 del informe y en la hoja MODELOS.
 - Inversión mínima (punto 5): cuenta sin monto mínimo; CDT de $50.000 a $500.000 según la entidad (prensa, 2026); ETF una unidad; inmueble completo. Ninguna limita al modelo porque las posiciones son de decenas de millones.
 - Hoja INM del Excel: los avisos de Aptología se reemplazan en la copia del master por la tabla de la Lonja (edición 275) con la que se fija el canon.
 - Impuestos (M5): no se modelan el impuesto de renta sobre intereses y arriendos ni la ganancia ocasional en la venta del inmueble; la retención se trata como costo definitivo aunque es un anticipo.
@@ -77,3 +77,14 @@ Veredicto de la primera pasada: aprobado con observaciones. Cambios hechos:
 - Informe: el estado económico no mueve la TPM ni la valorización (7.4.10 y 13 corregidos); 1.068 réplicas y rangos realmente corridos en la sección 4; venta urgente de 4 a 7 meses y sin venta ordinaria; arriendo como parte de los ingresos corrientes, no de la ganancia; normalidad de la inflación según la prueba; IC de α por entidad; una sola cita para la retención del CDT; sin notas internas ni referencias cruzadas viejas.
 - Formato APA 7: citas (autor, año), lista de referencias con DOI y sangría francesa, tablas y figuras numeradas 1 a n con título en cursiva arriba y nota, número de página, una sola fuente (Arial) y encabezado repetido en tablas largas. Interlineado sencillo (decisión del equipo para un informe técnico).
 - Diagramas: el informe trae una vista general del diagrama de eventos (sección 10) y remite a los PDF vectoriales de docs/diagramas para leer el detalle; se descartó reproducirlo por partes (26 páginas en A3). Se corrigió un error de la edición anterior de los PDF que quitaba los espacios del texto original.
+
+## Segunda auditoría independiente (9 de noviembre de 2026)
+
+Veredicto: aprobado con observaciones, nota estimada 86/100. Cambios hechos después:
+
+- Código: el 4x1000 ya no se cobra al renovar un CDT en la misma entidad (el capital no sale del banco); prueba nueva `test_renovar_un_cdt_no_paga_4x1000`. Sube un poco el resultado de E1 y E4.
+- Sensibilidad: se agregan la memoria de la inflación (φ = 0 y 0,6 con el mismo nivel) y el mantenimiento (0,2 % y 0,5 %); el texto ya no anuncia sensibilidades que no se corrieron.
+- Con la corrección de Holm la diferencia de patrimonio entre E4 y E2 deja de ser significativa; el informe lo dice.
+- Informe: todas las tablas y figuras se nombran en el texto; títulos en negro con los niveles de APA y tablas solo con líneas horizontales; un solo signo menos; notas con el rótulo "Nota."; columna "Por qué" en el resumen de modelos (7.9).
+- Excel: hoja MODELOS (modelo elegido, datos, pruebas, por qué y efecto de la alternativa) en lugar de DISTRIBUCIONES y DECISIONES; diseño del experimento y sensibilidad en RESULTADOS; hoja MARKOV corregida (el estado no mueve la valorización); se quita MARKOV_Fuentes; el estado "Pendiente" pasa a "Apagado".
+- El diagrama queda en una página del informe y los PDF vectoriales se entregan aparte (decisión del equipo).

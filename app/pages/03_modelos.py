@@ -13,7 +13,7 @@ T = p.tabla
 st.title("Modelos y economía")
 st.write("Cada control parte del valor de referencia de la hoja PARAMETROS del Excel maestro. Debajo de cada uno "
          "están la fuente y el estado: **Estimado** sale de los datos, **Supuesto** es una decisión del equipo y "
-         "**Pendiente** no tiene datos. Cambiar un valor solo afecta esta sesión; el Excel no se modifica.")
+         "**Apagado** no tiene datos y el proceso no se usa. Cambiar un valor solo afecta esta sesión; el Excel no se modifica.")
 
 
 def numero(clave: str, etiqueta: str, escala: float = 1.0, paso: float | None = None, minimo: float | None = None,

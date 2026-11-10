@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 ESCENARIOS = ("base", "adverso", "estres")
-ESTADOS_VALIDOS = {"Configurable", "Verificado", "Estimado", "Calibrado", "Supuesto", "Pendiente", "Calculado"}
+ESTADOS_VALIDOS = {"Configurable", "Verificado", "Estimado", "Calibrado", "Supuesto", "Apagado", "Calculado"}
 RAIZ = Path(__file__).resolve().parents[3]
 EXCEL_POR_DEFECTO = RAIZ / "data" / "master_datos.xlsx"
 COLUMNAS = ("ID", "Clave", "Grupo", "Parámetro", "Base", "Adverso", "Estrés", "Unidad", "Estado", "Fuente", "Soporte")
@@ -240,7 +240,7 @@ def advertencias(p: Params) -> list[str]:
         costo = w[3] * p.f("inm.costo_compra")
         if w[0] - costo < p.f("inv.liquidez_min"):
             avisos.append(f"{e}: después de pagar la compra del inmueble la cuenta queda bajo la liquidez mínima; el simulador venderá ETF desde el primer mes.")
-    pend = [t.nombre for t in p.tabla.values() if t.estado == "Pendiente"]
+    pend = [t.nombre for t in p.tabla.values() if t.estado == "Apagado"]
     if pend:
-        avisos.append("Parámetros pendientes, sin datos (el proceso queda apagado): " + "; ".join(pend))
+        avisos.append("Parámetros apagados por falta de datos: " + "; ".join(pend))
     return avisos

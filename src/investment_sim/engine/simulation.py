@@ -125,11 +125,19 @@ class Simulacion:
                                "detalle": texto, "estado": self.s.estado_eco,
                                "cuenta": self.s.cuenta, "W": self.W(), **extra})
 
-    def debitar(self, monto: float, concepto: str) -> None:
-        """Saca dinero de la cuenta y cobra el 4x1000 sobre lo que pase la exención del mes."""
+    def debitar(self, monto: float, concepto: str, sin_gmf: float = 0.0) -> None:
+        """Saca dinero de la cuenta y cobra el 4x1000 sobre lo que pase la exención del mes.
+
+        sin_gmf: parte del monto que no es un retiro real (el capital de un CDT que se renueva
+        en la misma entidad no sale del banco, así que no paga 4x1000)."""
         if monto <= 0:
             return
         s = self.s
+        libre = min(max(sin_gmf, 0.0), monto)
+        s.cuenta -= libre
+        monto -= libre
+        if monto <= 0:
+            return
         antes = max(s.debitos_mes - self.exencion, 0.0)
         s.debitos_mes += monto
         despues = max(s.debitos_mes - self.exencion, 0.0)
@@ -314,7 +322,7 @@ class Simulacion:
         s.etf += monto - comision
         s.etf_costo += monto
 
-    def abrir_cdt(self, monto: float, k: int) -> None:
+    def abrir_cdt(self, monto: float, k: int, renovado: float = 0.0) -> None:
         s, p = self.s, self.p
         monto = min(monto, max(s.cuenta, 0.0) / (1 + self.gmf))
         if monto <= TOL:
@@ -322,7 +330,7 @@ class Simulacion:
         delta = s.tpm - self.tpm_hace(3)
         margen = tasas.margen_cdt(delta, self.z_cdt[k], self.u_cdt[k], self.pp, self.res_cdt)
         tasa = (s.tpm + margen) / 100
-        self.debitar(monto, "apertura de CDT")
+        self.debitar(monto, "apertura de CDT", sin_gmf=renovado)
         plazo = p.f("cdt.plazo")
         cdt = CDT(monto, tasa, s.t, s.t + plazo)
         if s.t + plazo <= self.H + 1e-9:
@@ -505,7 +513,7 @@ class Simulacion:
         if self.e.dinamica:
             monto = min(monto, cdt.capital + self._disponible())
         k = ev.datos["k"]
-        self.abrir_cdt(monto, k=k)
+        self.abrir_cdt(monto, k=k, renovado=cdt.capital)
         nuevo = s.cdts[-1] if s.cdts and abs(s.cdts[-1].abierto - s.t) < 1e-9 else None
         self.anotar(ev.tipo, f"Vence CDT de {cdt.capital:,.0f} al {cdt.tasa:.2%}; " +
                     (f"se renueva por {nuevo.capital:,.0f} al {nuevo.tasa:.2%}" if nuevo else "no se renueva"))

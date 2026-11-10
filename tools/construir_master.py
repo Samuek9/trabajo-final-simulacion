@@ -26,7 +26,7 @@ from hoja_parametros import escribir as escribir_parametros  # noqa: E402
 from parametros_def import FILAS  # noqa: E402
 
 RES = RAIZ / "outputs" / "resultados"
-AZUL = "1F4E78"
+AZUL = "404040"  # gris oscuro: encabezados sobrios
 ID = {f[1]: f[0] for f in FILAS}
 
 
@@ -72,26 +72,26 @@ def leeme(ws) -> None:
     f = titulo(ws, "Excel maestro del trabajo final de Simulación",
                f"Reúne en un solo libro los datos, parámetros y resultados de los puntos 1 a 24. Generado el {date.today():%d/%m/%Y}. "
                "El simulador lee solo la hoja PARAMETROS; las demás documentan de dónde sale cada número. "
-               "Las hojas INF, TPM_Cuenta, CDT, ETF, INM y PIB vienen del consolidado de los puntos 1 a 7; las MARKOV, "
-               "del análisis de estados económicos del equipo, copiadas sin cambios.")
+               "Las hojas INF, TPM_Cuenta, CDT, ETF, INM y PIB vienen del consolidado de los puntos 1 a 7 y las MARKOV del "
+               "análisis de estados económicos del equipo, con las correcciones que pidió la revisión del modelo. Para la "
+               "exposición basta empezar por MODELOS y RESULTADOS.")
     hojas = [
-        ["LEEME", "Esta hoja", ""],
+        ["LEEME", "Esta hoja: qué hay en el libro y en qué orden leerlo", ""],
+        ["MODELOS", "Para leer primero: el modelo elegido para cada proceso, con sus datos, sus pruebas y por qué", "Puntos 7, 8 y 16"],
         ["PARAMETROS", f"Los {len(FILAS)} parámetros del simulador con valor base, adverso y de estrés, unidad, estado y fuente", "Puntos 7 a 14"],
-        ["FUENTES", "Fuentes de datos y documentos del equipo, con cuántos parámetros sale de cada una", "Todos"],
-        ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica", "Punto 15"],
-        ["DISTRIBUCIONES", "Modelo de cada proceso aleatorio, parámetros que usa y cómo se validó", "Puntos 7 y 16"],
-        ["DECISIONES", "Modelos alternativos, supuestos y pendientes que el equipo debe revisar", "Todos"],
-        ["MARKOV", "Matriz de transición y resultado del análisis de estados (equipo)", "Punto 8"],
-        ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda, MARKOV_Fuentes", "Datos del análisis de estados (equipo)", "Punto 8"],
-        ["INF", "Inflación: datos DANE y ajuste del AR(1) en logaritmos", "7.1"],
-        ["TPM_Cuenta", "TPM, tabla de decisiones por tendencia y tasa de la cuenta", "7.2 y 7.3"],
-        ["TPM_Logit", "Las 202 decisiones de la Junta 2001-2026 (calendario de 8 reuniones) y el logit ordenado que se usa como referencia", "7.2"],
+        ["INF", "Inflación: datos del DANE, pruebas y AR(1) en logaritmos", "7.1"],
+        ["TPM_Cuenta", "TPM, tabla de decisiones por tendencia (alternativa) y tasa de la cuenta", "7.2 y 7.3"],
+        ["TPM_Logit", "Las 202 decisiones de la Junta 2001-2026 y el logit ordenado que usa el simulador", "7.2"],
         ["CDT", "Margen de los CDT a 360 días sobre la TPM, modelo M5", "7.4"],
-        ["ETF", "Rendimientos mensuales del iCOLCAP y ajuste de distribuciones", "7.5"],
-        ["INM", "Valorización, canon, vacancia y gastos del inmueble", "7.6 a 7.8"],
-        ["PIB", "Crecimiento del PIB y clasificación en estados", "Punto 8"],
-        ["VALIDACION", "Simulado contra observado para cada proceso", "Punto 16"],
-        ["RESULTADOS", "Indicadores de las 12 configuraciones, capital necesario, precisión y comparaciones pareadas", "Puntos 15 a 18"],
+        ["ETF", "Rendimientos mensuales del iCOLCAP, pruebas y ajuste de distribuciones", "7.5"],
+        ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia", "5.4 y 7.6 a 7.7"],
+        ["PIB", "Crecimiento del PIB 1995-2026 y clasificación en estados", "7.8"],
+        ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado", "Punto 8"],
+        ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda", "Datos que usa la hoja MARKOV", "Punto 8"],
+        ["VALIDACION", "Simulado contra observado; separa lo que reproduce insumos de los contrastes", "Punto 16"],
+        ["RESULTADOS", "Diseño del experimento, indicadores de las 12 configuraciones, capital necesario, comparaciones y sensibilidad", "Puntos 14 a 18"],
+        ["FUENTES", "Fuentes de datos y documentos, con cuántos parámetros sale de cada una", "Todos"],
+        ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica", "Punto 15"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido", "Punto del enunciado"], hojas, [34, 95, 20], "Hojas")
     archivos = []
@@ -101,14 +101,14 @@ def leeme(ws) -> None:
         archivos.append(["outputs/resultados/replicas.csv.gz", sum(1 for _ in g) - 1, "Una fila por réplica, estrategia y escenario"])
     for nombre, desc in (("bandas.csv", "Percentiles mes a mes del patrimonio real y la cuenta"),
                          ("capital_meta.csv", "Probabilidad de meta por capital, meta y estrategia"),
-                         ("tornado.csv", "Sensibilidad uno a uno de 14 factores"),
+                         ("tornado.csv", "Sensibilidad de un factor a la vez"),
                          ("traza_E4_replica0.csv", "Todos los eventos de una réplica de ejemplo")):
         archivos.append([f"outputs/resultados/{nombre}", len(pd.read_csv(RES / nombre)), desc])
     f = tabla(ws, f, ["Archivo del repositorio", "Filas", "Contenido"], archivos, None,
               "Series que no caben bien en Excel (están completas en el repositorio, sin recortar)")
     estados = [["Configurable", "Lo elige el usuario en la aplicación"], ["Verificado", "Dato tomado de una fuente oficial"],
                ["Estimado", "Sale de ajustar un modelo a los datos"], ["Calibrado", "Ajustado para reproducir una referencia"],
-               ["Supuesto", "Decisión del equipo sin dato directo"], ["Pendiente", "Sin datos; el valor está apagado o es provisional"]]
+               ["Supuesto", "Decisión del equipo sin dato directo"], ["Apagado", "Sin datos; el proceso no se usa en la corrida"]]
     f = tabla(ws, f, ["Estado", "Significado"], estados, None, "Estados de un parámetro")
     ws.cell(f, 1, f"Corrida del informe: {corrida['replicas']} réplicas, semilla {corrida['semilla_base']}, "
                   f"modelo versión {corrida['version_modelo']}, {corrida['fecha']}.")
@@ -227,50 +227,151 @@ def diccionario(ws) -> None:
     tabla(ws, f, ["Serie mensual", "Significado"], tray, None, "Trayectorias mensuales (trazabilidad y bandas)")
 
 
-def distribuciones(ws) -> None:
-    filas = [
-        ["Estado económico", "Cadena de Markov de 3 estados, paso trimestral", "P(i → j) por conteo de transiciones", ids("markov.", "eco."), "Hoja MARKOV", "Proporción y duración de estados"],
-        ["Inflación de diciembre", "ln π_t = c + φ ln π_{t−1} + σZ, Z normal", "c, φ, σ por mínimos cuadrados", ids("inf."), "Hoja INF", "Mediana, percentiles, autocorrelación"],
-        ["Decisión de la Junta", "Logit ordenado (baja, mantiene, sube) con tendencia de inflación y brecha de Taylor; tamaño del paso por frecuencias", "Máxima verosimilitud, 202 decisiones fechadas por su vigencia", ids("junta.", "tpm."), "Hoja TPM_Logit", "TPM al año 10, tasa real"],
-        ["Tasa de la cuenta", "α × TPM", "α de las cuentas remuneradas", ids("cta.", "imp."), "Hoja TPM_Cuenta", ""],
-        ["Margen del CDT", "TPM + a + b·ΔTPM(3 meses) + ε, ε por bootstrap de los residuos", "Mínimos cuadrados, datos semanales", ids("cdt."), "Hoja CDT", "Margen simulado contra observado"],
-        ["ETF iCOLCAP", "g = μ + vol(estado)·√((ν−2)/ν)·T, T ~ t de Student con ν grados", "μ y vol por estado; ν por máxima verosimilitud", ids("etf."), "Hoja ETF y MARKOV_ETF", "Media, desviación, curtosis, peor mes"],
-        ["Valorización anual", "AR(1) del logaritmo (IPVU): r_t = μ + φ(r_{t−1} − μ) + σZ, igual en los tres estados", "Máxima verosimilitud, 2001-2025", ids("val."), "Hoja INM", "Media y desviación anual"],
-        ["Reajuste del canon", "a + b·IPC previo + σZ, con tope en el IPC previo", "Mínimos cuadrados con el índice de arriendos", ids("inm."), "Hoja INM", ""],
-        ["No renovación del contrato", "Bernoulli(p(estado)) al vencer cada contrato", "Supuesto del equipo", ids("vac.p"), "", "Fracción del tiempo desocupado"],
-        ["Duración de la vacancia", "Gamma con forma k y media m(estado)", "Forma y media normal ajustadas a la curva de Palomma; medias de expansión y crisis supuestas", ids("vac.media", "vac.forma"), "", ""],
-        ["Necesidades de liquidez", "Proceso de Poisson con tasa λ(estado); monto lognormal indexado", "Supuesto del equipo (IEFIC 2017-2018 como referencia de frecuencia)", ids("liq."), "", ""],
-        ["Reparaciones", "Poisson y lognormal (apagado)", "Pendiente: sin datos", ids("rep."), "", ""],
-        ["Crisis forzada (estrés)", "Inicio U(1, H − 12) y duración U(12, 24) meses", "Escenarios.docx", ids("estres."), "", ""],
-    ]
-    f = titulo(ws, "Distribuciones y modelos", "Cada proceso aleatorio tiene su propio generador de números, derivado de la semilla de la réplica.")
-    tabla(ws, f, ["Proceso", "Modelo", "Estimación", "IDs en PARAMETROS", "Datos", "Validación (hoja VALIDACION)"], filas,
-          [24, 60, 34, 40, 24, 34])
+def _sm(prefijo: str) -> str:
+    """Cambio en P(meta) (puntos) al usar el modelo alternativo, E1 / E2 / E3 / E4."""
+    sm = pd.read_csv(RES / "sensibilidad_modelos.csv")
+    g = sm[sm.modelo.str.startswith(prefijo)].set_index("estrategia")
+    return " / ".join(f"{(g.loc[e, 'alt_p_meta'] - g.loc[e, 'ref_p_meta']) * 100:+.1f}".replace(".", ",") for e in ("E1", "E2", "E3", "E4"))
 
 
-def decisiones(ws) -> None:
+def _tor(prefijo: str) -> str:
+    """P(meta) de E2 con el valor bajo y el alto de un factor del tornado."""
+    t = pd.read_csv(RES / "tornado.csv")
+    x = t[t.factor.str.startswith(prefijo) & (t.estrategia == "E2")].iloc[0]
+    return f"{x.bajo_p_meta * 100:.0f} % y {x.alto_p_meta * 100:.0f} %"
+
+
+def modelos(ws) -> None:
+    """Qué modelo elegimos para cada proceso, con qué datos, qué pruebas lo respaldan y por qué."""
+    f = titulo(ws, "Modelos elegidos y por qué",
+               "Resumen para leer primero. Por cada proceso aleatorio: los datos, los modelos que comparamos, las pruebas que "
+               "decidieron, el modelo que usa el simulador y la razón. La última columna dice cuánto cambia la probabilidad de "
+               "meta (E1 / E2 / E3 / E4, en puntos) si se usa la alternativa, o entre qué valores queda la de E2 si se mueve el "
+               "parámetro en la sensibilidad. El detalle de cada prueba está en la hoja indicada.")
     filas = [
-        ["D01", "Junta", "Referencia: logit ordenado. Alternativa: tabla por tendencia de 7.2", "Con la tabla la TPM llega al tope de 15 % en cerca de la mitad de las réplicas", "Cerrada"],
-        ["D02", "CDT", "Referencia: M5 (Word). Alternativa: margen por fase", "M5 usa 18 años de datos semanales; los valores por fase del diagrama eran de una versión anterior", "Cerrada"],
-        ["D03", "Canon", "Referencia: modelo DANE con tope. Alternativa: todo el IPC (diagrama)", "Los datos muestran reajustes por debajo del IPC", "Cerrada"],
-        ["D04", "ETF", "Referencia: t por estado (equipo). Alternativa: Jones-Faddy", "Conecta el ETF con el estado económico", "Cerrada"],
-        ["D05", "Valorización", "Referencia: AR(1) del IPVU. Alternativa: normal por estado con el IPVNBR de Medellín", "El inmueble es usado y el IPVNBR mide vivienda nueva; el estado no cambia la valorización (Welch, p = 0,275)", "Cerrada; con la alternativa la P(meta) sube 9 a 15 puntos"],
-        ["D06", "Vacancia", "5/10/30 % de no renovar y 1/1,5/6 meses de duración media", "Simula 2,5 % del tiempo vacante (medido en continuo) contra 0,6 % de Ciencuadras", "Cerrada"],
-        ["D07", "Estrés", "Recortes de TPM de 0,5 a 2 puntos durante la crisis forzada", "No hay dato; es un supuesto", "Cerrada"],
-        ["D08", "Impuestos", "UVT 2026 = 52.374 para la exención del 4x1000", "Resolución DIAN 000238 del 15 de diciembre de 2025", "Cerrada"],
-        ["D09", "Reparaciones", "Apagadas (frecuencia 0)", "Sin datos de costo ni frecuencia", "Pendiente"],
-        ["D10", "Inflación", "Diciembre se sortea al inicio del año y la ruta mensual es lineal", "Evita que la Junta mire el futuro", "Cerrada"],
-        ["D11", "Liquidez", "Lo que no se cubre queda como deuda y cuenta como iliquidez", "El enunciado no dice qué pasa si nada alcanza", "Cerrada"],
-        ["D12", "Arriendo", "En el mes en que cambia el contrato se cobra el canon viejo", "Regla de desempate", "Cerrada"],
-        ["D13", "Estados económicos", "Se usa la cadena de Markov de la hoja MARKOV (umbral de crisis 1 %, expansión 4 %) sin cambios",
-         "Limitaciones: 81 transiciones, así que los intervalos son amplios (IC 90 % bootstrap: C→C 0,25 a 0,89; N→C 0,024 a 0,167; "
-         "estacionaria de crisis 0,03 a 0,37). Parte de la persistencia es mecánica: el crecimiento interanual de un trimestre comparte "
-         "tres trimestres con el anterior (autocorrelación 0,69). Las tres crisis observadas duraron 4 trimestres; la cadena genera "
-         "crisis más largas (racha máxima mediana 6, p95 14). La matriz no cambia entre 2006-2015 y 2016-2026 (G = 4,29, p = 0,37). "
-         "Impacto bajo: la probabilidad de crisis × 0,5 / × 2 mueve la P(meta) de E2 en 0,005", "Limitación declarada"],
+        ["Inflación anual", "IPC del DANE, 2001 a 2025 (25 años)",
+         "Normal y lognormal; años independientes frente a AR(1)",
+         "Normalidad: depende de la prueba (Jarque-Bera p = 0,002; Shapiro-Wilk p = 0,057). En logaritmos no se rechaza "
+         "(Shapiro-Wilk p = 0,81). Autocorrelación de ln π: 0,42 (p = 0,043). Media frente a la meta de 3 %: p = 0,020",
+         "AR(1) en logaritmos: ln π(t) = c + φ·ln π(t−1) + σ·Z, con φ = 0,41 y nivel de largo plazo 4,5 %",
+         "La inflación nunca es negativa y sus saltos son hacia arriba (lognormal), y un año depende del anterior. "
+         "Pronosticada un año adelante cae en la banda de 90 % en 8 de 10 años de 2016 a 2025",
+         f"Nivel 3,5 % o 6,5 %: E2 entre {_tor('Nivel de la inflación')}. Sin memoria o con φ = 0,6: E2 entre {_tor('Memoria')}",
+         ids("inf."), "INF"],
+        ["Decisión de la Junta (TPM)", "202 decisiones de 2001 a 2026 (52 subidas, 48 bajadas, 102 sin cambio)",
+         "Tabla por tendencia de la inflación (7.2); logit ordenado solo con la tendencia; logit con tendencia y brecha de Taylor",
+         "Agregar la brecha de Taylor mejora el ajuste (razón de verosimilitud 6,88; p = 0,009; AIC de 336,4 a 331,5). "
+         "Brant: no se rechaza la proporcionalidad (p = 0,48). Las probabilidades predichas coinciden con las observadas por tercios",
+         "Logit ordenado (baja, mantiene o sube) con la tendencia de la inflación y la brecha de Taylor; el tamaño del cambio "
+         "se sortea con las frecuencias observadas. TPM entre 1,75 % y 15 %",
+         "Con la tabla la TPM llega al tope de 15 % en cerca de la mitad de las réplicas, algo que nunca pasó (máximo 13,25 %). "
+         "El logit reproduce las decisiones observadas",
+         f"Tabla por tendencia: {_sm('Junta: tabla')}. Logit solo con 2017-2026: {_sm('Junta: logit')}",
+         ids("junta.", "tpm."), "TPM_Logit, TPM_Cuenta"],
+        ["Tasa de la cuenta", "19 tasas de 4 cuentas digitales en 5 fechas (dic-2023 a oct-2026)",
+         "Proporción fija de la TPM (α)",
+         "α no depende del nivel de la TPM (correlación −0,26; p = 0,29). IC de α por entidad: 0,755 a 1,046",
+         "Tasa de la cuenta = 0,898 × TPM, retención de 7 %",
+         "Las cuentas digitales siguen a la TPM con una proporción estable",
+         f"α = 0,80 o 0,95: E2 entre {_tor('Tasa de la cuenta')}",
+         ids("cta."), "TPM_Cuenta"],
+        ["Margen del CDT sobre la TPM", "CDT a 360 días y TPM, semanal, 2008 a 2026",
+         "Margen fijo, margen por fase de la TPM y modelos con el cambio reciente de la TPM (M2 a M6)",
+         "El coeficiente del cambio de la TPM en 13 semanas es significativo (errores HAC). Los residuos no son normales "
+         "(Jarque-Bera p < 0,001). Fuera de muestra (2020-2026) M5 tiene un error de 1,78 puntos y el margen fijo 1,69",
+         "M5: margen = 1,06 + 0,67·ΔTPM(3 meses) + residuo sorteado de los observados; retención de 4 %",
+         "Es el único que recoge que el margen se abre cuando la TPM sube y se cierra cuando baja, aunque fuera de muestra no "
+         "predice mejor que el margen fijo. Los residuos se sortean de los datos porque no son normales",
+         f"Margen por fase: {_sm('CDT')}. Constante ± 0,5 puntos: E2 entre {_tor('Margen del CDT')}",
+         ids("cdt."), "CDT"],
+        ["Rendimiento del ETF", "NAV del iShares COLCAP, 182 meses (2011 a 2026)",
+         "Normal, logística, Laplace, t, t con la media muestral, t asimétrica de Jones-Faddy y otros (8 modelos)",
+         "Normalidad rechazada (Jarque-Bera 361,7). Sin memoria (Ljung-Box p ≥ 0,16) ni efecto ARCH (p = 0,997). Por estado: "
+         "la media no cambia (Kruskal-Wallis p = 0,39) y la volatilidad sí (Levene p = 0,004)",
+         "t de Student con 5 grados de libertad, media 0,36 % mensual y volatilidad 4,7 % (expansión y normal) u 8,8 % (crisis)",
+         "Tiene colas pesadas, no tiene memoria y permite que el estado de la economía mueva el riesgo, como pide el punto 8. "
+         "La Jones-Faddy ajusta mejor la asimetría pero no tiene estados",
+         f"Jones-Faddy: {_sm('ETF')}. Media 0 o 0,86 %: E2 entre {_tor('Rendimiento medio del ETF')}",
+         ids("etf."), "ETF, MARKOV_ETF"],
+        ["Valorización del inmueble", "Índice de precios de la vivienda usada (IPVU), 2001 a 2025",
+         "Normal independiente, AR(1) y normal por estado con el índice de vivienda nueva de Medellín (IPVNBR)",
+         "Variación normal (Jarque-Bera p = 0,92). φ significativo (t = 4,5; p < 0,001) y residuos sin autocorrelación "
+         "(p = 0,17). El estado no la cambia (Welch p = 0,275) ni la inflación del mismo año (p = 0,84)",
+         "AR(1) del logaritmo: media 7,55 % anual, φ = 0,676, σ = 2,36 %; arranca en la variación de 2025 (8,09 %)",
+         "El inmueble es usado y el IPVU mide vivienda usada; los años buenos y malos vienen seguidos. Fuera de muestra "
+         "cae en la banda de 90 % los 10 años de 2016 a 2025",
+         f"IPVNBR por estado: {_sm('Valorización')}. Media ± 2 puntos: E2 entre {_tor('Valorización')}",
+         ids("val."), "INM, MARKOV_Vivienda"],
+        ["Reajuste del canon", "IPC de arriendos del DANE, 2010 a 2025 (16 años)",
+         "Sube todo el IPC (diagrama) frente a una regresión sobre el IPC del año anterior",
+         "El coeficiente sobre el IPC previo es significativo (p < 0,001, errores robustos; R² = 0,71). Los arriendos suben en promedio menos que el IPC "
+         "(3,93 % frente a 4,90 %)",
+         "Reajuste = 1,68 % + 0,48·IPC previo + ε, sin pasar del IPC previo (Ley 820); canon inicial 0,60 % del valor (Lonja)",
+         "Los datos muestran reajustes menores que el IPC; el tope legal se respeta",
+         f"Todo el IPC: {_sm('Canon')}. Canon inicial 0,50 % o 0,70 %: E2 entre {_tor('Canon inicial')}",
+         ids("inm.reajuste", "inm.canon"), "INM"],
+        ["Vacancia", "Curva de tiempo en oferta de Palomma (25.084 apartamentos de Medellín, 2025-2026)",
+         "Exponencial, gamma, Weibull y lognormal para la duración",
+         "La gamma con forma 1,1 reproduce la curva; la probabilidad de no renovar no tiene datos (supuesto)",
+         "No renovar con probabilidad 5 % / 10 % / 30 % según el estado; duración gamma con media 1 / 1,5 / 6 meses",
+         "Es conservador a propósito: el apartamento pasa 2,5 % del tiempo vacío, frente a 0,6 % que reporta Ciencuadras",
+         f"Duración de 4 meses (Lonja): {_sm('Vacancia')}. Probabilidad × 0,5 o × 2: E2 entre {_tor('Probabilidad de no renovar')}",
+         ids("vac."), "INM, MARKOV"],
+        ["Estado de la economía", "PIB trimestral del DANE, 2006 a 2026 (82 trimestres)",
+         "Estados independientes frente a una cadena de Markov de 3 estados (crisis si el PIB crece menos de 1 %, "
+         "expansión desde 4 %)",
+         "El estado depende del trimestre anterior (χ² = 81,8; p < 0,001). La matriz no cambia entre 2006-2015 "
+         "y 2016-2026 (G = 4,29; p = 0,37)",
+         "Cadena de Markov trimestral; mueve la volatilidad del ETF, la vacancia, la frecuencia de las necesidades y el reparto "
+         "de E4. No mueve la inflación, la TPM ni la valorización",
+         "Las crisis duran varios trimestres seguidos. En el largo plazo la cadena pasa 32 / 52 / 16 % del tiempo en cada "
+         "estado, frente a 37 / 49 / 15 % observado",
+         f"Probabilidad de entrar en crisis × 0,5 o × 2: E2 entre {_tor('Probabilidad de crisis')}",
+         ids("markov.", "eco."), "MARKOV, MARKOV_PIB, PIB"],
+        ["Necesidades de liquidez", "Sin datos de monto. La IEFIC del DANE (2017-2018) solo sirve de referencia para la frecuencia",
+         "Proceso de Poisson con monto lognormal",
+         "No hay pruebas posibles: es un supuesto. La IEFIC sugiere un gasto mayor que el ingreso cada 16 a 23 meses",
+         "Una cada 24 meses (cada 12 en crisis); monto lognormal con mediana de $20 millones de hoy",
+         "Representa imprevistos grandes (salud, desempleo, reparación); por eso los resultados se muestran con y sin ellos",
+         f"Sin necesidades: {_sm('Sin necesidades')}. Frecuencia × 0,5 o × 1,5: E2 entre {_tor('Frecuencia de necesidades')}",
+         ids("liq."), "PARAMETROS"],
+        ["Reparaciones extraordinarias", "Sin datos de costo ni frecuencia", "Poisson con costo lognormal",
+         "No hay pruebas posibles", "Apagadas (frecuencia 0). El mantenimiento normal (0,3 % al año) y la pintura sí se cobran",
+         "Preferimos no inventar valores", f"Mantenimiento 0,2 % o 0,5 %: E2 entre {_tor('Mantenimiento')}",
+         ids("rep."), "PARAMETROS"],
+        ["Crisis forzada (escenario de estrés)", "Escenario definido por el equipo", "",
+         "", "Empieza en un mes uniforme entre 1 y H − 12 y dura entre 12 y 24 meses", "Probar una crisis más larga que las "
+         "observadas", "Es un escenario, no una sensibilidad (sección 13)", ids("estres."), "PARAMETROS"],
     ]
-    f = titulo(ws, "Decisiones", "Detalle completo en docs/decision_log.md del repositorio.")
-    tabla(ws, f, ["ID", "Tema", "Decisión", "Por qué", "Estado"], filas, [6, 14, 60, 60, 30])
+    tabla(ws, f, ["Proceso", "Datos", "Modelos que comparamos", "Pruebas y resultado", "Modelo que usa el simulador",
+                  "Por qué lo elegimos", "Alternativa o sensibilidad y su efecto", "Parámetros", "Hoja con el detalle"], filas,
+          [20, 28, 32, 48, 42, 42, 38, 22, 18])
+    ws.freeze_panes = "B6"
+
+
+def diseno_experimento(ws, f: int) -> int:
+    c = json.loads((RES / "corrida.json").read_text(encoding="utf-8"))
+    pr = pd.read_csv(RES / "precision_replicas.csv").set_index("replicas")
+    pa = pd.read_csv(RES / "comparaciones_pareadas.csv")
+    rn = c["replicas_necesarias_W_real"]
+    filas = [
+        ["Configuraciones", "4 estrategias × 3 escenarios (base, adverso, estrés) = 12"],
+        ["Réplicas por configuración", f"{c['replicas']:,}".replace(",", ".") + ": n = 1,96² × 0,25 / 0,03², para que P(meta) tenga un error de ±3 puntos "
+                                       "con 95 % de confianza en el peor caso"],
+        ["Comprobación del número", f"Un piloto de 200 réplicas pide entre {min(rn.values())} y {max(rn.values())} para un error de "
+                                    f"2 % en el patrimonio real medio. Con 2.400 réplicas P(meta) de E2 queda en "
+                                    f"{pr.loc[2400, 'p_meta'] * 100:.1f} %, dentro del intervalo de la corrida de {c['replicas']}".replace(".", ",")],
+        ["Semillas", f"Semilla base {c['semilla_base']}; la réplica r usa base + r, así que cualquier réplica se puede repetir sola"],
+        ["Números aleatorios comunes", "Cada proceso tiene su propio generador y las cuatro estrategias enfrentan la misma economía en "
+                                       "cada réplica; la varianza de las diferencias entre estrategias baja hasta 97 %"],
+        ["Intervalos de confianza", "Wilson para proporciones, t para medias, bootstrap para percentiles y CVaR, t pareada para "
+                                    f"comparar estrategias; {len(pa)} comparaciones con corrección de Holm"],
+        ["Sensibilidad", f"{pd.read_csv(RES / 'tornado.csv').factor.nunique()} factores uno a la vez (400 réplicas), "
+                         f"{pd.read_csv(RES / 'sensibilidad_modelos.csv').modelo.nunique()} modelos alternativos y una "
+                         "interacción 2 × 2 de inflación por necesidades de liquidez"],
+        ["Capital-meta", "7 capitales (400 a 1.000 M) × 5 metas (700 a 1.500 M) × 4 estrategias × 2 escenarios, 500 réplicas por celda"],
+    ]
+    return tabla(ws, f, ["Elemento", "Cómo se hizo"], filas, None, "Diseño del experimento (sección 14 del informe)")
 
 
 def tpm_logit(ws) -> None:
@@ -309,8 +410,9 @@ def _num(x):
 def resultados(ws) -> None:
     r = pd.read_csv(RES / "resumen.csv")
     c = json.loads((RES / "corrida.json").read_text(encoding="utf-8"))
-    f = titulo(ws, "Resultados", f"{c['replicas']} réplicas por estrategia y escenario, semilla {c['semilla_base']}, capital 700 M, "
+    f = titulo(ws, "Resultados", f"{c['replicas']:,}".replace(",", ".") + f" réplicas por estrategia y escenario, semilla {c['semilla_base']}, capital 700 M, "
                                  "meta real 1.000 M, 10 años. Montos en millones de pesos de hoy salvo que se diga otra cosa.")
+    f = diseno_experimento(ws, f)
     filas = []
     for x in r.itertuples():
         filas.append([x.escenario, x.estrategia, x.p_meta, x.p_meta_lo, x.p_meta_hi, x.W_real_media / 1e6, x.W_real_p5 / 1e6,
@@ -327,13 +429,26 @@ def resultados(ws) -> None:
     pr = pd.read_csv(RES / "precision_replicas.csv")
     f = tabla(ws, f, list(pr.columns), pr.values.tolist(), None, "Precisión de P(meta) de E2 según el número de réplicas")
     pa = pd.read_csv(RES / "comparaciones_pareadas.csv")
-    tabla(ws, f, list(pa.columns), pa.values.tolist(), None, "Diferencias pareadas (a − b) con números aleatorios comunes")
+    f = tabla(ws, f, list(pa.columns), pa.values.tolist(), None, "Diferencias pareadas (a − b) con números aleatorios comunes")
+    t = pd.read_csv(RES / "tornado.csv")
+    t = t[t.estrategia == "E2"].sort_values("rango_p_meta", ascending=False)
+    f = tabla(ws, f, ["Factor", "Fuente de incertidumbre", "P(meta) referencia", "P(meta) valor bajo", "P(meta) valor alto", "Rango (puntos)"],
+              [[x.factor, x.fuente, x.ref_p_meta, x.bajo_p_meta, x.alto_p_meta, x.rango_p_meta * 100] for x in t.itertuples()], None,
+              "Sensibilidad de un factor a la vez, E2 (tornado, 400 réplicas por punto)")
+    sm = pd.read_csv(RES / "sensibilidad_modelos.csv")
+    f = tabla(ws, f, ["Modelo alternativo", "Estrategia", "P(meta) referencia", "P(meta) alternativa"],
+              [[x.modelo, x.estrategia, x.ref_p_meta, x.alt_p_meta] for x in sm.itertuples()], None,
+              "Sensibilidad a la elección de modelos (400 réplicas)")
+    it = pd.read_csv(RES / "interaccion.csv")
+    tabla(ws, f, ["Estrategia", "Inflación 3,5 %, necesidades × 0,5", "3,5 %, × 1,5", "6,5 %, × 0,5", "6,5 %, × 1,5", "Interacción (puntos)"],
+          [[x.estrategia, x.inf_baja_liq_baja, x.inf_baja_liq_alta, x.inf_alta_liq_baja, x.inf_alta_liq_alta, x.interaccion * 100]
+           for x in it.itertuples()], None, "Interacción de inflación y necesidades de liquidez: P(meta)")
 
 
 def main(salida: Path) -> None:
     wb = Workbook()
-    hojas = [("LEEME", leeme), ("PARAMETROS", escribir_parametros), ("FUENTES", fuentes), ("DICCIONARIO", diccionario),
-             ("DISTRIBUCIONES", distribuciones), ("DECISIONES", decisiones), ("TPM_Logit", tpm_logit),
+    hojas = [("LEEME", leeme), ("MODELOS", modelos), ("PARAMETROS", escribir_parametros), ("FUENTES", fuentes),
+             ("DICCIONARIO", diccionario), ("TPM_Logit", tpm_logit),
              ("VALIDACION", validacion), ("RESULTADOS", resultados)]
     wb.remove(wb.active)
     for nombre, fn in hojas:

@@ -81,6 +81,13 @@ def test_4x1000_sobre_lo_que_pasa_la_exencion(quieto):
     assert r.indicadores["acum_gmf"] == pytest.approx(0.004 * (0.2 * C - 10e6), rel=1e-9)
 
 
+
+def test_renovar_un_cdt_no_paga_4x1000(quieto):
+    # El capital que se renueva no sale del banco: solo la apertura inicial paga 4x1000.
+    p = quieto.con(**{"imp.gmf": 0.004, "imp.gmf_exencion": 10e6, "E1.pesos": "0.4;0.6;0;0"})
+    r = una_replica(p, "E1", 8)
+    assert r.indicadores["acum_gmf"] == pytest.approx(0.004 * (0.6 * C - 10e6), rel=1e-9)
+
 def test_venta_anticipada_de_cdt_formula():
     v = tasas.valor_venta_anticipada(100.0, 0.10, 0.10, 0.0, 1.0, 1.0)
     assert v == pytest.approx(110.0)

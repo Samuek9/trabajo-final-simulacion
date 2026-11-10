@@ -53,8 +53,8 @@ with c2:
     st.write("La réplica r usa la misma semilla para las cuatro estrategias. En la corrida del informe esto bajó la varianza "
              "de la diferencia de patrimonio entre E4 y E2 en cerca de 96 %.")
 
-st.markdown("### Supuestos y pendientes")
-sup = [t for t in T.values() if t.estado in ("Supuesto", "Pendiente")]
+st.markdown("### Supuestos y procesos apagados")
+sup = [t for t in T.values() if t.estado in ("Supuesto", "Apagado")]
 st.dataframe(pd.DataFrame([{"ID": t.id, "Parámetro": t.nombre, "Valor": t.base, "Unidad": t.unidad, "Estado": t.estado,
                             "Fuente": t.fuente} for t in sup]), hide_index=True, width="stretch")
 
