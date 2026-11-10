@@ -442,8 +442,8 @@ AUDITORIA = [
     ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
     ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
     ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan TPM, inmueble y Markov", "Parcial"],
-    ["A10", "PIB", "Nota de crisis y conteo desde 2011", "Decía que crisis es crecimiento negativo y contaba 4 trimestres de crisis desde 2011, pero los umbrales vigentes son 1 % y 4 % (12 trimestres de crisis desde 2006).", "Inconsistencia", "Media", "La hoja PIB, estados recalcula el conteo con fórmula y describe la regla con los umbrales vigentes; la hoja original queda oculta sin cambios", "Resuelto"],
     ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
+    ["A11", "PIB", "Nota de crisis y conteo desde 2011", "Decía que crisis es crecimiento negativo y contaba 4 trimestres de crisis desde 2011, pero los umbrales vigentes son 1 % y 4 % (12 trimestres de crisis desde 2006).", "Inconsistencia", "Media", "La hoja PIB, estados recalcula el conteo con fórmula y describe la regla con los umbrales vigentes; la hoja original queda oculta sin cambios", "Resuelto"],
 ]
 
 
