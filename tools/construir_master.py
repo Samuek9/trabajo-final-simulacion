@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "INF", "INF_Datos", "INF_Anual", "INF_Pruebas", "INF_Modelo", "INF_Validacion", "TPM_Cuenta", "CDT", "ETF", "INM", "PIB", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "CDT", "ETF", "INM", "PIB", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -82,11 +82,8 @@ def leeme(ws) -> None:
         ["MODELOS", "El modelo elegido para cada proceso, con sus datos, sus pruebas y la razón"],
         ["PARAMETROS", "Capital, horizonte, meta, liquidez mínima, réplicas, estrategias y necesidades de liquidez: lo que se puede cambiar"],
         ["INF", "Inflación: datos del DANE, pruebas y AR(1) en logaritmos (análisis completo)"],
-        ["INF_Datos", "Inflación anual mensual, una fila por mes (lee de INF)"],
-        ["INF_Anual", "Inflación por año y estadística descriptiva (lee de INF)"],
-        ["INF_Pruebas", "Pruebas estadísticas de la inflación en una tabla (lee de INF)"],
-        ["INF_Modelo", "Parámetros del AR(1) (lee de INF)"],
-        ["INF_Validacion", "Validación dentro y fuera de muestra (lee de INF)"],
+        ["Inflación", "Evolución de la inflación frente a la meta y serie mensual"],
+        ["Inflación, modelo", "Pruebas, estimación y validación del modelo de la inflación"],
         ["TPM_Cuenta", "TPM y tasa de la cuenta remunerada"],
         ["CDT", "Margen de los CDT a 360 días sobre la TPM"],
         ["ETF", "Rendimientos mensuales del iCOLCAP, pruebas y ajuste de distribuciones"],
@@ -434,7 +431,7 @@ def resultados(ws) -> None:
 
 
 AUDITORIA = [
-    ["A01", "INF", "Serie mensual y anual", "El 6,29 % de 2026 es la inflación de septiembre, no de diciembre; el modelo lo usa solo como inflación inicial (P033).", "Aclaración temporal", "Media", "Se conserva el dato; INF_Anual lo marca como parcial (septiembre)", "Resuelto"],
+    ["A01", "INF", "Serie mensual y anual", "El 6,29 % de 2026 es la inflación de septiembre, no de diciembre; el modelo lo usa solo como inflación inicial (P033).", "Aclaración temporal", "Media", "Se conserva el dato; la hoja Inflación lo rotula como septiembre de 2026", "Resuelto"],
     ["A02", "PARAMETROS", "Hoja completa", "Mezclaba valores de inversionista con valores estimados de los procesos aleatorios.", "Estructural", "Alta", "PARAMETROS solo trae lo editable; los valores estimados pasaron a la hoja oculta MODELO con las mismas claves", "Resuelto"],
     ["A03", "PARAMETROS", "Columnas Fuente y Soporte", "Citaban secciones del informe y no aportaban a quien edita.", "Visual", "Baja", "Se quitaron de la hoja visible; siguen en MODELO", "Resuelto"],
     ["A04", "MODELOS", "Columnas de alternativa y parámetros", "Mostraban más de un modelo por proceso.", "Estructural", "Media", "Queda solo el modelo elegido y la prueba que lo respalda", "Resuelto"],
@@ -442,7 +439,7 @@ AUDITORIA = [
     ["A06", "PARAMETROS", "Reparaciones (P160 a P162)", "Sin datos de costo ni frecuencia.", "Dato faltante", "Media", "Salen de la vista y del informe; quedan apagadas en MODELO", "Resuelto"],
     ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
     ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
-    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: hojas INF_Datos, INF_Anual, INF_Pruebas, INF_Modelo e INF_Validacion leen de INF con fórmulas, sin mover nada. Faltan TPM, CDT, ETF, inmueble y PIB", "Parcial"],
+    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan TPM, CDT, ETF, inmueble y PIB", "Parcial"],
     ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
 ]
 
