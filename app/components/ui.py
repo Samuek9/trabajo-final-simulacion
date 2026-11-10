@@ -60,4 +60,4 @@ def pie_parametro(t) -> str:
         ref_txt = num(ref, 4) if abs(ref) < 10 else num(ref, 0)
     else:
         ref_txt = str(ref)
-    return f"Referencia: {ref_txt} {t.unidad} · {t.estado} · {t.fuente}"
+    return f"Valor de referencia: {ref_txt} {t.unidad}"

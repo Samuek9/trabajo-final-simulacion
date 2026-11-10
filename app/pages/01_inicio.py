@@ -18,7 +18,7 @@ st.write(
 
 c = st.columns(4)
 with c[0]:
-    ui.tarjeta("Capital inicial", ui.cop(p.f("inv.capital")), "configurable")
+    ui.tarjeta("Capital inicial", ui.cop(p.f("inv.capital")), "se cambia en Inversionista")
 with c[1]:
     ui.tarjeta("Horizonte", f"{p.i('inv.horizonte') // 12} años", f"{p.i('inv.horizonte')} cierres de mes")
 with c[2]:
@@ -42,11 +42,11 @@ for col, e in zip(cols, ("E1", "E2", "E3", "E4")):
 
 st.markdown("### Cómo usarlo")
 st.markdown(
-    "1. **Inversionista**: capital, horizonte, meta, liquidez mínima y réplicas.\n"
-    "2. **Modelos y economía**: cada parámetro muestra su valor de referencia, la fuente y si es estimado o supuesto.\n"
+    "1. **Inversionista**: capital, horizonte, meta, liquidez mínima, necesidades de liquidez y réplicas.\n"
+    "2. **Modelos y economía**: el modelo elegido para cada proceso aleatorio. Sus valores están estimados con datos y son fijos.\n"
     "3. **Estrategias**: pesos iniciales y reglas de E4.\n"
     "4. **Experimento**: escenario, estrategias, réplicas y semilla; luego *Ejecutar*.\n"
-    "5. **Resultados**, **Sensibilidad** y **Trazabilidad** para leer lo que pasó y por qué."
+    "5. **Resultados** y **Sensibilidad y capital-meta** para leer lo que pasó y por qué."
 )
 for a in advertencias(p):
     st.info(a)

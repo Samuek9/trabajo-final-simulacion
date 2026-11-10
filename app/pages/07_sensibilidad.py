@@ -17,16 +17,19 @@ def lista_millones(txt: str) -> list[float]:
     return [float(x.strip()) * 1e6 for x in txt.replace(";", ",").split(",") if x.strip()]
 
 
+CAPS0, METAS0 = capital_goal.malla(p)
+millones = lambda xs: ", ".join(f"{x / 1e6:.0f}" for x in xs)  # noqa: E731
+
 t1, t2, t3, t4 = st.tabs(["Capital-meta", "Tornado", "Elección de modelos", "Escenarios"])
 
 with t1:
     st.write("¿Qué probabilidad hay de llegar a cada meta según el capital inicial? Cada celda corre todas las réplicas con ese "
-             "capital (punto 17). El capital necesario es el que da la probabilidad objetivo, interpolando entre capitales.")
+             "capital. El capital necesario es el que da la probabilidad objetivo, interpolando entre capitales.")
     c = st.columns(4)
     with c[0]:
-        caps = st.text_input("Capitales (millones)", "400, 500, 600, 700, 800, 900, 1000")
+        caps = st.text_input("Capitales (millones)", millones(CAPS0))
     with c[1]:
-        metas = st.text_input("Metas reales (millones)", "700, 800, 1000, 1200, 1500")
+        metas = st.text_input("Metas reales (millones)", millones(METAS0))
     with c[2]:
         n_cm = st.number_input("Réplicas por celda", 50, 5000, 300, 50, key="n_cm")
     with c[3]:
@@ -41,7 +44,7 @@ with t1:
     if cm is None and fuente.guardado("capital_meta.csv") is not None:
         cm = fuente.guardado("capital_meta.csv")
         cm = cm[cm.escenario == esc_cm] if esc_cm in set(cm.escenario) else cm[cm.escenario == "base"]
-        origen = "Corrida del informe (500 réplicas por celda, parámetros de referencia)"
+        origen = "Corrida del informe (500 réplicas por celda, configuración de referencia)"
     if cm is not None and len(cm):
         st.caption(f"{origen} · escenario {ui.ESCENARIOS[cm.escenario.iloc[0]]}")
         e = st.radio("Estrategia", EST, format_func=ui.NOMBRES.get, horizontal=True, key="e_cm")

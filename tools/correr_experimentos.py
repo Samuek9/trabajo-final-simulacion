@@ -91,8 +91,7 @@ def main(procesos: int) -> None:
     assert np.allclose(e2.W_real.to_numpy(), extra.W_real.to_numpy()[:len(e2)])
 
     # 4. Capital-meta.
-    caps = [400e6, 500e6, 600e6, 700e6, 800e6, 900e6, 1000e6]
-    metas = [700e6, 800e6, 1000e6, 1200e6, 1500e6]
+    caps, metas = capital_goal.malla(cargar("base"))
     cm = []
     for esc in ("base", "estres"):
         cm.append(capital_goal.matriz(cargar(esc), caps, metas, ESTRATEGIAS, n=500, semilla=semilla, procesos=procesos))

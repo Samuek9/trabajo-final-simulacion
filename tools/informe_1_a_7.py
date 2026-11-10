@@ -140,7 +140,7 @@ def actualizar(w, P, c, pc) -> list[str]:
     t = _tabla(doc, "Regla | Valor en el modelo | Tipo y fuente")
     tasa = P.f("cta.alfa") * P.f("tpm.inicial") / 100
     _celdas(_fila(t, "Rendimiento"), {1: f"r = α × TPM con α = {c(P.f('cta.alfa'), 3)}. Con la TPM en 12,25 % paga {pc(tasa, 2)} E.A.",
-                                      2: "Estimado con 19 tasas de 4 cuentas (hoja TPM_Cuenta)"})
+                                      2: "Estimado con 19 tasas de 4 cuentas (sección 7.3)"})
     _celdas(_fila(t, "Cambio de tasa"), {1: "Se recalcula en cada reunión de la Junta"})
     _celdas(_fila(t, "Monto mínimo"), {1: "No tiene"})
 
@@ -159,7 +159,7 @@ def actualizar(w, P, c, pc) -> list[str]:
     _celdas(_fila(t, "Rendimiento mensual"), {1: f"t de Student con ν = 5 y volatilidad según el estado económico ({pc(P.f('etf.vol_N'), 1)} "
                                                  f"mensual en expansión y normal, {pc(P.f('etf.vol_C'), 1)} en crisis); media "
                                                  f"{pc(P.f('etf.mu'), 2)} mensual. Alternativa: t asimétrica de Jones y Faddy",
-                                              2: "Estimado (hojas ETF y MARKOV_ETF, sección 7.5)"})
+                                              2: "Estimado (sección 7.5)"})
     _agregar_fila(t, ["Inversión mínima", "Una unidad del fondo, que se compra en bolsa por medio de una comisionista. No limita al "
                                           "modelo, que compra millones de pesos en ETF", "Mecánica de la Bolsa de Valores de Colombia"])
 
@@ -216,10 +216,10 @@ def actualizar(w, P, c, pc) -> list[str]:
 
     # ---------------- 7.2: logit ordenado que usa el simulador
     _poner(_parrafo(doc, "Hoja del libro: TPM_Cuenta. Dónde está cada paso"),
-           "Hojas del libro: TPM_Cuenta y TPM_Logit. En 7.2.1 a 7.2.6 está el primer estudio, con las 46 reuniones de 2021 a 2026 y "
-           "una tabla de decisiones según la tendencia de la inflación. En 7.2.7 está el modelo que usa el simulador, un logit "
-           "ordenado estimado con 25 años de decisiones, y por qué cambiamos. La TPM oficial diaria desde 1998 (SUAMECA) se usa "
-           "también en 7.4 para estimar el margen del CDT.")
+           "El primer estudio (7.2.1 a 7.2.6) usa las 46 reuniones de 2021 a 2026 y una tabla de decisiones según la tendencia de "
+           "la inflación. El modelo que usa el simulador (7.2.7) es un logit ordenado estimado con 25 años de decisiones; allí se "
+           "explica por qué se cambió. La TPM oficial diaria desde 1998 (SUAMECA) también sirve en 7.4 para estimar el margen "
+           "del CDT.")
     cal = j["calibracion"]
 
     def logit():
@@ -292,10 +292,7 @@ def actualizar(w, P, c, pc) -> list[str]:
     i5, i6 = _i(doc, "7.5 Renta variable", True), _i(doc, "7.6 Valorización del inmueble", True)
     refs_etf = [_texto(el) for el in _cuerpo(doc)[_i(doc, "Referencias del ETF", True) + 1:i6] if _texto(el).strip()]
     _borrar_entre(doc, "Archivos y reproducibilidad del ETF", "7.6 Valorización del inmueble", True, True)
-    _poner(_parrafo(doc, "Hoja del libro: ETF. El código"),
-           "Hoja del libro: ETF. Los pasos del enunciado están en 7.5.1 (fuente), 7.5.2 a 7.5.4 (exploración, análisis temporal y "
-           "atípicos), 7.5.5 a 7.5.8 (modelos, estimación, bondad de ajuste y comparación), 7.5.9 (selección), 7.5.10 (dependencia) "
-           "y 7.5.11 (pruebas de hipótesis y modelo que usa el simulador). Las limitaciones están al final de 7.5.11.")
+    _borrar(doc, _i(doc, "Hoja del libro: ETF. El código"), _i(doc, "Hoja del libro: ETF. El código") + 1)
     _borrar(doc, _i(doc, "Datos descargados y procesados el 29"), _i(doc, "Datos descargados y procesados el 29") + 1)
     reemplazar(doc, " (carpeta src). Ninguna se fijó a mano.", ". Ninguna se fijó a mano.")
     # Tablas de comparación de fuentes, figura de control y detalles de calidad de Yahoo.
@@ -332,7 +329,7 @@ def actualizar(w, P, c, pc) -> list[str]:
            "deja esta como alternativa.")
     _borrar_entre(doc, "7.5.9.1 Incertidumbre de los parámetros", "7.5.10 Dependencia con otras variables", True, True)
     _poner(_parrafo(doc, "El enunciado no permite suponer que todas las variables son independientes. Para saber"),
-           "El enunciado no permite suponer que todas las variables son independientes. Para saber con qué se mueve el ICOLCAP "
+           "Las variables del modelo no se pueden tratar como independientes. Para saber con qué se mueve el ICOLCAP "
            "armamos un panel mensual con la tasa de cambio, el S&P 500, el petróleo Brent, la inflación, la TPM y la tasa de los "
            "CDT sobre los mismos 182 meses, y medimos la dependencia de tres formas: correlaciones contemporáneas, correlaciones "
            "con rezago y comportamiento por estado económico. Usamos Pearson para la relación lineal y Spearman y Kendall, que se "
@@ -367,7 +364,7 @@ def actualizar(w, P, c, pc) -> list[str]:
            "Con el umbral de crisis de 1 % que usa el simulador (sección 8), la media del ETF no cambia con el estado "
            "(Kruskal-Wallis, p = 0,39), pero la desviación en crisis es casi el doble de la de los otros dos estados (Levene, "
            "p = 0,004). Esa diferencia descansa en pocos meses: sin marzo de 2020 deja de ser significativa (p = 0,080). La "
-           "tomamos igual, porque es lo que se espera de una crisis y el enunciado pide que los estados muevan la renta variable, "
+           "tomamos igual, porque es lo que se espera de una crisis y el modelo necesita que el estado de la economía mueva la renta variable, "
            "pero la reportamos con esa advertencia.")
     _poner(_parrafo(doc, "La t por máxima verosimilitud centra en 0,67 %"),
            "La t por máxima verosimilitud centra en 0,67 % y sobreestimaría el rendimiento en cerca de 3 puntos al año, porque no "
@@ -380,8 +377,8 @@ def actualizar(w, P, c, pc) -> list[str]:
         w.p(f"Modelo que usa el simulador. Elegimos la t de Student con ν = 5 (la máxima verosimilitud da 5,34), la media de "
             f"{pc(P.f('etf.mu'), 2)} mensual y la desviación del estado: {pc(P.f('etf.vol_N'), 1)} en expansión y normal, "
             f"{pc(P.f('etf.vol_C'), 1)} en crisis. La media y las desviaciones salen de los mismos 179 meses que tienen estado "
-            "económico (agosto de 2011 a junio de 2026). La razón para dejar la Jones-Faddy como alternativa es el punto 8 del "
-            "enunciado: la Jones-Faddy no tiene estados, y la t con volatilidad por estado sí conecta el ETF con la economía. El "
+            "económico (agosto de 2011 a junio de 2026). La razón para dejar la Jones-Faddy como alternativa es la dependencia con "
+            "la economía: la Jones-Faddy no tiene estados, y la t con volatilidad por estado sí conecta el ETF con la economía. El "
             "costo es que la t es simétrica y no reproduce la asimetría de −1,12 de los datos. Usar la Jones-Faddy en el simulador "
             "cambia la probabilidad de meta unos tres puntos (sección 16.3).")
         w.p("Limitaciones. La muestra tiene 15 años y casi todo el rendimiento positivo del fondo está en 2024 a 2026; hasta 2023 la "
@@ -435,12 +432,11 @@ def actualizar(w, P, c, pc) -> list[str]:
 
     # ---------------- 7.8 Estado de la economía
     _poner(_parrafo(doc, "El enunciado pide analizar la dependencia entre procesos y habla de estados"),
-           "El enunciado pide analizar la dependencia entre procesos y habla de estados de la economía. Para eso definimos tres "
+           "Para analizar la dependencia entre procesos se define el estado de la economía. Se distinguen tres "
            "estados con el crecimiento anual del PIB real trimestral (DANE, base 2015, encadenado con las bases 2005 y 1994): crisis "
            "si crece menos de 1 % frente al mismo trimestre del año anterior, expansión si crece 4 % o más y normal en otro caso. "
            "Con 1 % entran como crisis la recesión de 2008 y 2009, la pandemia y el estancamiento de 2023 y 2024; con 0 % solo "
-           "quedarían cuatro trimestres desde 2006. La hoja PIB trae los 126 trimestres, de 1995 a junio de 2026, y los umbrales se "
-           "pueden cambiar.")
+           "quedarían cuatro trimestres desde 2006. Se usaron los 126 trimestres, de 1995 a junio de 2026.")
     _poner(_parrafo(doc, "El crecimiento medio es 3,2 %"),
            "El crecimiento medio es 3,2 % con desviación de 3,9 puntos. Hay 21 trimestres de crisis (1996 y 1997, 1998 y 1999, "
            "2002, 2008 y 2009, 2020, y 2023 y 2024), 58 normales y 47 de expansión; desde 2006 son 12, 40 y 30. Con esa definición "
@@ -458,7 +454,7 @@ def actualizar(w, P, c, pc) -> list[str]:
                                  f"{pc(P.f('etf.vol_C'), 1)} (crisis)", 3: "ETF, MARKOV_ETF"})
     _celdas(_fila(t, "Estado de la economía"), {2: "Umbrales 1 % y 4 %", 3: "PIB, MARKOV"})
     _agregar_fila(t, ["Necesidades de liquidez", "Poisson con monto lognormal (supuesto, sección 12)",
-                      "1 cada 24 meses (12 en crisis); mediana $20 M; σ = 0,8", "PARAMETROS"])
+                      "1 cada 24 meses (12 en crisis); mediana 3 % del capital; σ = 0,8", ""])
 
     # ---------------- referencias de los puntos 1 a 7, a la lista única
     k = _i(doc, "Referencias de las secciones 5.4, 7.6 y 7.7", True)
@@ -559,7 +555,7 @@ def correcciones_auditoria(w, P, c, pc) -> None:
                "así que no se rechaza que α sea constante. Como las 19 tasas vienen de cuatro cuentas, el intervalo de α se calcula "
                "con el promedio de cada cuenta y no con las 19 tasas como si fueran independientes; por eso es ancho.")
     reemplazar(doc, "publicadas en El Tiempo, El Colombiano y Rankia.",
-               "publicadas en El Tiempo, El Colombiano y Rankia y recopiladas en la hoja TPM_Cuenta (Equipo del trabajo, 2026b).")
+               "publicadas en El Tiempo, El Colombiano y Rankia.")
 
     # §7.4.10: el estado no mueve la TPM.
     reemplazar(doc, "La tasa depende del estado económico a través de la TPM: el estado fija los cambios de la TPM y estos el margen.",
@@ -623,13 +619,13 @@ def correcciones_auditoria(w, P, c, pc) -> None:
     reemplazar(doc, "p-valores", "valores p")
     reemplazar(doc, "p-valor", "valor p")
     reemplazar(doc, " Todas las cifras que aparecen aquí salen de los archivos descargados y de los scripts que acompañan el documento. "
-                    "Ninguna se fijó a mano.", " Los datos y los cálculos de esta sección están en la hoja ETF del Excel.")
+                    "Ninguna se fijó a mano.", "")
     reemplazar(doc, "Un cuidado de método: las tablas usuales", "Las tablas usuales")
     reemplazar(doc, "En diez años la diferencia no es pequeña: con la media histórica", "En diez años, con la media histórica")
     reemplazar(doc, "Juntando lo anterior, la dependencia", "La dependencia")
     reemplazar(doc, "Esta subsección completa el análisis con las pruebas de hipótesis que pide el enunciado, compara el modelo "
                     "elegido con una t de Student simple y revisa la dependencia",
-               "Aquí van las pruebas de hipótesis que pide el enunciado, la comparación del modelo elegido con una t de Student "
+               "Aquí se reúnen las pruebas de hipótesis, la comparación del modelo elegido con una t de Student "
                "simple y la dependencia")
     reemplazar(doc, "La lectura es la de los apartados anteriores. ", "")
     reemplazar(doc, "(marzo de 2020, junio de 2022 y uno más)", "(marzo de 2020, junio de 2022 y enero de 2026)")
@@ -643,7 +639,7 @@ def correcciones_auditoria(w, P, c, pc) -> None:
         "TPM": "Reproduce las decisiones observadas; la tabla lleva la TPM a un tope que nunca tuvo",
         "Cuenta": "α no depende del nivel de la TPM (p = 0,29)",
         "CDT": "El margen se abre cuando la TPM sube; residuos no normales, por eso se sortean de los datos",
-        "ETF": "Colas pesadas, sin memoria, y el estado mueve su volatilidad (punto 8)",
+        "ETF": "Colas pesadas, sin memoria, y el estado mueve su volatilidad (sección 8)",
         "Valoriz": "El IPVU mide vivienda usada; años seguidos parecidos (φ significativo); no depende del estado",
         "Vacancia": "La gamma reproduce la curva de Palomma; la probabilidad de no renovar es supuesto",
         "Estado de la economía": "El estado depende del trimestre anterior (χ² = 81,8; p < 0,001)",

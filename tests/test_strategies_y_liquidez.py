@@ -6,6 +6,8 @@ from investment_sim.engine.simulation import Simulacion
 from investment_sim.experiments.runner import correr, residuos, una_replica
 from investment_sim.strategies.rules import Estrategia
 
+CAP = 700e6  # capital de referencia
+
 
 @pytest.mark.parametrize("e,pesos", [("E1", (0.20, 0.60, 0.20, 0)), ("E2", (0.10, 0.26, 0.21, 0.43)),
                                      ("E3", (0.07, 0.08, 0.30, 0.55))])
@@ -41,7 +43,7 @@ def test_e4_cambia_con_el_estado(quieto):
 
 def test_sin_liquidez_suficiente_hay_iliquidez_y_deuda(quieto):
     """E1 sin ETF ni CDT y necesidades gigantes: no hay de dónde sacar, queda deuda."""
-    p = quieto.con(**{"E1.pesos": "1;0;0;0", "liq.tasa_N": 0.2, "liq.mediana": 200e6, "liq.sigma": 0.0})
+    p = quieto.con(**{"E1.pesos": "1;0;0;0", "liq.tasa_N": 0.2, "liq.mediana_pct": 200e6 / CAP, "liq.sigma": 0.0})
     r = una_replica(p, "E1", 3)
     assert r.indicadores["episodios_iliquidez"] >= 1
     assert r.indicadores["deuda_final"] > 0
@@ -49,7 +51,7 @@ def test_sin_liquidez_suficiente_hay_iliquidez_y_deuda(quieto):
 
 
 def test_orden_de_cobertura_etf_antes_que_cdt(quieto):
-    p = quieto.con(**{"liq.tasa_N": 0.05, "liq.tasa_E": 0.05, "liq.tasa_C": 0.05, "liq.mediana": 30e6, "liq.sigma": 0.0})
+    p = quieto.con(**{"liq.tasa_N": 0.05, "liq.tasa_E": 0.05, "liq.tasa_C": 0.05, "liq.mediana_pct": 30e6 / CAP, "liq.sigma": 0.0})
     r = una_replica(p, "E1", 4)
     a = r.indicadores
     assert a["acum_cubierto_etf"] > 0
@@ -59,7 +61,7 @@ def test_orden_de_cobertura_etf_antes_que_cdt(quieto):
 
 def test_patrimonio_alto_con_iliquidez(base):
     """E3 con necesidades grandes: el patrimonio sigue alto (inmueble) aunque falte efectivo."""
-    p = base.con(**{"liq.mediana": 120e6, "liq.sigma": 0.3, "liq.tasa_N": 1 / 6, "liq.tasa_E": 1 / 6, "liq.tasa_C": 1 / 6})
+    p = base.con(**{"liq.mediana_pct": 120e6 / CAP, "liq.sigma": 0.3, "liq.tasa_N": 1 / 6, "liq.tasa_E": 1 / 6, "liq.tasa_C": 1 / 6})
     r = correr(p, ["E3"], n=30, semilla=10, guardar=("iliquido", "W", "inmueble"))
     t = r.tabla
     assert (t.algun_episodio > 0).any()

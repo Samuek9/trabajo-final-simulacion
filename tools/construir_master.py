@@ -22,7 +22,7 @@ from openpyxl.utils import get_column_letter
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).parent))
-from hoja_parametros import escribir as escribir_parametros  # noqa: E402
+from hoja_parametros import escribir as escribir_parametros, escribir_modelo  # noqa: E402
 from parametros_def import FILAS  # noqa: E402
 
 RES = RAIZ / "outputs" / "resultados"
@@ -69,31 +69,28 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
 
 def leeme(ws) -> None:
     corrida = json.loads((RES / "corrida.json").read_text(encoding="utf-8"))
-    f = titulo(ws, "Excel maestro del trabajo final de Simulación",
-               f"Reúne en un solo libro los datos, parámetros y resultados de los puntos 1 a 24. Generado el {date.today():%d/%m/%Y}. "
-               "El simulador lee solo la hoja PARAMETROS; las demás documentan de dónde sale cada número. "
-               "Las hojas INF, TPM_Cuenta, CDT, ETF, INM y PIB vienen del consolidado de los puntos 1 a 7 y las MARKOV del "
-               "análisis de estados económicos del equipo, con las correcciones que pidió la revisión del modelo. Para la "
-               "exposición basta empezar por MODELOS y RESULTADOS.")
+    f = titulo(ws, "Simulación de estrategias de inversión bajo incertidumbre: datos, modelos y resultados",
+               f"Libro generado el {date.today():%d/%m/%Y}. El simulador lee los valores de las hojas PARAMETROS (lo que "
+               "cambia el usuario) y MODELO (oculta, con los valores estimados con datos, que quedan fijos). Las demás hojas "
+               "documentan el estudio de cada proceso aleatorio y los resultados.")
     hojas = [
-        ["LEEME", "Esta hoja: qué hay en el libro y en qué orden leerlo", ""],
-        ["MODELOS", "Para leer primero: el modelo elegido para cada proceso, con sus datos, sus pruebas y por qué", "Puntos 7, 8 y 16"],
-        ["PARAMETROS", f"Los {len(FILAS)} parámetros del simulador con valor base, adverso y de estrés, unidad, estado y fuente", "Puntos 7 a 14"],
-        ["INF", "Inflación: datos del DANE, pruebas y AR(1) en logaritmos", "7.1"],
-        ["TPM_Cuenta", "TPM, tabla de decisiones por tendencia (alternativa) y tasa de la cuenta", "7.2 y 7.3"],
-        ["TPM_Logit", "Las 202 decisiones de la Junta 2001-2026 y el logit ordenado que usa el simulador", "7.2"],
-        ["CDT", "Margen de los CDT a 360 días sobre la TPM, modelo M5", "7.4"],
-        ["ETF", "Rendimientos mensuales del iCOLCAP, pruebas y ajuste de distribuciones", "7.5"],
-        ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia", "5.4 y 7.6 a 7.7"],
-        ["PIB", "Crecimiento del PIB 1995-2026 y clasificación en estados", "7.8"],
-        ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado", "Punto 8"],
-        ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda", "Datos que usa la hoja MARKOV", "Punto 8"],
-        ["VALIDACION", "Simulado contra observado; separa lo que reproduce insumos de los contrastes", "Punto 16"],
-        ["RESULTADOS", "Diseño del experimento, indicadores de las 12 configuraciones, capital necesario, comparaciones y sensibilidad", "Puntos 14 a 18"],
-        ["FUENTES", "Fuentes de datos y documentos, con cuántos parámetros sale de cada una", "Todos"],
-        ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica", "Punto 15"],
+        ["LEEME", "Esta hoja: qué hay en el libro"],
+        ["MODELOS", "El modelo elegido para cada proceso, con sus datos, sus pruebas y la razón"],
+        ["PARAMETROS", "Capital, horizonte, meta, liquidez mínima, réplicas, estrategias y necesidades de liquidez: lo que se puede cambiar"],
+        ["INF", "Inflación: datos del DANE, pruebas y AR(1) en logaritmos"],
+        ["TPM_Cuenta", "TPM y tasa de la cuenta remunerada"],
+        ["CDT", "Margen de los CDT a 360 días sobre la TPM"],
+        ["ETF", "Rendimientos mensuales del iCOLCAP, pruebas y ajuste de distribuciones"],
+        ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia"],
+        ["PIB", "Crecimiento del PIB 1995-2026 y clasificación en estados"],
+        ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado"],
+        ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda", "Datos que usa la hoja MARKOV"],
+        ["VALIDACION", "Simulado contra observado"],
+        ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
+        ["FUENTES", "Fuentes de datos"],
+        ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
     ]
-    f = tabla(ws, f, ["Hoja", "Contenido", "Punto del enunciado"], hojas, [34, 95, 20], "Hojas")
+    f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")
     archivos = []
     for p in sorted((RAIZ / "data" / "raw").glob("*.csv")):
         archivos.append([f"data/raw/{p.name}", sum(1 for _ in p.open(encoding="utf-8")) - 1, "Serie de entrada"])
@@ -106,17 +103,13 @@ def leeme(ws) -> None:
         archivos.append([f"outputs/resultados/{nombre}", len(pd.read_csv(RES / nombre)), desc])
     f = tabla(ws, f, ["Archivo del repositorio", "Filas", "Contenido"], archivos, None,
               "Series que no caben bien en Excel (están completas en el repositorio, sin recortar)")
-    estados = [["Configurable", "Lo elige el usuario en la aplicación"], ["Verificado", "Dato tomado de una fuente oficial"],
-               ["Estimado", "Sale de ajustar un modelo a los datos"], ["Calibrado", "Ajustado para reproducir una referencia"],
-               ["Supuesto", "Decisión del equipo sin dato directo"], ["Apagado", "Sin datos; el proceso no se usa en la corrida"]]
-    f = tabla(ws, f, ["Estado", "Significado"], estados, None, "Estados de un parámetro")
-    ws.cell(f, 1, f"Corrida del informe: {corrida['replicas']} réplicas, semilla {corrida['semilla_base']}, "
+    ws.cell(f, 1, f"Corrida de los resultados: {corrida['replicas']} réplicas, semilla {corrida['semilla_base']}, "
                   f"modelo versión {corrida['version_modelo']}, {corrida['fecha']}.")
 
 
 FUENTES = [
     ["F01", "IPC y variación anual", "DANE", "dane.gov.co", "2001-2025", "Inflación (7.1), canon"],
-    ["F02", "PIB trimestral a precios constantes", "DANE", "dane.gov.co", "2006-2026", "Estados económicos (8)"],
+    ["F02", "PIB trimestral a precios constantes", "DANE", "dane.gov.co", "2006-2026", "Estados económicos"],
     ["F03", "Tasa de política monetaria diaria", "Banco de la República", "banrep.gov.co", "2001-2026", "TPM (7.2)"],
     ["F04", "Decisiones de la Junta Directiva", "Banco de la República", "banrep.gov.co", "2001-2026", "Logit de la Junta (7.2)"],
     ["F05", "Tasa de captación CDT a 360 días, semanal", "Banco de la República / Superfinanciera", "banrep.gov.co", "2008-2026", "Margen CDT (7.4)"],
@@ -128,13 +121,6 @@ FUENTES = [
     ["F11", "Ley 820 de 2003 (tope del reajuste del canon)", "Congreso de Colombia", "secretariasenado.gov.co", "", "Canon"],
     ["F12", "Estatuto Tributario (GMF) y Decretos 2418 de 2013, 1625 de 2016 y 572 de 2025 (retención en la fuente)", "DIAN / MinHacienda", "normograma.dian.gov.co", "2026", "Impuestos"],
     ["F13", "Valor de la UVT 2026: Resolución 000238 del 15 de diciembre de 2025", "DIAN", "dian.gov.co", "2026", "Exención del 4x1000"],
-    ["F14", "Estrategias de inversión.docx", "Equipo", "", "nov. 2026", "Punto 11"],
-    ["F15", "Escenarios.docx", "Equipo", "", "nov. 2026", "Punto 13"],
-    ["F16", "Dependencia entre variables y estados económicos.docx", "Equipo", "", "nov. 2026", "Punto 9"],
-    ["F17", "Diseño experimental.docx", "Equipo", "", "nov. 2026", "Punto 14"],
-    ["F18", "diagrama_eventos.pdf y diagrama_de_flujo_completo.pdf", "Equipo", "", "nov. 2026", "Puntos 9 y 10"],
-    ["F19", "Analisis_completo_estados_economicos_Markov.xlsx", "Equipo", "", "nov. 2026", "Punto 8"],
-    ["F20", "Trabajo final, puntos 1 a 7 (Word y Excel consolidados)", "Equipo", "", "oct. 2026", "Puntos 1 a 7"],
     ["F21", "Mercado inmobiliario residencial, edición 275 (precio, canon y administración por m²; días para arrendar y vender)",
      "Lonja de Propiedad Raíz de Medellín y Antioquia", "lonja.org.co", "ago. 2025", "Canon (5.4.1), venta, sensibilidad de vacancia"],
     ["F22", "Observatorio del Arriendo: tiempo en oferta de apartamentos en Medellín", "Palomma", "palomma.com", "2025-2026", "Vacancia (7.7)"],
@@ -147,12 +133,8 @@ FUENTES = [
 
 
 def fuentes(ws) -> None:
-    f = titulo(ws, "Fuentes", "Fuentes de datos y documentos del equipo. La columna Fuente de PARAMETROS cita estas mismas fuentes; "
-                              "abajo está cuántos parámetros sale de cada texto de fuente.")
-    f = tabla(ws, f, ["ID", "Fuente", "Entidad", "Sitio", "Periodo", "Se usa en"], FUENTES, [6, 55, 34, 24, 14, 40])
-    c = Counter(fl[9] for fl in FILAS)
-    tabla(ws, f, ["Fuente citada en PARAMETROS", "Parámetros"], [[k, v] for k, v in c.most_common()], None,
-          "Parámetros por fuente")
+    f = titulo(ws, "Fuentes de datos")
+    tabla(ws, f, ["ID", "Fuente", "Entidad", "Sitio", "Periodo", "Se usa en"], FUENTES, [6, 55, 34, 24, 14, 40])
 
 
 DESCR = {
@@ -243,11 +225,9 @@ def _tor(prefijo: str) -> str:
 
 def modelos(ws) -> None:
     """Qué modelo elegimos para cada proceso, con qué datos, qué pruebas lo respaldan y por qué."""
-    f = titulo(ws, "Modelos elegidos y por qué",
-               "Resumen para leer primero. Por cada proceso aleatorio: los datos, los modelos que comparamos, las pruebas que "
-               "decidieron, el modelo que usa el simulador y la razón. La última columna dice cuánto cambia la probabilidad de "
-               "meta (E1 / E2 / E3 / E4, en puntos) si se usa la alternativa, o entre qué valores queda la de E2 si se mueve el "
-               "parámetro en la sensibilidad. El detalle de cada prueba está en la hoja indicada.")
+    f = titulo(ws, "Modelos elegidos",
+               "Por cada proceso aleatorio: los datos, las pruebas que respaldan la elección, el modelo que usa el simulador y "
+               "la razón. Los valores estimados quedan fijos; no se modifican desde el libro ni desde la aplicación.")
     filas = [
         ["Inflación anual", "IPC del DANE, 2001 a 2025 (25 años)",
          "Normal y lognormal; años independientes frente a AR(1)",
@@ -289,7 +269,7 @@ def modelos(ws) -> None:
          "Normalidad rechazada (Jarque-Bera 361,7). Sin memoria (Ljung-Box p ≥ 0,16) ni efecto ARCH (p = 0,997). Por estado: "
          "la media no cambia (Kruskal-Wallis p = 0,39) y la volatilidad sí (Levene p = 0,004)",
          "t de Student con 5 grados de libertad, media 0,36 % mensual y volatilidad 4,7 % (expansión y normal) u 8,8 % (crisis)",
-         "Tiene colas pesadas, no tiene memoria y permite que el estado de la economía mueva el riesgo, como pide el punto 8. "
+         "Tiene colas pesadas, no tiene memoria y permite que el estado de la economía mueva el riesgo. "
          "La Jones-Faddy ajusta mejor la asimetría pero no tiene estados",
          f"Jones-Faddy: {_sm('ETF')}. Media 0 o 0,86 %: E2 entre {_tor('Rendimiento medio del ETF')}",
          ids("etf."), "ETF, MARKOV_ETF"],
@@ -330,22 +310,15 @@ def modelos(ws) -> None:
          ids("markov.", "eco."), "MARKOV, MARKOV_PIB, PIB"],
         ["Necesidades de liquidez", "Sin datos de monto. La IEFIC del DANE (2017-2018) solo sirve de referencia para la frecuencia",
          "Proceso de Poisson con monto lognormal",
-         "No hay pruebas posibles: es un supuesto. La IEFIC sugiere un gasto mayor que el ingreso cada 16 a 23 meses",
-         "Una cada 24 meses (cada 12 en crisis); monto lognormal con mediana de $20 millones de hoy",
+         "Sin pruebas posibles por falta de datos de monto. La IEFIC sugiere un gasto mayor que el ingreso cada 16 a 23 meses",
+         "Una cada 24 meses (cada 12 en crisis); monto lognormal con mediana de 3 % del capital inicial en pesos de hoy",
          "Representa imprevistos grandes (salud, desempleo, reparación); por eso los resultados se muestran con y sin ellos",
          f"Sin necesidades: {_sm('Sin necesidades')}. Frecuencia × 0,5 o × 1,5: E2 entre {_tor('Frecuencia de necesidades')}",
          ids("liq."), "PARAMETROS"],
-        ["Reparaciones extraordinarias", "Sin datos de costo ni frecuencia", "Poisson con costo lognormal",
-         "No hay pruebas posibles", "Apagadas (frecuencia 0). El mantenimiento normal (0,3 % al año) y la pintura sí se cobran",
-         "Preferimos no inventar valores", f"Mantenimiento 0,2 % o 0,5 %: E2 entre {_tor('Mantenimiento')}",
-         ids("rep."), "PARAMETROS"],
-        ["Crisis forzada (escenario de estrés)", "Escenario definido por el equipo", "",
-         "", "Empieza en un mes uniforme entre 1 y H − 12 y dura entre 12 y 24 meses", "Probar una crisis más larga que las "
-         "observadas", "Es un escenario, no una sensibilidad (sección 13)", ids("estres."), "PARAMETROS"],
     ]
-    tabla(ws, f, ["Proceso", "Datos", "Modelos que comparamos", "Pruebas y resultado", "Modelo que usa el simulador",
-                  "Por qué lo elegimos", "Alternativa o sensibilidad y su efecto", "Parámetros", "Hoja con el detalle"], filas,
-          [20, 28, 32, 48, 42, 42, 38, 22, 18])
+    filas = [[r[0], r[1], r[3], r[4], r[5]] for r in filas]
+    tabla(ws, f, ["Proceso", "Datos", "Pruebas y resultado", "Modelo que usa el simulador", "Por qué lo elegimos"], filas,
+          [22, 32, 56, 48, 48])
     ws.freeze_panes = "B6"
 
 
@@ -392,7 +365,7 @@ def tpm_logit(ws) -> None:
 
 def validacion(ws) -> None:
     v = pd.read_csv(RES / "validacion.csv")
-    f = titulo(ws, "Validación (punto 16)", "Corrida de 500 réplicas con los parámetros de referencia frente a los datos de cada "
+    f = titulo(ws, "Validación", "Corrida de 500 réplicas con los parámetros de referencia frente a los datos de cada "
                "proceso. Tipo: 'Reproduce insumos' compara con los mismos datos con que se estimó el proceso (verifica el "
                "generador); 'Contraste' compara con algo que el modelo no usó al estimarse (validación).")
     tabla(ws, f, ["Proceso", "Medida", "Tipo", "Simulado", "Observado", "Referencia", "Lectura"],
@@ -425,7 +398,7 @@ def resultados(ws) -> None:
     n = pd.read_csv(RES / "capital_necesario.csv")
     f = tabla(ws, f, ["Escenario", "Estrategia", "Meta (M)", "Capital para 80 % (M)", "Capital para 50 % (M)"],
               [[x.escenario, x.estrategia, x.meta / 1e6, x.capital_80 / 1e6, x.capital_50 / 1e6] for x in n.itertuples()], None,
-              "Capital necesario (punto 17; vacío = fuera del rango de 400 a 1.000 M)")
+              "Capital necesario (vacío = fuera del rango de 400 a 1.000 M)")
     pr = pd.read_csv(RES / "precision_replicas.csv")
     f = tabla(ws, f, list(pr.columns), pr.values.tolist(), None, "Precisión de P(meta) de E2 según el número de réplicas")
     pa = pd.read_csv(RES / "comparaciones_pareadas.csv")
@@ -447,7 +420,7 @@ def resultados(ws) -> None:
 
 def main(salida: Path) -> None:
     wb = Workbook()
-    hojas = [("LEEME", leeme), ("MODELOS", modelos), ("PARAMETROS", escribir_parametros), ("FUENTES", fuentes),
+    hojas = [("LEEME", leeme), ("MODELOS", modelos), ("PARAMETROS", escribir_parametros), ("MODELO", escribir_modelo), ("FUENTES", fuentes),
              ("DICCIONARIO", diccionario), ("TPM_Logit", tpm_logit),
              ("VALIDACION", validacion), ("RESULTADOS", resultados)]
     wb.remove(wb.active)

@@ -13,6 +13,11 @@ Estados: Configurable, Verificado, Estimado, Calibrado, Supuesto, Apagado.
 
 X = None  # igual que la base
 
+# Lo que el usuario puede cambiar: el inversionista, el experimento, las estrategias y las
+# necesidades de liquidez. Todo lo demás (procesos aleatorios estimados con datos) va en la
+# hoja oculta MODELO y no se modifica desde el Excel ni desde la aplicación.
+VISIBLES_PREFIJOS = ("inv.", "exp.", "cdt.plazo", "liq.tasa_", "liq.mediana_pct", "E1.", "E2.", "E3.", "E4.")
+
 FILAS = [
     # ---------------- Inversionista y experimento (punto 4 y 14) ----------------
     ("P001", "inv.capital", "Inversionista", "Capital inicial", 700_000_000, X, X, "COP", "Configurable", "Equipo", "Punto 4"),
@@ -67,8 +72,8 @@ FILAS = [
     ("P059", "junta.p_subidas_logit", "TPM", "Logit: probabilidad de cada subida", "0.480769;0.25;0.038462;0.192308;0.038462", X, X, "lista", "Estimado", "52 subidas 2001-2026 (calendario de 8 reuniones, fechas de vigencia)", "TPM_Logit"),
     ("P064", "junta.bajadas_logit", "TPM", "Logit: tamaños de bajada", "0.25;0.5;0.75;1;1.5;1.75;2", X, X, "lista de puntos", "Estimado", "48 bajadas 2001-2026 (calendario de 8 reuniones, fechas de vigencia)", "TPM_Logit"),
     ("P065", "junta.p_bajadas_logit", "TPM", "Logit: probabilidad de cada bajada", "0.354167;0.4375;0.083333;0.041667;0.041667;0.020833;0.020833", X, X, "lista", "Estimado", "48 bajadas 2001-2026 (calendario de 8 reuniones, fechas de vigencia)", "TPM_Logit"),
-    ("P052", "junta.bajadas_estres", "TPM", "Tamaños de bajada durante la crisis forzada", "0.5;1;1.5;2", X, X, "lista de puntos", "Supuesto", "Recortes de 1 a 2 puntos en 2009 (TPM oficial)", "Punto 13"),
-    ("P053", "junta.p_bajadas_estres", "TPM", "Probabilidad de cada bajada durante la crisis forzada", "0.25;0.25;0.25;0.25", X, X, "lista", "Supuesto", "Equipo: sin datos para repartirlas", "Punto 13"),
+    ("P052", "junta.bajadas_estres", "TPM", "Tamaños de bajada durante la crisis del escenario de estrés", "0.5;1;1.5;2", X, X, "lista de puntos", "Supuesto", "Recortes de 1 a 2 puntos en 2009 (TPM oficial)", "Punto 13"),
+    ("P053", "junta.p_bajadas_estres", "TPM", "Probabilidad de cada bajada durante la crisis del escenario de estrés", "0.25;0.25;0.25;0.25", X, X, "lista", "Supuesto", "Equipo: sin datos para repartirlas", "Punto 13"),
 
     # ---------------- Cuenta remunerada (7.3) ----------------
     ("P060", "cta.alfa", "Cuenta", "Tasa de la cuenta = α × TPM", 0.8978, 0.80, X, "fracción", "Estimado", "19 tasas de 4 cuentas digitales (Nu, Pibank, Lulo, RappiPay) en 5 fechas, dic-2023 a oct-2026; IC 95 % por entidad 0,755 a 1,046. Ualá se excluye: es un depósito de bajo monto con tope cercano a $10 M. En las otras 4 no se encontró tope de saldo (comparadores, oct-2026); adverso 0,80", "TPM_Cuenta, 7.3"),
@@ -100,7 +105,7 @@ FILAS = [
     ("P094", "etf.vol_N", "ETF", "Volatilidad mensual en normal", 0.04706, X, X, "desviación mensual", "Estimado", "Hoja MARKOV, expansión + normal (155 meses)", "Punto 8"),
     ("P095", "etf.vol_C", "ETF", "Volatilidad mensual en crisis", 0.08783, X, X, "desviación mensual", "Estimado", "Hoja MARKOV, crisis (24 meses). Levene p = 0,004; sin marzo de 2020 p = 0,080: descansa en pocos meses", "Punto 8"),
     ("P096", "etf.jf", "ETF", "Alternativa Jones-Faddy: a; b; ubicación; escala", "2.5447;3.4477;0.024712;0.040623", X, X, "lista", "Estimado", "Máxima verosimilitud, 182 meses", "7.5"),
-    ("P097", "etf.caida_estres", "ETF", "Caída del ETF al iniciar la crisis forzada", 0.0, X, 0.25, "fracción", "Supuesto", "Marzo de 2020: −27 %", "Punto 13"),
+    ("P097", "etf.caida_estres", "ETF", "Caída del ETF al iniciar la crisis del escenario de estrés", 0.0, X, 0.25, "fracción", "Supuesto", "Marzo de 2020: −27 %", "Punto 13"),
     ("P098", "etf.comision", "ETF", "Comisión por compra o venta", 0.005, X, X, "fracción", "Supuesto", "Tarifas de comisionistas", "5.3"),
 
     # ---------------- Inmueble (5.4, 7.6) ----------------
@@ -142,11 +147,12 @@ FILAS = [
     ("P146", "vac.media_C", "Vacancia", "Duración media en crisis", 6.0, 9.0, 9.0, "meses", "Supuesto", "Sin datos por estado; escenario de crisis a sensibilidad", "7.7"),
 
     # ---------------- Liquidez extraordinaria (punto 12) ----------------
-    ("P150", "liq.tasa_E", "Liquidez", "Necesidades por mes en expansión", 1 / 24, 1.5 / 24, X, "eventos por mes", "Supuesto", "Supuesto del equipo (1 cada 24 meses); los resultados se reportan con y sin necesidades. Referencia, no calibración: en la IEFIC 2017-2018 (DANE), Medellín, 10 % de hogares con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos ocurre cada 16 a 23 meses, pero mide déficits de cualquier tamaño y la pregunta de cómo se cubren es sobre conducta habitual, no sobre el último mes (tools/iefic_liquidez.py). Adverso × 1,5", "Punto 12"),
-    ("P151", "liq.tasa_N", "Liquidez", "Necesidades por mes en normal", 1 / 24, 1.5 / 24, X, "eventos por mes", "Supuesto", "Supuesto del equipo (1 cada 24 meses); los resultados se reportan con y sin necesidades. Referencia, no calibración: en la IEFIC 2017-2018 (DANE), Medellín, 10 % de hogares con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos ocurre cada 16 a 23 meses, pero mide déficits de cualquier tamaño y la pregunta de cómo se cubren es sobre conducta habitual, no sobre el último mes (tools/iefic_liquidez.py). Adverso × 1,5", "Punto 12"),
-    ("P152", "liq.tasa_C", "Liquidez", "Necesidades por mes en crisis", 1 / 12, 1.5 / 12, 1 / 12, "eventos por mes", "Supuesto", "Sin datos por estado (la IEFIC es de 2017-2018, sin crisis): el doble en crisis es supuesto; adverso × 1,5", "Punto 12"),
-    ("P153", "liq.mediana", "Liquidez", "Mediana del monto (pesos de hoy)", 20_000_000, X, X, "COP", "Supuesto", "Sin fuente: los resultados se reportan con y sin necesidades", "Punto 12"),
+    ("P150", "liq.tasa_E", "Liquidez", "Necesidades por mes en expansión", 1 / 24, X, X, "eventos por mes", "Configurable", "Supuesto del equipo (1 cada 24 meses); los resultados se reportan con y sin necesidades. Referencia, no calibración: en la IEFIC 2017-2018 (DANE), Medellín, 10 % de hogares con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos ocurre cada 16 a 23 meses, pero mide déficits de cualquier tamaño y la pregunta de cómo se cubren es sobre conducta habitual, no sobre el último mes (tools/iefic_liquidez.py). Adverso × 1,5", "Punto 12"),
+    ("P151", "liq.tasa_N", "Liquidez", "Necesidades por mes en normal", 1 / 24, X, X, "eventos por mes", "Configurable", "Supuesto del equipo (1 cada 24 meses); los resultados se reportan con y sin necesidades. Referencia, no calibración: en la IEFIC 2017-2018 (DANE), Medellín, 10 % de hogares con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos ocurre cada 16 a 23 meses, pero mide déficits de cualquier tamaño y la pregunta de cómo se cubren es sobre conducta habitual, no sobre el último mes (tools/iefic_liquidez.py). Adverso × 1,5", "Punto 12"),
+    ("P152", "liq.tasa_C", "Liquidez", "Necesidades por mes en crisis", 1 / 12, X, X, "eventos por mes", "Configurable", "Sin datos por estado (la IEFIC es de 2017-2018, sin crisis): el doble en crisis es supuesto; adverso × 1,5", "Punto 12"),
+    ("P153", "liq.mediana_pct", "Liquidez", "Mediana del monto de una necesidad (fracción del capital inicial, en pesos de hoy)", 0.03, X, X, "fracción del capital", "Configurable", "Sin fuente: los resultados se reportan con y sin necesidades", "Punto 12"),
     ("P154", "liq.sigma", "Liquidez", "σ del logaritmo del monto", 0.8, X, X, "ln", "Supuesto", "Equipo (percentil 90 ≈ $56 M)", "Punto 12"),
+    ("P156", "liq.mult_tasa", "Liquidez", "Multiplicador de la frecuencia de las necesidades", 1.0, 1.5, X, "veces", "Supuesto", "Adverso: una vez y media más seguidas", "Punto 13"),
     ("P155", "liq.mult_monto", "Liquidez", "Multiplicador del monto", 1.0, X, 2.0, "veces", "Supuesto", "Estrés: monto × 2", "Punto 13"),
 
     # ---------------- Reparaciones (evento 10) ----------------
@@ -155,11 +161,11 @@ FILAS = [
     ("P162", "rep.sigma", "Reparación", "σ del logaritmo del costo", 0.0, X, X, "ln", "Apagado", "Sin datos", "Diagrama, evento 10"),
 
     # ---------------- Escenario de estrés (punto 13) ----------------
-    ("P170", "estres.activo", "Escenario", "¿Se fuerza una crisis?", 0, X, 1, "0 o 1", "Configurable", "Punto 13", "Punto 13"),
-    ("P171", "estres.inicio_min", "Escenario", "Inicio de la crisis forzada: mínimo", 1, X, X, "mes", "Supuesto", "Equipo", "Punto 13"),
+    ("P170", "estres.activo", "Escenario", "¿El escenario incluye una crisis?", 0, X, 1, "0 o 1", "Configurable", "Punto 13", "Punto 13"),
+    ("P171", "estres.inicio_min", "Escenario", "Inicio de la crisis del escenario de estrés: mínimo", 1, X, X, "mes", "Supuesto", "Equipo", "Punto 13"),
     ("P172", "estres.margen_final", "Escenario", "Inicio máximo = H menos este valor", 12, X, X, "meses", "Supuesto", "Equipo", "Punto 13"),
-    ("P173", "estres.dur_min", "Escenario", "Duración mínima de la crisis forzada", 12, X, X, "meses", "Supuesto", "Promedio histórico: 12 meses", "Punto 13"),
-    ("P174", "estres.dur_max", "Escenario", "Duración máxima de la crisis forzada", 24, X, X, "meses", "Supuesto", "Equipo", "Punto 13"),
+    ("P173", "estres.dur_min", "Escenario", "Duración mínima de la crisis del escenario de estrés", 12, X, X, "meses", "Supuesto", "Promedio histórico: 12 meses", "Punto 13"),
+    ("P174", "estres.dur_max", "Escenario", "Duración máxima de la crisis del escenario de estrés", 24, X, X, "meses", "Supuesto", "Equipo", "Punto 13"),
 
     # ---------------- Estrategias (punto 11) ----------------
     ("P200", "E1.pesos", "Estrategias", "E1 Seguridad: cuenta; CDT; ETF; inmueble", "0.20;0.60;0.20;0", X, X, "fracción del capital", "Configurable", "Equipo", "Punto 11"),

@@ -6,6 +6,8 @@ from investment_sim.engine.simulation import Simulacion
 from investment_sim.experiments.runner import residuos
 from investment_sim.strategies.rules import Estrategia
 
+CAP = 700e6  # capital de referencia
+
 
 def test_lista_ordena_por_tiempo_prioridad_y_secuencia():
     c = ListaEventos()
@@ -81,7 +83,7 @@ def test_eventos_periodicos_en_su_calendario(base):
 
 
 def test_inmueble_vendido_cancela_sus_eventos(base):
-    p = base.con(**{"liq.mediana": 600e6, "liq.sigma": 0.0, "liq.tasa_N": 0.5, "liq.tasa_E": 0.5, "liq.tasa_C": 0.5})
+    p = base.con(**{"liq.mediana_pct": 600e6 / CAP, "liq.sigma": 0.0, "liq.tasa_N": 0.5, "liq.tasa_E": 0.5, "liq.tasa_C": 0.5})
     sim, r = _correr_con_traza(p, "E3", 3)
     ventas = [x for x in r.traza if x["n"] == 13 and x["detalle"].startswith("Se vende")]
     assert ventas, "con necesidades enormes el inmueble debe venderse"

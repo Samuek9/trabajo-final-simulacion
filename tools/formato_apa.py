@@ -40,8 +40,6 @@ REFERENCIAS = [
     ("DANE, 2026b", "Departamento Administrativo Nacional de Estadística [DANE]. (2026b). *Producto interno bruto trimestral a precios constantes* [Conjunto de datos]. Consultado en SUAMECA, https://suameca.banrep.gov.co/estadisticas-economicas/"),
     ("DIAN, 2025", "Dirección de Impuestos y Aduanas Nacionales [DIAN]. (2025, 15 de diciembre). *Resolución 000238 de 2025, por la cual se fija el valor de la Unidad de Valor Tributario (UVT) para 2026*. https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0238_2025.htm"),
     ("El País, 2026", "El País. (2026, septiembre). *CDT en Colombia: estas son las tasas que ofrecen algunas entidades para septiembre de 2026*. https://www.elpais.com.co/economia/cdt-en-colombia-estas-son-las-tasas-que-ofrecen-algunas-entidades-para-septiembre-de-2026-3049.html"),
-    ("Equipo del trabajo, 2026a", "Equipo del trabajo. (2026a). *Estrategias de inversión; Escenarios; Dependencia entre variables y estados económicos; Diseño experimental; Diagrama de eventos y diagrama de flujo; Análisis de estados económicos (Markov)* [Documentos internos no publicados]."),
-    ("Equipo del trabajo, 2026b", "Equipo del trabajo. (2026b). *Tasas de cuentas de ahorro digitales en Colombia, diciembre de 2023 a octubre de 2026* [Conjunto de datos no publicado, recopilado de notas de El Tiempo, El Colombiano y Rankia; hoja TPM_Cuenta del Excel maestro]."),
     ("Fogafín, 2025", "Fondo de Garantías de Instituciones Financieras [Fogafín]. (2025). *ABC del proceso de pago del seguro de depósitos*. https://www.fogafin.gov.co/sites/default/files/2025-12/ABC%20del%20proceso%20de%20pago%20del%20seguro%20de%20dep%C3%B3sitos.pdf"),
     ("Hamilton, 1989", "Hamilton, J. D. (1989). A new approach to the economic analysis of nonstationary time series and the business cycle. *Econometrica, 57*(2), 357-384. https://doi.org/10.2307/1912559"),
     ("Harris et al., 2020", "Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., Wieser, E., Taylor, J., Berg, S., Smith, N. J., Kern, R., Picus, M., Hoyer, S., van Kerkwijk, M. H., Brett, M., Haldane, A., Fernández del Río, J., Wiebe, M., Peterson, P., . . . Oliphant, T. E. (2020). Array programming with NumPy. *Nature, 585*(7825), 357-362. https://doi.org/10.1038/s41586-020-2649-2"),
@@ -99,13 +97,11 @@ CITAS = [
     ("La Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) del DANE, de 2017 y 2018,",
      "La Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) del DANE (2019), de 2017 y 2018,"),
     ("202 decisiones, de las cuales", "202 decisiones (Banco de la República, 2026a), de las cuales"),
-    ("La hoja PIB trae los 126 trimestres,", "La hoja PIB trae los 126 trimestres (DANE, 2026b),"),
+    ("Se usaron los 126 trimestres,", "Se usaron los 126 trimestres (DANE, 2026b),"),
     ("Modelo. Un logit ordenado con dos variables:", "Modelo. Un logit ordenado (McCullagh, 1980) con dos variables:"),
     ("La segunda es una cadena de Markov de tres estados económicos", "La segunda es una cadena de Markov de tres estados económicos, en la línea de los modelos de cambio de régimen de Hamilton (1989),"),
     ("El simulador está escrito en Python y no usa ninguna librería de simulación:",
      "El simulador está escrito en Python, con NumPy, SciPy y statsmodels para el cálculo y la estadística (Harris et al., 2020; Virtanen et al., 2020; Seabold y Perktold, 2010), y no usa ninguna librería de simulación:"),
-    ("El diagrama de eventos y el diagrama de flujo los construyó el equipo antes de programar.",
-     "El diagrama de eventos y el diagrama de flujo los construyó el equipo antes de programar (Equipo del trabajo, 2026a)."),
     ("Los promedios ponderados de captación de la Superintendencia Financiera dan un α más bajo, cercano a 0,82, porque incluyen cuentas tradicionales que pagan menos;",
      "Las cuentas de ahorro tradicionales pagan bastante menos que las digitales, así que un promedio de todo el sistema daría un α más bajo;"),
 ]
@@ -170,7 +166,7 @@ LEYENDA = re.compile(r"^(Tabla|Figura) ([0-9A-C][0-9.]*-[a-z])\.\s*(.*)$", re.S)
 
 # Títulos de las tablas del equipo que no tenían, por las dos primeras celdas del encabezado.
 TITULOS = {
-    "Parámetro|Valor base": "Parámetros configurables del inversionista",
+    "Parámetro|Valor de referencia": "Parámetros configurables del inversionista",
     "Activo|Instrumento": "Universo de inversión",
     "Regla|Valor en el modelo|Tipo y fuente|Disponibilidad": "Reglas de la cuenta remunerada",
     "Regla|Valor en el modelo|Sustento": "Reglas del CDT",

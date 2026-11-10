@@ -9,7 +9,7 @@ ACTIVOS = ("Cuenta", "CDT", "ETF", "Inmueble")
 COL_ACTIVOS = ("#7FA7C9", "#2F6B9A", "#C0612B", "#3C8D5A")
 
 st.title("Estrategias")
-st.write("Pesos iniciales de cada estrategia (punto 11). Cada fila debe sumar 100 %. E1, E2 y E3 compran y mantienen: "
+st.write("Pesos iniciales de cada estrategia. Cada fila debe sumar 100 %. E1, E2 y E3 compran y mantienen: "
          "solo venden para cubrir liquidez y renuevan el CDT por el mismo capital. E4 empieza como E2 y una vez al año "
          "acomoda cuenta, CDT y ETF al estado de la economía; el inmueble no lo toca.")
 
@@ -27,8 +27,7 @@ def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> list[float] 
             nuevos.append(st.number_input(f"{et} (%)", 0.0, 100.0, round(v * 100, 2), 1.0, key=f"{k}_{i}") / 100)
     suma = sum(nuevos)
     ref = [float(x) for x in str(T[clave].base).split(";")]
-    st.caption(f"<span class='etiqueta'>{T[clave].estado}</span> Referencia {' · '.join(f'{x * 100:g}' for x in ref)} % · "
-               f"{T[clave].fuente}", unsafe_allow_html=True)
+    st.caption(f"Valor de referencia: {' · '.join(f'{x * 100:g}' for x in ref)} %")
     if abs(suma - 1) > 1e-6:
         st.error(f"Suma {suma * 100:.2f} %. Ajusta para que dé 100 %.")
         return None

@@ -80,7 +80,7 @@ def validar(p: Params, n: int = 500, semilla: int | None = None, procesos: int =
     obs_g = serie("etf")["g"].to_numpy(float)
     fila("ETF", "Rendimiento log mensual medio", float(g.mean()), float(obs_g.mean()), "BlackRock NAV 2011-2026")
     fila("ETF", "Desviación mensual (todos los estados)", float(g.std()), float(obs_g.std()), "BlackRock NAV 2011-2026")
-    fila("ETF", "Desviación mensual en crisis", float(g[estados == 2].std()), 0.08783, "Hoja MARKOV (24 meses)")
+    fila("ETF", "Desviación mensual en crisis", float(g[estados == 2].std()), 0.08783, "Estados del PIB (24 meses)")
     fila("ETF", "Asimetría", float(stats.skew(g.ravel())), float(stats.skew(obs_g)), "BlackRock NAV 2011-2026",
          "La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.", tipo="Contraste")
     fila("ETF", "Curtosis en exceso", float(stats.kurtosis(g.ravel())), float(stats.kurtosis(obs_g)), "BlackRock NAV 2011-2026",

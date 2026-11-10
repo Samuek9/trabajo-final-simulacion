@@ -8,7 +8,7 @@ TPM,Tasa real media en los años 6 a 10 (puntos),Contraste,2.7033382150882583,1.
 TPM,Réplicas con la TPM en el tope de 15 % al año 10,Contraste,0.008,0.0,"Máximo histórico desde 2001: 13,25 %",
 ETF,Rendimiento log mensual medio,Reproduce insumos,0.0038015057983817203,0.0036327192628493733,BlackRock NAV 2011-2026,
 ETF,Desviación mensual (todos los estados),Reproduce insumos,0.054576807640489576,0.053819480299156314,BlackRock NAV 2011-2026,
-ETF,Desviación mensual en crisis,Reproduce insumos,0.08524451508200478,0.08783,Hoja MARKOV (24 meses),
+ETF,Desviación mensual en crisis,Reproduce insumos,0.08524451508200478,0.08783,Estados del PIB (24 meses),
 ETF,Asimetría,Contraste,-0.09498690588468547,-1.1191953821976646,BlackRock NAV 2011-2026,La t(5) es simétrica; la asimetría negativa de los datos solo la recoge Jones-Faddy.
 ETF,Curtosis en exceso,Contraste,5.5933623421927905,6.28737156398531,BlackRock NAV 2011-2026,
 ETF,Peor mes en 10 años (mediana de las réplicas),Contraste,-0.16287642568898575,-0.3112215514896113,Marzo de 2020: −31 % en logaritmo,
@@ -16,6 +16,6 @@ Estados,Proporción del tiempo en Expansión,Reproduce insumos,0.30535,0.366,DAN
 Estados,Proporción del tiempo en Normal,Reproduce insumos,0.5381,0.488,DANE PIB 2006-2026,
 Estados,Proporción del tiempo en Crisis,Reproduce insumos,0.15655,0.146,DANE PIB 2006-2026,
 Estados,Duración media de una crisis (trimestres),Reproduce insumos,3.6076923076923078,4.0,DANE PIB 2006-2026,"El 4,0 observado es 1 / (1 − 0,75), la misma matriz; las rachas que tocan el final del horizonte quedan truncadas."
-Valorización,Valorización nominal media (ln anual),Reproduce insumos,0.07645645592205139,0.07680845591752625,IPVU 2001-2025,"El primer año parte de la variación de 2025 (0,0809) y se acerca a la media del AR(1)."
-Valorización,Desviación anual,Reproduce insumos,0.030951645265150287,0.033513644145387066,IPVU 2001-2025,
-Vacancia,Fracción del tiempo desocupado,Contraste,0.0273767896035069,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.
+Valorización,Valorización nominal media (ln anual),Reproduce insumos,0.07641967073296228,0.07680845591752625,IPVU 2001-2025,"El primer año parte de la variación de 2025 (0,0809) y se acerca a la media del AR(1)."
+Valorización,Desviación anual,Reproduce insumos,0.030909243420671965,0.033513644145387066,IPVU 2001-2025,
+Vacancia,Fracción del tiempo desocupado,Contraste,0.027372748346980978,0.006,"Ciencuadras 2026: 0,6 % de vacancia en Medellín",El modelo es más conservador a propósito: 10 % de no renovación en estado normal.

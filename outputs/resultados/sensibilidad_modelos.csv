@@ -1,33 +1,33 @@
 modelo,estrategia,ref_p_meta,alt_p_meta,ref_W,alt_W
-ETF: Jones-Faddy sin estados (en vez de t por estado),E1,0.0475,0.0425,743740439.0341783,759081976.5546694
-ETF: Jones-Faddy sin estados (en vez de t por estado),E2,0.1375,0.1625,822665952.3518285,832373187.9778628
-ETF: Jones-Faddy sin estados (en vez de t por estado),E3,0.175,0.2125,825923788.5260253,844909460.2309947
-ETF: Jones-Faddy sin estados (en vez de t por estado),E4,0.1625,0.1875,824495226.0562942,841113407.883301
-"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E1,0.0475,0.0475,743740439.0341783,743740439.0341783
-"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E2,0.1375,0.24,822665952.3518285,903631517.3888052
-"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E3,0.175,0.32,825923788.5260253,925605146.0595968
-"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E4,0.1625,0.245,824495226.0562942,896785929.0342166
-CDT: margen por fase (en vez de M5),E1,0.0475,0.05,743740439.0341783,747824315.1918528
-CDT: margen por fase (en vez de M5),E2,0.1375,0.14,822665952.3518285,824901091.1736003
-CDT: margen por fase (en vez de M5),E3,0.175,0.1775,825923788.5260253,825587992.8918781
-CDT: margen por fase (en vez de M5),E4,0.1625,0.1675,824495226.0562942,825530918.6838386
-Canon: sube todo el IPC (en vez del modelo DANE),E1,0.0475,0.0475,743740439.0341783,743740439.0341783
-Canon: sube todo el IPC (en vez del modelo DANE),E2,0.1375,0.1425,822665952.3518285,829615732.663
-Canon: sube todo el IPC (en vez del modelo DANE),E3,0.175,0.18,825923788.5260253,831417309.1527858
-Canon: sube todo el IPC (en vez del modelo DANE),E4,0.1625,0.1725,824495226.0562942,831777979.3682859
-Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.0475,0.5875,743740439.0341783,1051826361.0775244
-Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.1375,0.44,822665952.3518285,973092604.6917589
-Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.175,0.32,825923788.5260253,904009524.3986235
-Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.1625,0.4075,824495226.0562942,945086583.0806744
-Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E1,0.0475,0.0475,743740439.0341783,759824952.2751534
-Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E2,0.1375,0.1525,822665952.3518285,826583817.3726106
-Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E3,0.175,0.1725,825923788.5260253,830339121.00965
-Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E4,0.1625,0.1675,824495226.0562942,826695032.9420565
-Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E1,0.0475,0.0475,743740439.0341783,743740439.0341783
-Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E2,0.1375,0.1375,822665952.3518285,819697153.0160813
-Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E3,0.175,0.1725,825923788.5260253,821768661.3915734
-Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E4,0.1625,0.16,824495226.0562942,821480048.9626331
-Sin necesidades extraordinarias de liquidez (no tienen fuente),E1,0.0475,0.2125,743740439.0341783,903575102.0116181
-Sin necesidades extraordinarias de liquidez (no tienen fuente),E2,0.1375,0.4475,822665952.3518285,985400928.9167198
-Sin necesidades extraordinarias de liquidez (no tienen fuente),E3,0.175,0.455,825923788.5260253,981322743.5599114
-Sin necesidades extraordinarias de liquidez (no tienen fuente),E4,0.1625,0.455,824495226.0562942,980653598.1104952
+ETF: Jones-Faddy sin estados (en vez de t por estado),E1,0.0475,0.04,736276457.9143071,750768963.597162
+ETF: Jones-Faddy sin estados (en vez de t por estado),E2,0.135,0.155,815284887.6610749,825869404.2302343
+ETF: Jones-Faddy sin estados (en vez de t por estado),E3,0.17,0.2,817951709.9245552,837645325.8553671
+ETF: Jones-Faddy sin estados (en vez de t por estado),E4,0.1525,0.175,817547286.4590856,832105950.3866954
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E1,0.0475,0.0475,736276457.9143071,736276457.9143071
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E2,0.135,0.235,815284887.6610749,893511243.2144719
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E3,0.17,0.3,817951709.9245552,918452122.8162097
+"Valorización: normal por estado con IPVNBR, vivienda nueva (en vez del AR(1) del IPVU)",E4,0.1525,0.2325,817547286.4590856,891456672.9613587
+CDT: margen por fase (en vez de M5),E1,0.0475,0.0475,736276457.9143071,740024354.3184373
+CDT: margen por fase (en vez de M5),E2,0.135,0.135,815284887.6610749,815983635.208004
+CDT: margen por fase (en vez de M5),E3,0.17,0.1725,817951709.9245552,819122623.9426225
+CDT: margen por fase (en vez de M5),E4,0.1525,0.1575,817547286.4590856,818203362.458291
+Canon: sube todo el IPC (en vez del modelo DANE),E1,0.0475,0.0475,736276457.9143071,736276457.9143071
+Canon: sube todo el IPC (en vez del modelo DANE),E2,0.135,0.1375,815284887.6610749,823071444.6645291
+Canon: sube todo el IPC (en vez del modelo DANE),E3,0.17,0.1775,817951709.9245552,826708686.2186875
+Canon: sube todo el IPC (en vez del modelo DANE),E4,0.1525,0.1625,817547286.4590856,825746569.2410712
+Junta: tabla por tendencia de 7.2 (en vez del logit),E1,0.0475,0.5775,736276457.9143071,1041692034.9401052
+Junta: tabla por tendencia de 7.2 (en vez del logit),E2,0.135,0.4275,815284887.6610749,965433953.5838562
+Junta: tabla por tendencia de 7.2 (en vez del logit),E3,0.17,0.315,817951709.9245552,894442616.713481
+Junta: tabla por tendencia de 7.2 (en vez del logit),E4,0.1525,0.39,817547286.4590856,937725902.9795555
+Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E1,0.0475,0.045,736276457.9143071,753708094.578176
+Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E2,0.135,0.145,815284887.6610749,821773780.9343476
+Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E3,0.17,0.1725,817951709.9245552,823412449.409565
+Junta: logit estimado solo con 2017-2026 (78 reuniones con el calendario actual),E4,0.1525,0.155,817547286.4590856,819194449.1877784
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E1,0.0475,0.0475,736276457.9143071,736276457.9143071
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E2,0.135,0.135,815284887.6610749,813983536.0052865
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E3,0.17,0.1675,817951709.9245552,815551785.0153384
+Vacancia de 4 meses en estado normal (Lonja: 121 días en oferta antes de arrendar),E4,0.1525,0.1525,817547286.4590856,814302079.2502803
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E1,0.0475,0.2125,736276457.9143071,903575102.0116181
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E2,0.135,0.4475,815284887.6610749,985400928.9167198
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E3,0.17,0.455,817951709.9245552,981322743.5599114
+Sin necesidades extraordinarias de liquidez (no tienen fuente),E4,0.1525,0.455,817547286.4590856,980653598.1104952

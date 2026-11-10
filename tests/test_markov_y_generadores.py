@@ -79,7 +79,7 @@ def test_poisson_de_liquidez(base):
     assert liq.espera(0.0, 0.5) == float("inf")
     z = np.random.default_rng(6).standard_normal(100_000)
     montos = np.array([liq.monto(x, 1.0, 1.0, base) for x in z])
-    assert np.median(montos) == pytest.approx(20e6, rel=0.02)
+    assert np.median(montos) == pytest.approx(base.f("liq.mediana_pct") * base.f("inv.capital"), rel=0.02)
 
 
 def test_parametros_fuera_de_dominio(base):

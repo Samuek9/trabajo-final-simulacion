@@ -7,7 +7,7 @@ p = estado.params()
 T = p.tabla
 
 st.title("Inversionista")
-st.write("Estos valores no son fijos: el enunciado pide que el capital, la meta, el horizonte y la liquidez mínima sean entradas del simulador.")
+st.write("Ningún valor es fijo: el capital, la meta, el horizonte y la liquidez mínima son entradas del simulador.")
 
 c1, c2 = st.columns(2)
 with c1:
@@ -28,6 +28,21 @@ with c2:
     if modo == "fijo" and fijo >= capital:
         st.error("El inmueble no puede costar más que el capital.")
 
+st.markdown("##### Necesidades extraordinarias de liquidez")
+st.write("Gastos imprevistos que obligan a conseguir efectivo. Llegan al azar con la frecuencia que se indique (0 = sin necesidades) "
+         "y su monto es un porcentaje del capital inicial, en pesos de hoy; el valor mediano es el que se pide aquí y algunos "
+         "son bastante mayores.")
+c5 = st.columns(4)
+meses = {}
+for col, (L, nombre) in zip(c5[:3], (("E", "expansión"), ("N", "normal"), ("C", "crisis"))):
+    tasa = p.f(f"liq.tasa_{L}")
+    with col:
+        meses[L] = st.number_input(f"Una necesidad cada ... meses ({nombre})", min_value=0.0, step=1.0,
+                                   value=float(round(1 / tasa, 2)) if tasa > 0 else 0.0, key=f"liq_{L}")
+with c5[3]:
+    monto = st.number_input("Monto mediano (% del capital)", min_value=0.0, max_value=50.0, step=0.5,
+                            value=round(p.f("liq.mediana_pct") * 100, 2), help=ui.pie_parametro(T["liq.mediana_pct"]))
+
 st.markdown("##### Experimento")
 c3, c4 = st.columns(2)
 with c3:
@@ -37,17 +52,18 @@ with c4:
 
 cambios = {"inv.capital": capital * 1e6, "inv.horizonte": anios * 12, "inv.meta_real": meta * 1e6,
            "inv.liquidez_min": liq / 100, "inv.modo_inmueble": modo, "inv.valor_inmueble_fijo": fijo * 1e6,
-           "exp.replicas": int(n), "exp.semilla": int(semilla)}
+           "exp.replicas": int(n), "exp.semilla": int(semilla), "liq.mediana_pct": monto / 100,
+           **{f"liq.tasa_{L}": (1 / m if m > 0 else 0.0) for L, m in meses.items()}}
 error = estado.probar(cambios)
 if error:
     st.error(error)
 elif not (modo == "fijo" and fijo >= capital):
     for k, v in cambios.items():
-        if v != p.valores[k]:
+        if abs(float(v) - float(p.valores[k])) > 1e-12 if isinstance(v, (int, float)) else v != p.valores[k]:
             estado.fijar(k, v)
 
 if st.button("Restablecer esta página"):
-    estado.restablecer(("inv.", "exp."))
+    estado.restablecer(("inv.", "exp.", "liq."))
     st.rerun()
 
 for a in advertencias(estado.params()):

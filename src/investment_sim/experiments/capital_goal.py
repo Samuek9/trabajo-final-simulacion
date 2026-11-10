@@ -1,4 +1,4 @@
-"""Experimento capital-meta (punto 17).
+"""Experimento capital-meta.
 
 Capital inicial × meta × estrategia → probabilidad de cumplimiento. Cada capital se
 simula; las metas se evalúan sobre el mismo patrimonio real final, así que cambiar la
@@ -14,6 +14,17 @@ import pandas as pd
 from ..config.parameters import Params
 from ..metrics.summary import ic_proporcion
 from .runner import correr
+
+
+FACTORES_CAPITAL = (4 / 7, 5 / 7, 6 / 7, 1.0, 8 / 7, 9 / 7, 10 / 7)
+FACTORES_META = (0.7, 0.8, 1.0, 1.2, 1.5)
+
+
+def malla(p: Params) -> tuple[list[float], list[float]]:
+    """Capitales y metas por defecto: múltiplos del capital y la meta configurados (redondeados al millón)."""
+    capital, meta = p.f("inv.capital"), p.f("inv.meta_real")
+    return ([round(capital * k / 1e6) * 1e6 for k in FACTORES_CAPITAL],
+            [round(meta * k / 1e6) * 1e6 for k in FACTORES_META])
 
 
 def matriz(p: Params, capitales: Iterable[float], metas: Iterable[float],

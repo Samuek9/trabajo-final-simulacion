@@ -1,6 +1,7 @@
 """Lectura y validación de los parámetros del simulador.
 
-La única fuente de los valores es la hoja PARAMETROS de data/master_datos.xlsx.
+Los valores salen de las hojas PARAMETROS (inversionista, experimento, estrategias y necesidades
+de liquidez) y MODELO (procesos estimados con datos, ocultos y fijos) de data/master_datos.xlsx.
 Cada fila tiene una clave (por ejemplo "etf.mu"), un valor base y, si cambia,
 un valor para el escenario adverso y otro para el de estrés.
 """
@@ -14,7 +15,7 @@ ESCENARIOS = ("base", "adverso", "estres")
 ESTADOS_VALIDOS = {"Configurable", "Verificado", "Estimado", "Calibrado", "Supuesto", "Apagado", "Calculado"}
 RAIZ = Path(__file__).resolve().parents[3]
 EXCEL_POR_DEFECTO = RAIZ / "data" / "master_datos.xlsx"
-COLUMNAS = ("ID", "Clave", "Grupo", "Parámetro", "Base", "Adverso", "Estrés", "Unidad", "Estado", "Fuente", "Soporte")
+HOJAS_PARAMETROS = ("PARAMETROS", "MODELO")
 
 
 class ParametroInvalido(ValueError):
@@ -44,37 +45,44 @@ class Parametro:
 
 
 def leer_tabla(ruta: str | Path = EXCEL_POR_DEFECTO) -> list[Parametro]:
-    """Lee la hoja PARAMETROS. Solo valores, nunca fórmulas."""
+    """Lee las hojas PARAMETROS (lo que cambia el usuario) y MODELO (valores estimados, fijos).
+
+    Solo valores, nunca fórmulas. En PARAMETROS la columna del valor se llama "Valor"; en MODELO,
+    "Base", y puede traer además los valores del escenario adverso y del de estrés.
+    """
     from openpyxl import load_workbook
 
     ruta = Path(ruta)
     if not ruta.exists():
         raise FileNotFoundError(f"No existe el libro de parámetros: {ruta}")
     wb = load_workbook(ruta, read_only=True, data_only=True)
-    if "PARAMETROS" not in wb.sheetnames:
-        raise ParametroInvalido(f"{ruta.name} no tiene la hoja PARAMETROS")
-    ws = wb["PARAMETROS"]
-    filas = list(ws.iter_rows(values_only=True))
+    for hoja in HOJAS_PARAMETROS:
+        if hoja not in wb.sheetnames:
+            raise ParametroInvalido(f"{ruta.name} no tiene la hoja {hoja}")
+    salida: list[Parametro] = []
+    for hoja in HOJAS_PARAMETROS:
+        filas = list(wb[hoja].iter_rows(values_only=True))
+        # El encabezado es la primera fila cuya primera celda es "ID".
+        inicio = next(i for i, f in enumerate(filas) if f and f[0] == "ID")
+        encabezado = [str(c).strip() if c is not None else "" for c in filas[inicio]]
+        idx = {c: encabezado.index(c) for c in encabezado if c}
+        if "Valor" in idx:
+            idx["Base"] = idx["Valor"]
+        for f in filas[inicio + 1:]:
+            if not f or f[idx["Clave"]] in (None, ""):
+                continue
+            g = lambda c: f[idx[c]] if c in idx and idx[c] < len(f) else None  # noqa: E731
+            salida.append(Parametro(
+                id=str(g("ID")), clave=str(g("Clave")).strip(), grupo=str(g("Grupo") or ""),
+                nombre=str(g("Parámetro") or ""), base=_limpio(g("Base")), adverso=_limpio(g("Adverso")),
+                estres=_limpio(g("Estrés")), unidad=str(g("Unidad") or ""),
+                estado=str(g("Estado") or "Configurable"), fuente=str(g("Fuente") or ""), soporte=str(g("Soporte") or ""),
+            ))
     wb.close()
-    # El encabezado es la primera fila cuya primera celda es "ID".
-    inicio = next(i for i, f in enumerate(filas) if f and f[0] == "ID")
-    encabezado = [str(c).strip() if c is not None else "" for c in filas[inicio]]
-    idx = {c: encabezado.index(c) for c in COLUMNAS}
-    salida = []
-    for f in filas[inicio + 1:]:
-        if not f or f[idx["Clave"]] in (None, ""):
-            continue
-        g = lambda c: f[idx[c]] if idx[c] < len(f) else None  # noqa: E731
-        salida.append(Parametro(
-            id=str(g("ID")), clave=str(g("Clave")).strip(), grupo=str(g("Grupo") or ""),
-            nombre=str(g("Parámetro") or ""), base=_limpio(g("Base")), adverso=_limpio(g("Adverso")),
-            estres=_limpio(g("Estrés")), unidad=str(g("Unidad") or ""), estado=str(g("Estado") or ""),
-            fuente=str(g("Fuente") or ""), soporte=str(g("Soporte") or ""),
-        ))
     claves = [p.clave for p in salida]
     repetidas = {c for c in claves if claves.count(c) > 1}
     if repetidas:
-        raise ParametroInvalido(f"Claves repetidas en PARAMETROS: {sorted(repetidas)}")
+        raise ParametroInvalido(f"Claves repetidas en PARAMETROS y MODELO: {sorted(repetidas)}")
     return salida
 
 
@@ -240,7 +248,4 @@ def advertencias(p: Params) -> list[str]:
         costo = w[3] * p.f("inm.costo_compra")
         if w[0] - costo < p.f("inv.liquidez_min"):
             avisos.append(f"{e}: después de pagar la compra del inmueble la cuenta queda bajo la liquidez mínima; el simulador venderá ETF desde el primer mes.")
-    pend = [t.nombre for t in p.tabla.values() if t.estado == "Apagado"]
-    if pend:
-        avisos.append("Parámetros apagados por falta de datos: " + "; ".join(pend))
     return avisos

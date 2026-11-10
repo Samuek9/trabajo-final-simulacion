@@ -29,8 +29,6 @@ paginas = {
     "Análisis": [
         st.Page(str(APP / "pages" / "06_resultados.py"), title="Resultados"),
         st.Page(str(APP / "pages" / "07_sensibilidad.py"), title="Sensibilidad y capital-meta"),
-        st.Page(str(APP / "pages" / "08_trazabilidad.py"), title="Trazabilidad de una réplica"),
-        st.Page(str(APP / "pages" / "09_metodologia.py"), title="Metodología"),
     ],
 }
 

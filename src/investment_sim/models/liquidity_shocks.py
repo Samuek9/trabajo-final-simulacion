@@ -8,7 +8,7 @@ _L = {"Expansión": "E", "Normal": "N", "Crisis": "C"}
 
 def tasa(estado: str, p) -> float:
     """Eventos por mes del proceso de Poisson."""
-    return p.f(f"liq.tasa_{_L[estado]}")
+    return p.f(f"liq.tasa_{_L[estado]}") * p.f("liq.mult_tasa")
 
 
 def espera(lam: float, u: float) -> float:
@@ -19,8 +19,8 @@ def espera(lam: float, u: float) -> float:
 
 
 def monto(z: float, indice_precios: float, mult: float, p) -> float:
-    """Lognormal con mediana en pesos de hoy, pasada a pesos del momento."""
-    return mult * p.f("liq.mediana") * indice_precios * math.exp(p.f("liq.sigma") * z)
+    """Lognormal con mediana en pesos de hoy (fracción del capital inicial), pasada a pesos del momento."""
+    return mult * p.f("liq.mediana_pct") * p.f("inv.capital") * indice_precios * math.exp(p.f("liq.sigma") * z)
 
 
 def costo_reparacion(z: float, indice_precios: float, p) -> float:

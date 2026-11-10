@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from investment_sim.config.parameters import cargar  # noqa: E402
 from investment_sim.models import inflation, markov  # noqa: E402
 import formato_apa  # noqa: E402
+import limpieza_texto  # noqa: E402
 from informe_1_a_7 import actualizar  # noqa: E402
 from parametros_def import FILAS  # noqa: E402
 
@@ -291,49 +292,9 @@ def portada_y_resumen(doc):
     for t in ("Universidad Pontificia Bolivariana", "Curso: Simulación", "Profesor: John Fernando Vargas Buitrago"):
         antes(doc, fecha, [t])
     poner(fecha, "10 de noviembre de 2026")
-    poner(buscar(doc, "Archivo de soporte"),"Archivos de soporte: data/master_datos.xlsx (Excel maestro con parámetros, fuentes, "
-          "datos, validación y resultados), el repositorio del simulador (código, datos, pruebas y resultados de la corrida) y "
-          "docs/decision_log.md (decisiones de modelación).")
-    poner(buscar(doc, "Este documento cubre los puntos 1 a 7"),
-          "Este documento cubre los puntos 1 a 19 del enunciado. Las secciones 1 a 7 plantean el problema y estudian cada proceso "
-          "aleatorio con datos; las secciones 8 a 15 describen el modelo de eventos discretos, las estrategias, los escenarios y el "
-          "diseño del experimento; las secciones 16 a 18 muestran la verificación, la validación, la sensibilidad y los resultados. "
-          "Los cálculos están en el Excel maestro (data/master_datos.xlsx) y cada sección dice en qué hoja.")
-
-    ancla = buscar(doc, "1. Contexto", True)
-    e_mejor = mejor("base", "p_meta")
-    v = par("base", "E4", "E2", "W_real")
-    sin_liq = [alt("Sin necesidades", e) for e in ("E2", "E3", "E4")]
-    textos = [
-        ["Simulamos diez años de un inversionista de Medellín con 700 millones de pesos que quiere llegar a 1.000 millones en "
-         "pesos de hoy. El modelo es de eventos discretos: un reloj que salta de evento en evento (reuniones de la Junta, "
-         "vencimientos de CDT, arriendos, vacancias, gastos imprevistos, cambios del ciclo económico) y un estado que cada evento "
-         f"actualiza. Corrimos {c(N)} réplicas de cuatro estrategias en tres escenarios, y dentro de cada réplica las cuatro "
-         "estrategias viven la misma economía."],
-        [f"En el escenario base la meta es difícil para todas. {NOM[e_mejor]} la alcanza en {pc(r('base', e_mejor, 'p_meta'))} de las "
-         f"réplicas; E2 en {pc(r('base', 'E2', 'p_meta'))}, E4 en {pc(r('base', 'E4', 'p_meta'))} y E1 en {pc(r('base', 'E1', 'p_meta'))}. "
-         f"Lo que más la frena es la inflación: en pesos corrientes E2 pasa de 1.000 millones en "
-         f"{pc(NR.loc[('base', 'E2'), 'p_meta_nominal'], 0)} de las réplicas, y la inflación acumulada mediana de los diez años es "
-         f"{pc(NR.loc[('base', 'E2'), 'inflacion_acumulada_p50'], 0)}."],
-        [f"Más patrimonio esperado viene con menos liquidez. E3 tiene la probabilidad de meta más alta, pero en el escenario adverso "
-         f"{pc(r('adverso', 'E3', 'p_iliquidez'), 0)} de sus réplicas tienen al menos un episodio de iliquidez y "
-         f"{pc(r('adverso', 'E3', 'p_venta_urgente'), 0)} terminan vendiendo el apartamento de urgencia. E1 casi nunca se queda sin "
-         "efectivo y es la que mejor aguanta los escenarios adverso y de estrés, pero en el base pierde poder adquisitivo en "
-         f"{pc(r('base', 'E1', 'p_perdida_real'), 0)} de las réplicas."],
-        [f"La estrategia dinámica E4 no mejora a E2, de la que parte: {frase_e4()}, y su probabilidad de meta no es distinta. El estado de la economía cambia la volatilidad del ETF pero no "
-         "su rendimiento medio, así que salir del ETF en una crisis baja el riesgo sin ganar rentabilidad, y cada ajuste cuesta "
-         "comisión y 4x1000."],
-        [f"Con 700 millones la meta es poco probable: para tener 80 % de probabilidad de llegar a 1.000 millones reales hacen falta "
-         f"unos {mm(cap('base', 'E2', 1e9))} con E2. Según el análisis de sensibilidad, lo que más mueve el resultado es "
-         f"{principales()}. Los gastos imprevistos son un supuesto "
-         f"sin datos: sin gastos imprevistos la probabilidad de meta de E2 a E4 sube a {pc(min(sin_liq), 0)} o {pc(max(sin_liq), 0)} "
-         "(corrida de 400 réplicas de la sensibilidad), y por eso mostramos los resultados con y sin ellos."],
-    ]
-    antes(doc, ancla, ["Resumen ejecutivo"], "Heading 1")
-    for t in textos:
-        antes(doc, ancla, t)
-    salto = antes(doc, ancla, [""])
-    salto.add_run().add_break(WD_BREAK.PAGE)
+    for inicio in ("Archivo de soporte", "Este documento cubre los puntos 1 a 7"):
+        x = buscar(doc, inicio)
+        x._p.getparent().remove(x._p)
 
 
 def notas_7(doc):
@@ -360,10 +321,10 @@ def seccion_8(w: Informe):
     w.p("Clasificamos cada trimestre de 2006 a 2026 según el crecimiento anual del PIB real (DANE): expansión si pasa de 4 %, "
         "crisis si es menor que 1 % y normal en otro caso. De 82 trimestres, 30 fueron de expansión, 40 normales y 12 de crisis. "
         "La matriz sale de contar las transiciones de cada estado a cada otro y dividir por el total de la fila.")
-    w.p("El enunciado propone, como una alternativa, cinco estados: expansión, normalidad, desaceleración, crisis y recuperación. "
-        "Usamos tres. Con 81 transiciones, una matriz de 5 × 5 tiene 25 casillas y varias quedarían con uno o dos datos, sobre "
-        "todo alrededor de las crisis, que en el periodo son solo tres episodios. Lo que el enunciado exige es al menos una "
-        "estructura de dependencia, y con tres estados las probabilidades se pueden estimar con los datos que hay.")
+    w.p("Una alternativa frecuente usa cinco estados: expansión, normalidad, desaceleración, crisis y recuperación. "
+        "Se usaron tres. Con 81 transiciones, una matriz de 5 × 5 tiene 25 casillas y varias quedarían con uno o dos datos, sobre "
+        "todo alrededor de las crisis, que en el periodo son solo tres episodios. Lo necesario es una estructura de dependencia, "
+        "y con tres estados las probabilidades se pueden estimar con los datos que hay.")
     filas = [[s] + [c(Pm[i, j], 3) for j in range(3)] + [c(dur[i], 1), pc(pi[i], 0)] for i, s in enumerate(markov.ESTADOS)]
     w.tabla("8", "Matriz de transición trimestral y lo que implica.", ["Desde \\ hacia", "Expansión", "Normal", "Crisis",
             "Duración media (trimestres)", "Tiempo a largo plazo"], filas)
@@ -433,10 +394,6 @@ def seccion_9(w: Informe):
         "de modo que E4 decide cuánto renovar sin vender el CDT antes de tiempo. La compra o venta de activos y el pago de "
         "dividendos no son eventos separados: las compras ocurren en el inicio y en la revisión de E4, las ventas en la cobertura "
         "de liquidez, y los dividendos del ETF ya están dentro de su rendimiento total (sección 7.5).")
-    w.p("La reparación extraordinaria (evento 10) está en el diagrama y en el código, pero la dejamos con frecuencia cero. No "
-        "encontramos datos de cuánto cuestan ni cada cuánto pasan en un apartamento usado de este tamaño, y no quisimos inventarlos. "
-        "El mantenimiento normal (0,3 % del valor al año) y la pintura cada vez que cambia el inquilino sí se cobran. Desde la "
-        "aplicación se puede encender el evento con una frecuencia y un costo para ver su efecto.")
     w.h("9.2 Variables de estado", 2)
     filas = [
         ["Reloj", "t (meses)"], ["Efectivo", "Saldo de la cuenta"], ["Renta fija", "Lista de CDT abiertos: capital, tasa, vencimiento"],
@@ -455,29 +412,27 @@ def seccion_9(w: Informe):
         "sigue idéntica. Y dos estrategias con la misma semilla ven exactamente la misma inflación, la misma Junta y el mismo "
         "ETF, que es lo que permite compararlas réplica a réplica (sección 14).")
     w.h("9.4 Modelos de referencia del simulador", 2)
-    w.p("Para algunos procesos estudiamos más de un modelo. El simulador trae los dos: el de referencia es el que se usa en los "
-        "resultados y el otro se puede elegir en la aplicación y entra al análisis de sensibilidad (sección 16.3).")
+    w.p("Para algunos procesos se estudió más de un modelo. El de referencia es el que usan los resultados; el otro queda en el "
+        "código solo para el análisis de sensibilidad (sección 16.3).")
     filas = [
-        ["Estados económicos", "Markov del equipo (umbral 1 % y 4 %)", "No"],
+        ["Estados económicos", "Cadena de Markov de tres estados (umbral 1 % y 4 %)", "No"],
         ["Junta", "Logit ordenado con tendencia y brecha de Taylor (7.2.7)", "Tabla por tendencia (7.2.3)"],
         ["Margen del CDT", "M5 con residuos observados (7.4)", "Normal por fase de la TPM"],
         ["ETF", "t de Student (ν = 5) con volatilidad por estado (7.5.11)", "Jones-Faddy sin estados (7.5.9)"],
         ["Valorización", "AR(1) del IPVU (7.6)", "Normal por estado con el IPVNBR de Medellín (vivienda nueva)"],
-        ["Reajuste del canon", "Modelo DANE con tope en el IPC previo (5.4.3)", "Sube todo el IPC (diagrama del equipo)"],
+        ["Reajuste del canon", "Modelo DANE con tope en el IPC previo (5.4.3)", "Sube todo el IPC"],
     ]
     w.tabla("9", "Modelo de referencia y alternativa de cada proceso.", ["Proceso", "Referencia", "Alternativa"], filas)
 
 
 def seccion_10(w: Informe):
     w.h("10. Diagrama de eventos")
-    w.p("El diagrama de eventos y el diagrama de flujo los construyó el equipo antes de programar. El motor sigue su numeración: "
+    w.p("El diagrama de eventos y el diagrama de flujo se elaboraron antes de programar. El motor sigue su numeración: "
         "cada manejador lleva el número de su evento, y la prioridad de los empates es la de la página 1 del diagrama de flujo. "
-        "Los originales en PDF están en docs/diagramas del repositorio y en la página Metodología de la aplicación. Sobre el "
-        "diagrama original hicimos dos agregados que no cambian su lógica: los eventos 16 y 17 de la crisis forzada del escenario "
-        "de estrés, y que la cobertura de liquidez (12) se ejecute en el mismo instante del evento que la necesita, en vez de "
-        "programarse en la lista. El texto de las cajas describe los modelos que usa el simulador (Junta, margen del CDT, cuenta, "
-        "ETF, valorización, reajuste del canon, tiempo de venta del inmueble y reparación); la estructura y las flechas son las "
-        "del diseño original.")
+        "Los originales en PDF están en docs/diagramas del repositorio. Sobre el diagrama original se hicieron dos agregados que "
+        "no cambian su lógica: los eventos 16 y 17 de la crisis forzada del escenario de estrés, y que la cobertura de liquidez "
+        "(12) se ejecute en el mismo instante del evento que la necesita, en vez de programarse en la lista. El texto de las cajas "
+        "describe los modelos que usa el simulador; la estructura y las flechas son las del diseño original.")
     w.p("El diagrama es grande y en una página carta solo se ve su estructura. La Figura 10-a lo muestra completo como vista "
         "general. Para leer el texto de las cajas se entregan con el informe los PDF vectoriales, que se pueden ampliar sin "
         "perder calidad: diagrama_eventos.pdf (una hoja) y diagrama_de_flujo_completo.pdf (cinco hojas), en la carpeta "
@@ -519,19 +474,21 @@ def seccion_11(w: Informe):
 
 def seccion_12(w: Informe):
     w.h("12. Evento extraordinario de liquidez")
+    pct_liq = P.f("liq.mediana_pct")
+    p90_liq = pct_liq * float(np.exp(1.2816 * P.f("liq.sigma")))
     w.p("Los gastos imprevistos (una enfermedad, una reparación de la casa propia, una ayuda a la familia) llegan como un proceso "
         f"de Poisson: en expansión y normal, en promedio uno cada {c(1 / P.f('liq.tasa_N'))} meses; en crisis, uno cada "
-        f"{c(1 / P.f('liq.tasa_C'))}. El monto es lognormal con mediana de {mm(P.f('liq.mediana'))} en pesos de hoy y σ = "
-        f"{c(P.f('liq.sigma'), 1)} en el logaritmo, y se indexa con el índice de precios simulado. Con esos valores, una de cada "
-        "diez necesidades pasa de 55 millones. En diez años el inversionista enfrenta en promedio "
+        f"{c(1 / P.f('liq.tasa_C'))}. El monto es lognormal con mediana de {pc(pct_liq, 1)} del capital inicial, en pesos de hoy, y σ = "
+        f"{c(P.f('liq.sigma'), 1)} en el logaritmo, y se indexa con el índice de precios simulado. Al ser una fracción del capital, "
+        f"el imprevisto pesa lo mismo sin importar cuánto se invierte. Con esos valores, una de cada diez necesidades pasa de "
+        f"{pc(p90_liq, 1)} del capital inicial. En el horizonte de referencia el inversionista enfrenta en promedio "
         f"{c(r('base', 'E1', 'n_necesidades_media'), 1)} necesidades en el escenario base.")
-    w.p("Estos valores son un supuesto del equipo, como el enunciado admite para este componente, y buscamos con qué "
-        "contrastarlos. La Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) del DANE, de 2017 y 2018, "
+    w.p("Estos valores son un supuesto, porque no hay datos de monto, y se buscó con qué contrastarlos. La Encuesta de Carga Financiera y Educación Financiera de los Hogares (IEFIC) del DANE, de 2017 y 2018, "
         "pregunta si en el último mes los gastos del hogar superaron sus ingresos y cómo se cubren esos meses. Entre el 10 % de "
         "hogares de Medellín con más ingreso, un mes con gastos mayores que los ingresos cubierto con ahorros o venta de activos "
         "aparece una vez cada 16 a 23 meses. No la usamos para calibrar, por dos razones: cuenta déficits de cualquier tamaño, "
         "también los pequeños, y la pregunta de cómo se cubren es sobre lo que el hogar suele hacer, no sobre ese mes. Sí muestra "
-        "que una necesidad cada dos años no es exagerada. Para el monto no encontramos ninguna fuente. Como el supuesto pesa "
+        "que una necesidad cada dos años no es exagerada. Para el monto no hay ninguna fuente. Como el supuesto pesa "
         "mucho, la sección 16.3 muestra los resultados sin necesidades extraordinarias. (Fuente: Departamento Administrativo "
         "Nacional de Estadística: www.dane.gov.co. Los microdatos no se publican con este trabajo; solo el resumen.)")
     w.p("Cuando llega una necesidad, o cuando la cuenta queda por debajo del mínimo al cierre de mes, el simulador consigue el "
@@ -631,8 +588,8 @@ def seccion_14(w: Informe):
 
 def seccion_15(w: Informe):
     w.h("15. Indicadores de desempeño")
-    w.p("Cada réplica produce una fila con 66 columnas (hoja DICCIONARIO del Excel). En el informe usamos los indicadores que pide "
-        "el enunciado y tres que agregamos porque responden preguntas del estudio; el resto queda en los archivos de resultados.")
+    w.p("Cada réplica produce una fila con 66 columnas . Se reportan los indicadores mínimos de desempeño y tres más que responden "
+        "preguntas del estudio; el resto queda en los archivos de resultados.")
     filas = [
         ["Patrimonio nominal y real final", "Inmueble neto de costos de venta; real = nominal / índice de precios"],
         ["Rentabilidad real", "Tasa anual compuesta del patrimonio real"],
@@ -673,7 +630,7 @@ def seccion_16(w: Informe):
         "constante a que elegía el usuario, de modo que un cambio en a se cancelaba con el corrimiento de los residuos y no movía "
         "el margen. Lo notamos porque el tornado mostraba efecto cero para ese factor. Ahora los residuos salen de los valores "
         "estimados y una prueba lo vigila.")
-    w.p("Además de las pruebas, la página Trazabilidad de la aplicación corre una réplica y muestra cada evento con su hora, número, "
+    w.p("Además de las pruebas, el simulador registra cada evento de una réplica con su hora, número, "
         f"detalle, estado económico, cuenta y patrimonio. La réplica 0 de E4 en el escenario base tiene {c(len(TRAZA))} eventos sin "
         "contar arriendos ni cierres de mes; el Anexo B muestra los primeros y la Figura 16-a su trayectoria.")
     w.figura(FIG / "f09_replica_E4.png", "16", "Una réplica de E4 en el escenario base: composición del patrimonio, TPM e inflación, y estado económico.")
@@ -726,8 +683,8 @@ def seccion_16(w: Informe):
     ])
     w.h("16.3 Análisis de sensibilidad", 2)
     w.p(f"Movimos {c(TOR.factor.nunique())} factores, uno a la vez, a un valor bajo y uno alto, con 400 réplicas y las mismas "
-        "semillas, y medimos el cambio en la probabilidad de meta. Los factores cubren lo que pide el enunciado (inflación, renta "
-        "variable, tasas, valorización y vacancia) y además las necesidades de liquidez, la probabilidad de crisis, la liquidez "
+        "semillas, y medimos el cambio en la probabilidad de meta. Los factores incluyen la inflación, la renta "
+        "variable, las tasas, la valorización y la vacancia, y además las necesidades de liquidez, la probabilidad de crisis, la liquidez "
         "mínima, el descuento de la venta urgente, el castigo del CDT y la administración del edificio.")
     w.figura(FIG / "f06_tornado.png", "16", "Tornado de la probabilidad de meta para E2 y E3 (escenario base, 400 réplicas por punto).")
     top = TOR[TOR.estrategia == "E2"].sort_values("rango_p_meta", ascending=False).head(5)
@@ -776,9 +733,13 @@ def seccion_16(w: Informe):
 
 def seccion_17(w: Informe):
     w.h("17. Experimento capital-meta")
-    w.p("Corrimos las cuatro estrategias con capitales de 400 a 1.000 millones y medimos la probabilidad de llegar a metas reales "
-        "de 700, 800, 1.000, 1.200 y 1.500 millones, con 500 réplicas por celda, en los escenarios base y de estrés. El inmueble "
-        "cambia en proporción al capital.")
+    caps_cm = sorted(CM.capital.unique())
+    metas_cm = sorted(CM.meta.unique())
+    lista_metas = ", ".join(c(m / 1e6) for m in metas_cm)
+    w.p(f"Se corrieron las cuatro estrategias con {c(len(caps_cm))} capitales, de {c(caps_cm[0] / 1e6)} a {c(caps_cm[-1] / 1e6)} millones, y se "
+        f"midió la probabilidad de llegar a {c(len(metas_cm))} metas reales ({lista_metas} millones), con 500 réplicas por celda, "
+        "en los escenarios base y de estrés. Las dos mallas son múltiplos del capital y de la meta de la configuración de "
+        "referencia, y en la aplicación se recalculan para cualquier otra. El inmueble cambia en proporción al capital.")
     w.figura(FIG / "f05_capital_meta.png", "17", "Probabilidad de alcanzar la meta según el capital inicial. Izquierda: E2 por capital y meta (escenario base). Derecha: "
                                                  "probabilidad de llegar a 1.000 millones según el capital, base (continua) y estrés (punteada).")
     filas = []
@@ -792,16 +753,15 @@ def seccion_17(w: Informe):
     w.tabla("17", "Capital inicial (millones) para tener 80 % de probabilidad de alcanzar cada meta real.",
             ["Escenario", "Meta (M)"] + EST, filas)
     saltos = [pm("base", e, k + 1e8) - pm("base", e, k) for e in ("E2", "E3") for k in (7e8, 8e8, 9e8)]
-    w.p(f"Con el capital actual de 700 millones, la meta de 1.000 millones es poco probable para todas "
-        f"({pc(pm('base', 'E3', 7e8), 0)} con E3 en esta corrida de 500 réplicas). La curva es empinada entre 700 y 1.000 millones: "
+    w.p(f"Con el capital y la meta de referencia, llegar a la meta es poco probable para todas "
+        f"({pc(pm('base', 'E3', 7e8), 0)} con E3 en esta corrida de 500 réplicas). La curva es empinada cerca del capital de referencia: "
         f"cada 100 millones adicionales suben la probabilidad entre {c(min(saltos) * 100)} y {c(max(saltos) * 100)} puntos con E2 y "
-        f"E3. Con E1 hace falta más capital para cualquier meta: empezando con 1.000 millones llega a 1.000 millones reales en "
+        f"E3. Con E1 hace falta más capital para cualquier meta: con {c(max(caps_cm) / 1e6)} millones llega a la meta de 1.000 millones reales en "
         f"{pc(pm('base', 'E1', 1e9), 0)} de las réplicas, frente a {pc(pm('base', 'E2', 1e9), 0)} con E2. Para 80 % de probabilidad "
         f"con E2 se necesitan unos {mm(cap('base', 'E2', 1e9))}. Esa cifra sale de interpolar una malla de 100 millones con 500 "
         "réplicas por punto, así que tiene su propio error: con los extremos del intervalo de 95 % de cada punto, el capital "
         f"necesario queda entre {mm(cap('base', 'E2', 1e9, 'capital_80_lo'))} y {mm(cap('base', 'E2', 1e9, 'capital_80_hi'))}. "
-        "En el escenario de estrés ninguna estrategia llega a 80 % para la meta de 1.000 millones dentro de la malla, que termina "
-        "en 1.000 millones de capital.")
+        "En el escenario de estrés ninguna estrategia llega a 80 % para esa meta dentro de la malla.")
 
 
 def seccion_18(w: Informe):
@@ -818,8 +778,18 @@ def seccion_18(w: Informe):
             ["Escenario", "Estr.", "P(meta) e IC 95 %", "P5", "P25", "P50", "P75", "P95", "CVaR 5 %", "Rent. real", "P(pérdida real)",
              "Caída máx. P50", "P(iliquidez)", "P(venta urgente)"], filas,
             [0.5, 0.33, 0.9, 0.36, 0.36, 0.36, 0.38, 0.4, 0.44, 0.45, 0.5, 0.45, 0.5, 0.5], tam=7)
-    w.p("El momento de llegar a la meta, la duración de los episodios de iliquidez y los costos totales están en la hoja "
-        "RESULTADOS del Excel y en el archivo resumen.csv.")
+    filas2 = []
+    for esc in ESC:
+        for e in EST:
+            x = R.loc[(esc, e)]
+            t_meta = "n. a." if x.t_meta_p50_anios != x.t_meta_p50_anios else c(x.t_meta_p50_anios, 1)
+            filas2.append([ESC[esc].capitalize(), e, c(x.W_nominal_media / 1e6), c(x.W_nominal_p50 / 1e6), c(x.W_real_sd / 1e6),
+                           pc(x.caida_max_p95, 0), t_meta, c(x.episodios_iliquidez_media, 3), c(x.duracion_iliquidez_media, 1),
+                           c(x.meses_iliquidez_media, 2), pc(x.participacion_arriendo_media, 0)])
+    w.tabla("18", "Otros indicadores. Patrimonio en millones de pesos corrientes (nominal) y de hoy (real); años hasta la meta entre las réplicas que la alcanzan.",
+            ["Escenario", "Estr.", "Nominal medio", "Nominal P50", "Desv. real", "Pérdida máx. P95", "Años a la meta (P50)",
+             "Episodios por réplica", "Meses por episodio", "Meses en iliquidez", "Arriendo en el retorno"], filas2,
+            [0.55, 0.35, 0.6, 0.6, 0.55, 0.55, 0.6, 0.6, 0.55, 0.55, 0.6], tam=7)
     w.figura(FIG / "f01_abanico.png", "18", "Patrimonio real mes a mes: mediana (línea) y percentiles 25 a 75 (banda). La línea gris es la meta.")
     w.figura(FIG / "f02_cajas.png", "18", "Patrimonio real final: caja del percentil 25 al 75 y bigotes del 5 al 95. Punteada: capital inicial; rayada: meta.")
     w.figura(FIG / "f03_prob_meta.png", "18", "Probabilidad de alcanzar la meta con su intervalo de 95 %.", 5.5)
@@ -903,19 +873,18 @@ def seccion_19(w: Informe):
         ("Diagrama de eventos:", "sección 10 y docs/diagramas en PDF."),
         ("Simulador:", "repositorio con el motor (src/investment_sim), la aplicación web (app/), las pruebas (tests/), los "
                        "scripts de estimación y de corrida (tools/) y los resultados (outputs/resultados)."),
-        ("Excel maestro:", "data/master_datos.xlsx con 20 hojas: parámetros, fuentes, diccionario, distribuciones, decisiones, "
-                           "los datos de los puntos 7 y 8, validación y resultados."),
+        ("Excel maestro:", "data/master_datos.xlsx, con los parámetros que se pueden cambiar, el modelo elegido para cada "
+                           "proceso, los datos y las pruebas de la sección 7, la validación y los resultados."),
         ("Registro de decisiones:", "docs/decision_log.md."),
     ])
     w.p("Para reproducir todo: instalar las dependencias (pip install -r requirements-dev.txt), correr pytest para las pruebas, "
         "python tools/correr_experimentos.py 12 para la corrida completa (unos 10 minutos con 12 procesos) y streamlit run "
         "app/main.py para abrir la aplicación. Con la semilla base y los parámetros de referencia se obtienen exactamente las "
         "tablas de este informe.")
-    w.p("La aplicación permite cambiar sin tocar código el capital, el horizonte, la meta, la liquidez mínima, los pesos de las "
-        "estrategias, las reglas de E4, cada parámetro de los modelos y el modelo de cada proceso. Debajo de cada control muestra el "
-        "valor de referencia, la fuente y si el parámetro es estimado, supuesto o pendiente. Tiene nueve páginas: inicio, "
-        "inversionista, modelos, estrategias, experimento, resultados, sensibilidad y capital-meta, trazabilidad de una réplica y "
-        "metodología. Los resultados, las réplicas y los parámetros usados se descargan en CSV, Excel y JSON.")
+    w.p("La aplicación permite cambiar sin tocar código el capital, el horizonte, la meta, la liquidez mínima, las necesidades "
+        "de liquidez, los pesos de las estrategias y las reglas de E4. Los procesos aleatorios quedan fijos con el modelo elegido "
+        "en la sección 7. Tiene siete páginas: inicio, inversionista, modelos, estrategias, experimento, resultados, y sensibilidad "
+        "y capital-meta. Los resultados, las réplicas y los parámetros usados se descargan en CSV, Excel y JSON.")
 
 
 def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
@@ -946,8 +915,9 @@ def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
 
     w.h("Conclusiones")
     w.vinetas([
-        f"Con 700 millones y diez años, la meta de 1.000 millones reales tiene a lo sumo {pc(r('base', mejor('base', 'p_meta'), 'p_meta'), 0)} "
-        f"de probabilidad en el escenario base. Para 80 % hacen falta unos {mm(cap('base', 'E2', 1e9))} de capital con E2.",
+        f"Con la configuración de referencia, la meta tiene a lo sumo {pc(r('base', mejor('base', 'p_meta'), 'p_meta'), 0)} "
+        f"de probabilidad en el escenario base. Para 80 % con E2 hace falta un capital de unos {mm(cap('base', 'E2', 1e9))}, es decir "
+        f"{c(cap('base', 'E2', 1e9) / P.f('inv.capital'), 2)} veces el de referencia.",
         "Las estrategias con inmueble (E2, E3, E4) dan más patrimonio que E1 en el escenario base. E2 tiene una probabilidad de "
         f"iliquidez parecida a la de E1 ({pc(r('base', 'E2', 'p_iliquidez'), 0)} frente a {pc(r('base', 'E1', 'p_iliquidez'), 0)}), "
         f"aunque termina con menos dinero líquido ({mm(r('base', 'E2', 'liquido_final_real_media'))} frente a "
@@ -966,7 +936,7 @@ def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
         ("Tasa real alta.", f"La TPM simulada menos la inflación promedia {c(TASA_REAL, 1)} puntos en los diez años, contra 1,2 en la "
                             f"historia, y {c(float(real.simulado), 1)} en los años 6 a 10. Viene de partir de una tasa real de 6 puntos. "
                             "Favorece la renta fija, es decir a E1."),
-        ("Necesidades de liquidez.", "Frecuencia y monto son un supuesto del equipo. La IEFIC del DANE solo sirve de referencia para la "
+        ("Necesidades de liquidez.", "Frecuencia y monto son un supuesto. La IEFIC del DANE solo sirve de referencia para la "
                                      "frecuencia, y para el monto no hay datos. Es uno de los factores que más mueve el resultado."),
         ("Rendimiento del ETF por estado.", "Solo la volatilidad depende del estado. Si el rendimiento medio también dependiera, la "
                                             "regla de E4 podría servir."),
@@ -977,7 +947,7 @@ def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
                        "ganancia ocasional al vender el inmueble, que reducirían el patrimonio de todas las estrategias."),
         ("Inmueble.", "Es un solo apartamento indivisible. Su valorización viene del IPVU, que agrega nueve ciudades y suaviza los "
                       "precios porque usa avalúos, y el apartamento no tiene riesgo propio (un daño grande, un barrio que se "
-                      "deteriora). Las reparaciones extraordinarias están apagadas porque no tenemos datos."),
+                      "deteriora)."),
         ("Pocos datos de crisis.", "La matriz de Markov se estimó con 12 trimestres de crisis y tres episodios. La duración media "
                                    "de una crisis simulada se parece a la observada, pero en diez años una réplica puede "
                                    "encadenar crisis más largas que las tres reales."),
@@ -993,9 +963,11 @@ def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
 def anexos(w: Informe):
     w.salto()
     w.h("Anexo A. Parámetros del simulador")
-    w.p("Copia de la hoja PARAMETROS del Excel maestro. Adverso y Estrés vacíos significan el mismo valor de la base.")
+    w.p("Valores de referencia del simulador. Los del inversionista, el experimento, las estrategias y las necesidades de "
+        "liquidez se pueden cambiar; los demás están estimados con datos y son fijos. Adverso y Estrés vacíos significan el mismo "
+        "valor de la base.")
     filas = []
-    for f in FILAS:
+    for f in (f for f in FILAS if not f[1].startswith("rep.")):
         def v(x):
             if x is None:
                 return ""
@@ -1036,6 +1008,7 @@ def main(origen: Path) -> None:
     seccion_19(w)
     discusion_y_cierre(w, refs_equipo)
     anexos(w)
+    limpieza_texto.aplicar(doc)
     faltan = formato_apa.citas(doc)
     info = formato_apa.aplicar(doc)
     formato_apa.notas_sueltas(doc)
