@@ -374,7 +374,7 @@ def actualizar(w, P, c, pc) -> list[str]:
            "41,6 % observados: las dos reproducen la historia casi igual.")
 
     def modelo_etf():
-        w.p(f"Modelo que usa el simulador. Elegimos la t de Student con ν = 5 (la máxima verosimilitud da 5,34), la media de "
+        w.p(f"Modelo que usa el simulador. Elegimos la t de Student con ν = 5 (la máxima verosimilitud da 5,42), la media de "
             f"{pc(P.f('etf.mu'), 2)} mensual y la desviación del estado: {pc(P.f('etf.vol_N'), 1)} en expansión y normal, "
             f"{pc(P.f('etf.vol_C'), 1)} en crisis. La media y las desviaciones salen de los mismos 179 meses que tienen estado "
             "económico (agosto de 2011 a junio de 2026). La razón para dejar la Jones-Faddy como alternativa es la dependencia con "
@@ -413,7 +413,7 @@ def actualizar(w, P, c, pc) -> list[str]:
     _poner(_parrafo(doc, "Aquí r_t es la variación logarítmica"),
            "Aquí r_t es la variación logarítmica del precio en el año t y V_t el valor del apartamento. La variación esperada "
            "converge a 7,55 % anual y cada año la sorpresa e_t la aleja de ese nivel. La valorización no cambia con el estado de la "
-           "economía: entre estados la diferencia no es significativa (Welch, p = 0,275). Solo en el escenario de estrés, mientras "
+           "economía: entre estados la diferencia no es significativa (Welch de una cola, p = 0,275; de dos colas, 0,550). Solo en el escenario de estrés, mientras "
            "dura la crisis forzada, el apartamento se desvaloriza 5 % al año; en el adverso la media baja 2 puntos.")
     reemplazar(doc, "Hoja del libro: INM (IPVU y su modelo) y PIB. El análisis detallado está en el notebook Simulación "
                     "Inmueble/notebooks/02_validacion_inmobiliaria.ipynb.", "Hoja del libro: INM (IPVU y su modelo) y PIB.")

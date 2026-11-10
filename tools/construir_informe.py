@@ -354,7 +354,7 @@ def seccion_8(w: Informe):
     w.tabla("8", "Efecto del estado económico sobre los demás procesos.", ["Variable", "Expansión", "Normal", "Crisis", "Fuente"], filas)
     w.p("Así, cuando llega una crisis el ETF se vuelve más riesgoso, arrendar cuesta más y los imprevistos llegan el doble de "
         "seguido, todo en la misma réplica. Dos cosas no cambian con el estado porque los datos no lo sostienen: el rendimiento "
-        "medio del ETF (Kruskal-Wallis, p = 0,39) y la valorización del inmueble (Welch, p = 0,275). Preferimos no inventar esas "
+        "medio del ETF (Kruskal-Wallis, p = 0,39) y la valorización del inmueble (Welch de una cola, p = 0,275). Preferimos no inventar esas "
         "diferencias, y esa decisión explica buena parte del resultado de E4 (sección 18).")
 
 
@@ -793,7 +793,7 @@ def seccion_18(w: Informe):
             filas2.append([ESC[esc].capitalize(), e, c(x.W_nominal_media / 1e6), c(x.W_nominal_p50 / 1e6), c(x.W_real_sd / 1e6),
                            pc(x.caida_max_p95, 0), t_meta, c(x.episodios_iliquidez_media, 3), c(x.duracion_iliquidez_media, 1),
                            c(x.meses_iliquidez_media, 2), pc(x.participacion_arriendo_media, 0)])
-    w.tabla("18", "Otros indicadores. Patrimonio en millones de pesos corrientes (nominal) y de hoy (real); años hasta la meta entre las réplicas que la alcanzan.",
+    w.tabla("18", "Otros indicadores. Patrimonio en millones de pesos corrientes (nominal) y de hoy (real); años hasta la meta (mediana) entre las réplicas que la alcanzan en algún momento, que son más que las que la tienen al final.",
             ["Escenario", "Estr.", "Nominal medio", "Nominal P50", "Desv. real", "Pérdida máx. P95", "Años a la meta (P50)",
              "Episodios por réplica", "Meses por episodio", "Meses en iliquidez", "Arriendo en el retorno"], filas2,
             [0.55, 0.35, 0.6, 0.6, 0.55, 0.55, 0.6, 0.6, 0.55, 0.55, 0.6], tam=7)

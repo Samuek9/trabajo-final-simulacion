@@ -127,7 +127,7 @@ FILAS = [
     ("P125", "inm.reajuste_sigma", "Inmueble", "Reajuste DANE: σ de ε", 0.9409701223606414, X, X, "puntos", "Estimado", "DANE, 16 años", "INM_Arriendo"),
 
     # ---------------- Valorización (7.6 y punto 8) ----------------
-    ("P130", "val.modelo", "Valorización", "Modelo: ar1 (IPVU, vivienda usada) o estado (normal por estado, IPVNBR)", "ar1", X, X, "texto", "Estimado", "IPVU: mide vivienda usada, como el inmueble del modelo. Con el IPVU el estado económico no cambia la valorización (Welch, p = 0,275); el IPVNBR mide vivienda nueva y queda solo como alternativa", "7.6, punto 8"),
+    ("P130", "val.modelo", "Valorización", "Modelo: ar1 (IPVU, vivienda usada) o estado (normal por estado, IPVNBR)", "ar1", X, X, "texto", "Estimado", "IPVU: mide vivienda usada, como el inmueble del modelo. Con el IPVU el estado económico no cambia la valorización (Welch de una cola, p = 0,275); el IPVNBR mide vivienda nueva y queda solo como alternativa", "7.6, punto 8"),
     ("P131", "val.mu_E", "Valorización", "Valorización logarítmica media en expansión", 0.11935, 0.09935, X, "ln anual", "Estimado", "Solo con val.modelo = estado (alternativa). IPVNBR Medellín 2006-2025, 8 años; adverso −2 puntos", "MARKOV"),
     ("P132", "val.mu_N", "Valorización", "Valorización logarítmica media en normal", 0.08316, 0.06316, X, "ln anual", "Estimado", "Solo con val.modelo = estado (alternativa). IPVNBR Medellín, 12 años normal + crisis; adverso −2 puntos", "MARKOV"),
     ("P133", "val.mu_C", "Valorización", "Valorización logarítmica media en crisis", 0.08316, 0.06316, -0.05129, "ln anual", "Estimado", "Solo con val.modelo = estado (alternativa). Igual a normal (2 años de crisis); estrés: −5 % anual", "MARKOV, punto 13"),

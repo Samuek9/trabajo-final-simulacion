@@ -41,3 +41,14 @@ Al revisar el PDF a tamaño completo aparecía «NaN millones» en cuatro lugare
 - DOI: los 13 DOI de revistas y libros se consultaron en Crossref y coinciden con autor, título, revista, volumen, número, páginas y año de la lista (el del libro de Burnham y Anderson resuelve en Springer). Para McCullagh (1980), Crossref da 109-127 y la lista 109-142, que es la paginación habitual del artículo con su discusión; no se cambió.
 - URL: 21 de 22 responden 200. La del primer informe trimestral de Ciencuadras (2025) devuelve 404 desde este equipo, aunque un buscador la lista; hay que abrirla en un navegador antes de entregar.
 - Revisión visual de las 73 páginas del PDF: sin tablas cortadas ni figuras fuera de margen. Detalles menores: la última página del anexo B tiene solo 7 filas y una URL larga de Fogafín se parte en la lista de referencias.
+
+
+## Cuatro puntos sin ubicar y cifras de Python de la sección 7
+
+- Inflación entre diciembres: confirmado en `models/inflation.py` (`interpolar`, línea recta entre diciembres); coincide con 7.1.5 y con la Tabla 45.
+- Participación del arriendo: `resumen.csv` da 44,0 % (E2), 67,5 % (E3) y 45,6 % (E4); el texto dice 44 % y 67 %. Coincide.
+- Costos totales: el código suma comisión del ETF, 4x1000, retención, intereses perdidos, costo de compra, comisión inmobiliaria, descuento de venta urgente y costo de venta; coincide con la definición de la Tabla 52 (no incluye predial ni administración).
+- Primer cumplimiento de la meta: `t_meta` es el primer mes con patrimonio real (inmueble neto de costos de venta) en la meta. Entre réplicas que la alcanzan alguna vez (10 a 24 %, por estrategia) hay más que las que la tienen al final (6 a 19 %). La nota de la Tabla 58 ahora lo dice.
+- Cifras de Python de la sección 7: se cotejaron contra los análisis originales del equipo (`insumos_equipo`): de unas 620 cifras con decimales quedaron 32 sin coincidencia directa, y todas tienen respaldo en algún archivo del proyecto. Se recalcularon de forma independiente: Shapiro-Wilk de la inflación (0,057 en nivel; 0,81 en logaritmo), Welch de la valorización del IPVU por estado (0,275 de una cola; 0,550 de dos colas), los parámetros de la t del ETF (ν = 5,42; 0,668 %; 4,132 %) y los AIC del logit de la TPM (336,4 y 331,5).
+- Correcciones: en 7.5.9 «la máxima verosimilitud da 5,34» pasa a 5,42 (valor reproducible, igual al de la Tabla 28); el p de Welch de 0,275 se rotula «de una cola, 0,550 de dos colas» en el informe y en tres celdas del Excel.
+- Siguen sin recalcular a mano (salen de simulaciones de 3.000 trayectorias, no de una hoja): 5,3 %/5,4 % de rendimiento anual y 40,5 %/40,8 % de caída máxima de la sección 7.5.

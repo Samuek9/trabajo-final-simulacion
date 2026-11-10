@@ -13,3 +13,10 @@
 - Cerrado: DOI verificados en Crossref; revisión visual de las 73 páginas; la página 62 no está en blanco.
 - Abierto: la URL de Ciencuadras (informe trimestral I-2025) da 404 desde este equipo; confirmar en un navegador y, si no abre, citar la página del informe en su blog o retirarla.
 - Abierto: los cuatro puntos sin ubicar (inflación entre diciembres, participación del arriendo 44 % y 67 %, indicador de costos totales, primer cumplimiento de la meta).
+
+
+## Cierre
+
+- Cerrados: los cuatro puntos sin ubicar y el cotejo de las cifras de Python de la sección 7 (detalle en el informe de cambios).
+- Abierto: URL de Ciencuadras (informe I-2025) a confirmar en un navegador.
+- Abierto, menor: rendimiento anual y caída máxima simulados de 7.5 (5,3 %, 5,4 %, 40,5 %, 40,8 %), que dependen de una simulación aparte.

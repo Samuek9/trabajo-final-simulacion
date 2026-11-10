@@ -295,7 +295,7 @@ def modelos(ws) -> None:
         ["Valorización del inmueble", "Índice de precios de la vivienda usada (IPVU), 2001 a 2025",
          "Normal independiente, AR(1) y normal por estado con el índice de vivienda nueva de Medellín (IPVNBR)",
          "Variación normal (Jarque-Bera p = 0,92). φ significativo (t = 4,5; p < 0,001) y residuos sin autocorrelación "
-         "(p = 0,17). El estado no la cambia (Welch p = 0,275) ni la inflación del mismo año (p = 0,84)",
+         "(p = 0,17). El estado no la cambia (Welch de una cola, p = 0,275) ni la inflación del mismo año (p = 0,84)",
          "AR(1) del logaritmo: media 7,55 % anual, φ = 0,676, σ = 2,36 %; arranca en la variación de 2025 (8,09 %)",
          "El inmueble es usado y el IPVU mide vivienda usada; los años buenos y malos vienen seguidos. Fuera de muestra "
          "cae en la banda de 90 % los 10 años de 2016 a 2025",
