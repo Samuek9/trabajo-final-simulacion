@@ -1315,8 +1315,462 @@ try {
     $cm.Range("A8:A39").EntireRow.RowHeight = 15
     $cm.Range("A1").Select()
 
+    # ------------------------------------------------ Inmueble (cinco hojas)
+    function Kpi($h, $col, $etq, $formula, $fmt, $sub) {
+        $h.Range($col + "4").Value2 = $etq
+        $h.Range($col + "4").Font.Color = $gris
+        $h.Range($col + "5").Formula = $formula
+        $h.Range($col + "5").NumberFormatLocal = $fmt
+        $h.Range($col + "5").Font.Size = 18
+        $h.Range($col + "5").Font.Bold = $true
+        $h.Range($col + "5").HorizontalAlignment = -4131
+        $h.Rows.Item(5).RowHeight = 28
+        if ($sub) {
+            $h.Range($col + "6").Value2 = $sub
+            $h.Range($col + "6").Font.Size = 9
+            $h.Range($col + "6").Font.Color = $gris
+        }
+    }
+    function Nuevo-Grafico($h, $desde, $hasta, $col1, $col2, $tipo) {
+        $izq = $h.Range($col1 + $desde).Left
+        $arr = $h.Range($col1 + $desde).Top
+        $ancho = $h.Range($col2 + $desde).Left + $h.Range($col2 + $desde).Width - $izq
+        $alto = $h.Range($col1 + $hasta).Top - $arr
+        $co = $h.ChartObjects().Add($izq, $arr, $ancho, $alto)
+        $g = $co.Chart
+        $g.ChartType = $tipo
+        while ($g.SeriesCollection().Count -gt 0) { $g.SeriesCollection(1).Delete() | Out-Null }
+        $co.Border.LineStyle = -4142
+        return $g
+    }
+    function Nueva-Serie($g, $nombre, $vals, $xs, $color, $peso, $guion) {
+        $s = $g.SeriesCollection().NewSeries()
+        $s.Name = $nombre
+        $s.Values = $vals
+        $s.XValues = $xs
+        if ($g.ChartType -eq 74) { $s.MarkerStyle = -4142 }
+        if ($g.ChartType -eq 57 -or $g.ChartType -eq 51) { $s.Format.Fill.ForeColor.RGB = $color }
+        else {
+            $s.Format.Line.ForeColor.RGB = $color
+            $s.Format.Line.Weight = [single]$peso
+            $s.Format.Line.DashStyle = $guion
+        }
+    }
+    function Cerrar-Grafico($g, $fmtY, $leyenda) {
+        $g.HasTitle = $true
+        $g.HasTitle = $false
+        $g.HasLegend = $leyenda
+        if ($leyenda) { $g.Legend.Position = -4107 }
+        $g.Axes(2).TickLabels.NumberFormat = $fmtY
+        $g.Axes(2).MajorGridlines.Format.Line.ForeColor.RGB = 0xE0E0E0
+    }
+
+    # ---- Inmueble, datos
+    $ih = Nueva-Hoja $dest "Inmueble, datos"
+    Titulo $ih "Inmueble: canon, precio y costos" "Apartamentos de Medellín, Lonja de Propiedad Raíz, edición 275 de agosto de 2025"
+    foreach ($k in 1..5) { $ih.Columns.Item($k).ColumnWidth = @(36, 20, 20, 20, 4)[$k - 1] }
+    Kpi $ih "A" "Rentabilidad bruta anual" "=INM!H16" "0,0 %" "Con la mediana de canon ÷ precio"
+    Kpi $ih "B" "Canon ÷ precio mensual" "=INM!H13" "0,00 %" "Mediana de 11 barrios"
+    Kpi $ih "C" "Costo total de venta" "=INM!W23" "0,00 %" "Del valor del inmueble"
+
+    Seccion $ih 8 "Canon frente a precio de venta"
+    $ih.Range("A9").Value2 = "Canon mensual dividido por el precio de venta, por barrio y tamaño."
+    $ih.Range("A9").Font.Color = $gris
+    Seccion $ih 30 "Canon y precio por barrio"
+    Encabezado $ih 31 1 4 @("Barrio y tamaño (m²)", "Precio de venta por m²", "Canon mensual por m²", "Canon ÷ precio")
+    for ($k = 0; $k -lt 11; $k++) {
+        $r = 32 + $k; $o = 5 + $k
+        $ih.Cells.Item($r, 1).Formula = "=INM!A$o&"", ""&INM!B$o"
+        $ih.Cells.Item($r, 2).Formula = "=INM!C$o"
+        $ih.Cells.Item($r, 3).Formula = "=INM!D$o"
+        $ih.Cells.Item($r, 4).Formula = "=INM!E$o"
+    }
+    $ih.Range("B32:C42").NumberFormatLocal = "#.##0"
+    $ih.Range("D32:D42").NumberFormatLocal = "0,00 %"
+    $ih.Range("B31:D42").HorizontalAlignment = -4152
+    Nota $ih 43 "Fuente: Lonja de Propiedad Raíz de Medellín y Antioquia. Los encabezados del original estaban intercambiados y se ubicaron por magnitud."
+
+    Seccion $ih 45 "Costos de tenencia y venta"
+    $ih.Range("A46").Value2 = "Como proporción del valor comercial del inmueble, para que no dependan de un precio fijo."
+    $ih.Range("A46").Font.Color = $gris
+    Encabezado $ih 47 1 4 @("Concepto", "Valor", "Base", "")
+    $cos = @(
+        @("Predial anual", "=INM!W8", "Tarifa de 9,5 por mil sobre el 65 % del valor"),
+        @("Mantenimiento preventivo anual", "=INM!W14", "Del valor"),
+        @("Gasto fijo anual del propietario", "=INM!W19", "Predial, administración y mantenimiento"),
+        @("Comisión inmobiliaria", "=INM!W10", "Del canon, sin IVA de 19 %"),
+        @("Comisión de venta, con IVA", "=INM!W20", "Del precio de venta"),
+        @("Notaría, mitad del vendedor", "=INM!W21", "Del precio de venta"),
+        @("Retención en la fuente", "=INM!W22", "Del precio de venta"),
+        @("Costo total de venta", "=INM!W23", "Suma de los tres anteriores")
+    )
+    for ($k = 0; $k -lt $cos.Count; $k++) {
+        $r = 48 + $k
+        $ih.Cells.Item($r, 1).Value2 = $cos[$k][0]
+        $ih.Cells.Item($r, 2).Formula = $cos[$k][1]
+        $ih.Cells.Item($r, 3).Value2 = $cos[$k][2]
+    }
+    $ih.Range("B48:B55").NumberFormatLocal = "0,00 %"
+    $ih.Range("B47:B55").HorizontalAlignment = -4152
+    $ih.Range("C47:C55").IndentLevel = 1
+    Nota $ih 56 "Fuente: Acuerdo 093 de 2023 del Concejo de Medellín, tarifas publicadas y OneEstimate 2026."
+
+    $g = Nuevo-Grafico $ih 10 28 "A" "D" 57
+    Nueva-Serie $g "Canon ÷ precio" $ih.Range("D32:D42") $ih.Range("A32:A42") $azul 0 0
+    $g.Axes(1).ReversePlotOrder = $true
+    $g.ChartGroups(1).GapWidth = 50
+    Cerrar-Grafico $g "0,0%" $false
+    $ih.Range("A1").Select()
+
+    # ---- Reajuste, modelo
+    $rm = Nueva-Hoja $dest "Reajuste, modelo"
+    Titulo $rm "Canon: reajuste anual" "Arriendo efectivo y IPC total del DANE, diciembre de cada año, 2010 a 2025"
+    foreach ($k in 1..10) { $rm.Columns.Item($k).ColumnWidth = @(12, 18, 16, 18, 20, 3, 44, 12, 14, 16)[$k - 1] }
+    Kpi $rm "G" "Coeficiente del IPC previo (b)" "=INM!T17" "0,00" ""
+    Kpi $rm "H" "R²" "=INM!T18" "0 %" ""
+    Kpi $rm "I" "σ del error (pp)" "=INM!T19" "0,00" ""
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    Seccion $rm 8 "Arriendo frente al IPC"
+    $rm.Range("A9").Value2 = "Variación de diciembre a diciembre, en %."
+    $rm.Range("A9").Font.Color = $gris
+    Seccion $rm 28 "Serie anual"
+    Encabezado $rm 29 1 5 @("Año", "Arriendo efectivo (%)", "IPC total (%)", "IPC previo (%)", "Arriendo − IPC (pp)")
+    for ($k = 0; $k -lt 16; $k++) {
+        $r = 30 + $k; $o = 5 + $k
+        $rm.Cells.Item($r, 1).Formula = "=INM!M$o"
+        $rm.Cells.Item($r, 2).Formula = "=INM!N$o"
+        $rm.Cells.Item($r, 3).Formula = "=INM!O$o"
+        $rm.Cells.Item($r, 4).Formula = "=INM!P$o"
+        $rm.Cells.Item($r, 5).Formula = "=INM!Q$o"
+    }
+    $rm.Range("A30:A45").NumberFormatLocal = "0"
+    $rm.Range("A30:A45").HorizontalAlignment = -4131
+    $rm.Range("B30:E45").NumberFormatLocal = "0,00"
+    $rm.Range("B29:E45").HorizontalAlignment = -4152
+    Nota $rm 46 "Fuente: DANE, IPC por clase y subclase; IPC total del Banco de la República con cifras del DANE. El dato de 2023 se deduce del índice de diciembre de 2024."
+    $rm.Range("A47").Value2 = "Septiembre de 2026: arriendo efectivo de 5,12 % anual frente a 6,29 % del IPC total."
+    $rm.Range("A47").Font.Size = 9; $rm.Range("A47").Font.Color = $gris
+    $g = Nuevo-Grafico $rm 10 27 "A" "E" 4
+    Nueva-Serie $g "Arriendo efectivo" $rm.Range("B30:B45") $rm.Range("A30:A45") $azul 2 1
+    Nueva-Serie $g "IPC total" $rm.Range("C30:C45") $rm.Range("A30:A45") $gris 1.5 4
+    Cerrar-Grafico $g '0" %"' $true
+
+    Bloque $rm 8 7 10 "Evidencia estadística"
+    Cabecera $rm 9 7 @("Prueba y contraste", "Valor", "p", "Decisión") @(1, 2)
+    $pr = @(
+        @("t de una muestra: arriendo menos IPC igual a 0", "=INM!T10", "=INM!T11"),
+        @("Correlación del arriendo con el IPC del mismo año", "=INM!T12", "=INM!T13"),
+        @("Correlación del arriendo con el IPC del año anterior", "=INM!T14", "=INM!T15")
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 10 + $k
+        $rm.Cells.Item($r, 7).Value2 = $pr[$k][0]
+        $rm.Cells.Item($r, 8).Formula = $pr[$k][1]
+        $rm.Cells.Item($r, 9).Formula = $pr[$k][2]
+        $rm.Cells.Item($r, 10).Formula = "=IF(I$r<0.05,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $rm.Range("H10:H12").NumberFormatLocal = "0,000"
+    $rm.Range("I10:I12").NumberFormatLocal = $pfmt
+    $rm.Range("J9:J12").IndentLevel = 1
+    $rm.Range("G13").Value2 = "Significancia de 5 %. Con errores robustos (HC1), el coeficiente del IPC previo tiene p < 0,001."
+    $rm.Range("G14").Value2 = "Wilcoxon de la diferencia: p = 0,23."
+    $rm.Range("G13:G14").Font.Size = 9; $rm.Range("G13:G14").Font.Color = $gris
+
+    Bloque $rm 16 7 10 "Especificación"
+    $rm.Range("G17").Value2 = "arriendo(t) = a + b · IPC(t−1) + ε"
+    $rm.Range("G17").Font.Italic = $true
+    Cabecera $rm 18 7 @("Parámetro", "Estimación", "Significado", "") @(1)
+    $rm.Range("I18").IndentLevel = 1
+    $esp = @(
+        @("a (%)", "=INM!T16", "0,00", "Reajuste con IPC previo en cero"),
+        @("b", "=INM!T17", "0,000", "Puntos de arriendo por punto de IPC"),
+        @("R²", "=INM!T18", "0,000", "Parte del arriendo que explica"),
+        @("σ de ε (pp)", "=INM!T19", "0,00", "Tamaño del error"),
+        @("f, sin constante", "=INM!T20", "0,000", "Fracción del IPC previo"),
+        @("Error típico con f = 1 (pp)", "=INM!T21", "0,00", "Sensibilidad"),
+        @("Error típico con el modelo (pp)", "=INM!T22", "0,00", "Modelo elegido")
+    )
+    for ($k = 0; $k -lt $esp.Count; $k++) {
+        $r = 19 + $k
+        $rm.Cells.Item($r, 7).Value2 = $esp[$k][0]
+        $rm.Cells.Item($r, 8).Formula = $esp[$k][1]
+        $rm.Cells.Item($r, 8).NumberFormatLocal = $esp[$k][2]
+        $rm.Cells.Item($r, 9).Value2 = $esp[$k][3]
+    }
+    $rm.Range("I19:I25").IndentLevel = 1
+
+    Bloque $rm 28 7 10 "Lectura"
+    $lec = $rm.Range("G29:J43")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $rm.Range("G29").Value2 = "El arriendo sube menos que el IPC en promedio, pero la diferencia no es significativa. Lo que sí se observa es que sigue la inflación del año anterior, que es la que fija el tope legal del reajuste: casi la mitad de cada punto de IPC previo, más una constante. El simulador reajusta con este modelo sin pasar del IPC previo, y f = 1 queda como sensibilidad. Son 16 observaciones anuales y los años de 2021 a 2023, con la inflación más alta de la muestra, pesan mucho en el ajuste."
+    $rm.Range("A8:A47").EntireRow.RowHeight = 15
+    $rm.Range("A1").Select()
+
+    # ---- Valorización, datos
+    $vd = Nueva-Hoja $dest "Valorización, datos"
+    Titulo $vd "Valorización de la vivienda" "Índice de precios de vivienda usada (IPVU), Banco de la República, 1988 a 2025"
+    foreach ($k in 1..8) { $vd.Columns.Item($k).ColumnWidth = @(14, 16, 16, 16, 16, 16, 18, 4)[$k - 1] }
+    Kpi $vd "A" "Variación nominal media" "=INM!AN5" "0,0 %" "Logarítmica anual, 2001-2025"
+    Kpi $vd "C" "Desviación" "=INM!AN6" "0,0 %" "De la variación nominal"
+    Kpi $vd "E" "Variación real media" "=INM!AN7" "0,0 %" "Descontada la inflación"
+    Seccion $vd 8 "Variación anual del valor"
+    $vd.Range("A9").Value2 = "Variación logarítmica anual del IPVU, nominal y real."
+    $vd.Range("A9").Font.Color = $gris
+    Seccion $vd 30 "Serie anual"
+    Encabezado $vd 31 1 7 @("Año", "IPVU nominal", "IPVU real", "r nominal", "r real", "IPC de diciembre", "PIB real (%)")
+    for ($k = 0; $k -lt 38; $k++) {
+        $r = 32 + $k; $o = 5 + $k
+        $vd.Cells.Item($r, 1).Formula = "=INM!AE$o"
+        $vd.Cells.Item($r, 2).Formula = "=INM!AF$o"
+        $vd.Cells.Item($r, 3).Formula = "=INM!AG$o"
+        $vd.Cells.Item($r, 4).Formula = "=IF(INM!AH$o="""","""",INM!AH$o)"
+        $vd.Cells.Item($r, 5).Formula = "=IF(INM!AI$o="""","""",INM!AI$o)"
+        $vd.Cells.Item($r, 6).Formula = "=IF(INM!AJ$o="""","""",INM!AJ$o)"
+        $vd.Cells.Item($r, 7).Formula = "=IF(INM!AL$o="""","""",INM!AL$o)"
+    }
+    $vd.Range("A32:A69").NumberFormatLocal = "0"
+    $vd.Range("A32:A69").HorizontalAlignment = -4131
+    $vd.Range("B32:C69").NumberFormatLocal = "#.##0,00"
+    $vd.Range("D32:F69").NumberFormatLocal = "0,0 %"
+    $vd.Range("G32:G69").NumberFormatLocal = "0,00"
+    $vd.Range("B31:G69").HorizontalAlignment = -4152
+    Nota $vd 71 "Fuente: Banco de la República (SUAMECA, series 17540 y 17541, descargadas el 30 de octubre de 2026). El IPVU agrega nueve ciudades y sus municipios vecinos; no hay serie solo de Medellín."
+    $g = Nuevo-Grafico $vd 10 29 "A" "G" 4
+    Nueva-Serie $g "Variación nominal" $vd.Range("D33:D69") $vd.Range("A33:A69") $azul 2 1
+    Nueva-Serie $g "Variación real" $vd.Range("E33:E69") $vd.Range("A33:A69") $gris 1.5 4
+    $g.Axes(1).TickLabelSpacing = 4
+    $g.Axes(1).TickLabelPosition = -4134
+    Cerrar-Grafico $g "0%" $true
+    $vd.Range("A1").Select()
+
+    # ---- Valorización, modelo
+    $vm = Nueva-Hoja $dest "Valorización, modelo"
+    Titulo $vm "Valorización: modelo probabilístico" "AR(1) sobre la variación logarítmica anual del IPVU, muestra 2001-2025"
+    foreach ($k in 1..12) { $vm.Columns.Item($k).ColumnWidth = @(52, 12, 10, 16, 14, 12, 3, 34, 12, 13, 13, 17)[$k - 1] }
+    Kpi $vm "H" "Media de largo plazo (μ)" "=INM!AV30" "0,00 %" ""
+    Kpi $vm "I" "φ" "=INM!AW30" "0,00" ""
+    Kpi $vm "J" "σ" "=INM!AX30" "0,000" ""
+
+    Bloque $vm 8 1 4 "Evidencia estadística"
+    Cabecera $vm 9 1 @("Prueba y contraste", "Estadístico", "p", "Decisión") @(1, 2)
+    $pr = @(
+        @("t de una muestra: variación nominal media igual a 0", 6),
+        @("t de una muestra: variación real media igual a 0", 7),
+        @("Jarque-Bera: r normal", 8),
+        @("Ljung-Box: sin autocorrelación a 1 año", 9),
+        @("ADF: raíz unitaria en r", 10),
+        @("Kruskal-Wallis: variación trimestral igual entre trimestres del año", 11),
+        @("t del coeficiente: φ igual a 0 en el AR(1)", 12),
+        @("Correlación de r con el PIB del mismo año", 13),
+        @("Correlación de r con la inflación del año", 14)
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 10 + $k; $o = $pr[$k][1]
+        $vm.Cells.Item($r, 1).Value2 = $pr[$k][0]
+        $vm.Cells.Item($r, 2).Formula = "=IF(INM!AV$o="""","""",INM!AV$o)"
+        $vm.Cells.Item($r, 3).Formula = "=INM!AW$o"
+        $vm.Cells.Item($r, 4).Formula = "=IF(C$r<0.05,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $vm.Range("B10:B18").NumberFormatLocal = "0,000"
+    $vm.Range("C10:C18").NumberFormatLocal = $pfmt
+    $vm.Range("D9:D18").IndentLevel = 1
+    $vm.Range("A19").Value2 = "Significancia de 5 %. El ADF tiene poca potencia con 25 datos; el KPSS no rechaza estacionariedad."
+    $vm.Range("A20").Value2 = "Ningún año pasa de 2,5 desviaciones: no hay atípicos en 2001-2025."
+    $vm.Range("A19:A20").Font.Size = 9; $vm.Range("A19:A20").Font.Color = $gris
+
+    Bloque $vm 22 1 5 "Modelos candidatos"
+    Cabecera $vm 23 1 @("Modelo", "log L", "AIC", "BIC", "p") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 5; $k++) {
+        $r = 24 + $k; $o = 21 + $k
+        $vm.Cells.Item($r, 1).Formula = "=INM!AU$o"
+        $vm.Cells.Item($r, 2).Formula = "=IF(INM!AW$o="""","""",INM!AW$o)"
+        $vm.Cells.Item($r, 3).Formula = "=IF(INM!AX$o="""","""",INM!AX$o)"
+        $vm.Cells.Item($r, 4).Formula = "=IF(INM!AY$o="""","""",INM!AY$o)"
+        $vm.Cells.Item($r, 5).Formula = "=IF(INM!AZ$o="""","""",INM!AZ$o)"
+    }
+    $vm.Range("B24:D28").NumberFormatLocal = "0,0"
+    $vm.Range("E24:E28").NumberFormatLocal = "0,000"
+    $vm.Range("A29").Value2 = "p de KS o de los residuos. El AR(1) nominal gana por AIC y BIC; sus residuos son normales y sin autocorrelación."
+    $vm.Range("A29").Font.Size = 9; $vm.Range("A29").Font.Color = $gris
+
+    Bloque $vm 31 1 4 "Variación según el estado de la economía"
+    Cabecera $vm 32 1 @("Crecimiento medio anual del PIB", "Años", "r medio", "Desviación") @(1, 2, 3)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 33 + $k; $o = 37 + $k
+        $vm.Cells.Item($r, 1).Formula = "=INM!AU$o"
+        $vm.Cells.Item($r, 2).Formula = "=INM!AV$o"
+        $vm.Cells.Item($r, 3).Formula = "=INM!AW$o"
+        $vm.Cells.Item($r, 4).Formula = "=INM!AX$o"
+    }
+    $vm.Range("B33:B35").NumberFormatLocal = "0"
+    $vm.Range("C33:D35").NumberFormatLocal = "0,0 %"
+    $vm.Range("A36").Value2 = "La diferencia entre estados no es significativa (Kruskal-Wallis p = 0,50), aunque el efecto lineal del PIB sí lo es."
+    $vm.Range("A36").Font.Size = 9; $vm.Range("A36").Font.Color = $gris
+
+    Bloque $vm 38 1 4 "Sensibilidad: vivienda nueva en Medellín (IPVNBR)"
+    Cabecera $vm 39 1 @("Medida", "Valor", "", "") @(1)
+    $sen = @(
+        @("Años usados, 2005 a 2025", "=INM!AV48", "0"),
+        @("Variación nominal media", "=INM!AV49", "0,0 %"),
+        @("Desviación estándar", "=INM!AV50", "0,0 %"),
+        @("Autocorrelación a 1 año", "=INM!AV51", "0,00"),
+        @("Jarque-Bera, p de normalidad", "=INM!AV52", "0,000"),
+        @("Correlación con el IPVU nacional", "=INM!AV53", "0,00")
+    )
+    for ($k = 0; $k -lt $sen.Count; $k++) {
+        $r = 40 + $k
+        $vm.Cells.Item($r, 1).Value2 = $sen[$k][0]
+        $vm.Cells.Item($r, 2).Formula = $sen[$k][1]
+        $vm.Cells.Item($r, 2).NumberFormatLocal = $sen[$k][2]
+    }
+    $vm.Range("B39:B45").HorizontalAlignment = -4152
+    $vm.Range("A46").Value2 = "Es vivienda nueva en construcción y se mueve poco con el IPVU: entra como escenario optimista."
+    $vm.Range("A46").Font.Size = 9; $vm.Range("A46").Font.Color = $gris
+
+    Bloque $vm 8 8 12 "Especificación"
+    $vm.Range("H9").Value2 = "r(t) = μ + φ · (r(t−1) − μ) + e(t),   e ~ Normal(0, σ)"
+    $vm.Range("H9").Font.Italic = $true
+    Cabecera $vm 10 8 @("Parámetro", "Estimación", "Significado", "", "") @(1)
+    $vm.Range("J10").IndentLevel = 1
+    $esp = @(
+        @("μ", "=INM!AV30", "0,00 %", "Variación media de largo plazo"),
+        @("φ", "=INM!AW30", "0,000", "Memoria del año anterior"),
+        @("σ", "=INM!AX30", "0,000", "Desviación de la perturbación"),
+        @("r(0)", "=INM!AV31", "0,00 %", "Variación de 2025, punto de partida"),
+        @("γ", "=INM!AV32", "0,000", "Ajuste por punto de PIB sobre su media"),
+        @("Crisis (sensibilidad)", "=INM!AV33", "0,0 %", "Se resta a μ en el escenario adverso")
+    )
+    for ($k = 0; $k -lt $esp.Count; $k++) {
+        $r = 11 + $k
+        $vm.Cells.Item($r, 8).Value2 = $esp[$k][0]
+        $vm.Cells.Item($r, 9).Formula = $esp[$k][1]
+        $vm.Cells.Item($r, 9).NumberFormatLocal = $esp[$k][2]
+        $vm.Cells.Item($r, 10).Value2 = $esp[$k][3]
+    }
+    $vm.Range("J11:J16").IndentLevel = 1
+    $vm.Range("H17").Value2 = "El valor del inmueble se acumula como V(t) = V(t−1) · exp(r(t))."
+    $vm.Range("H17").Font.Size = 9; $vm.Range("H17").Font.Color = $gris
+
+    Bloque $vm 22 8 12 "Validación"
+    Cabecera $vm 23 8 @("Evaluación", "", "", "Dentro del 90 %", "") @(3)
+    $vm.Range("H24").Value2 = "Un paso adelante, 2002–2025"
+    $vm.Range("K24").Formula = "=INM!AV43"
+    $vm.Range("H25").Value2 = "Fuera de muestra, 2016–2025"
+    $vm.Range("K25").Formula = "=INM!AV44"
+    $vm.Range("K24:K25").HorizontalAlignment = -4152
+    $vm.Range("H26").Value2 = "Proporción de años dentro del intervalo predictivo nominal de 90 %."
+    $vm.Range("H27").Value2 = "Fuera de muestra: parámetros estimados con 2001–2015."
+    $vm.Range("H26:H27").Font.Size = 9; $vm.Range("H26:H27").Font.Color = $gris
+
+    Bloque $vm 29 8 12 "Lectura"
+    $lec = $vm.Range("H30:L46")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $vm.Range("H30").Value2 = "La variación nominal es compatible con una normal y depende del año anterior, así que un AR(1) la describe mejor que los modelos de una sola distribución, incluidos los de colas pesadas. El PIB del año aporta un efecto pequeño pero significativo, que entra como ajuste de la media; la inflación del año no se relaciona con la variación nominal, y por eso se simula en términos nominales. Como limitaciones, la serie es corta y de avalúos hipotecarios, que suavizan los precios y exageran la persistencia, y la crisis de 1998-1999 queda fuera de la muestra, de modo que el escenario de crisis es un supuesto. El índice de vivienda nueva de Medellín sube más y se parece poco al nacional."
+    $vm.Range("A8:A46").EntireRow.RowHeight = 15
+    $vm.Range("A1").Select()
+
+    # ---- Vacancia, modelo
+    $va = Nueva-Hoja $dest "Vacancia, modelo"
+    Titulo $va "Vacancia: tiempo hasta arrendar" "Curva de supervivencia de Palomma (Kaplan-Meier) y distribución elegida"
+    foreach ($k in 1..10) { $va.Columns.Item($k).ColumnWidth = @(30, 14, 14, 14, 14, 14, 3, 40, 22, 22)[$k - 1] }
+    Kpi $va "H" "Forma de la gamma" "=INM!BK6" "0,00" ""
+    Kpi $va "I" "Media normal (meses)" "=INM!BE17" "0,0" ""
+    Kpi $va "J" "Vacancia normal" "=INM!BJ17" "0,0 %" ""
+    $va.Range("I4").WrapText = $false
+
+    Bloque $va 8 1 6 "Probabilidad de seguir vacío, S(t)"
+    Cabecera $va 9 1 @("Días en oferta", "Publicado", "Exponencial", "Gamma", "Weibull", "Lognormal") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 7; $k++) {
+        $r = 10 + $k; $o = 5 + $k
+        foreach ($j in 1..6) { $va.Cells.Item($r, $j).Formula = "=INM!" + @("BC", "BD", "BE", "BF", "BG", "BH")[$j - 1] + "$o" }
+    }
+    $va.Range("A10:A16").NumberFormatLocal = "0"
+    $va.Range("A10:A16").HorizontalAlignment = -4131
+    $va.Range("B10:F16").NumberFormatLocal = "0,0 %"
+    $va.Range("A17").Value2 = "S(t) es la proporción de apartamentos que sigue sin arrendar después de t días."
+    $va.Range("A17").Font.Size = 9; $va.Range("A17").Font.Color = $gris
+    $g = Nuevo-Grafico $va 19 36 "A" "F" 74
+    Nueva-Serie $g "Publicado" $va.Range("B10:B16") $va.Range("A10:A16") $azul 2.5 1
+    Nueva-Serie $g "Exponencial" $va.Range("C10:C16") $va.Range("A10:A16") 0x808080 1.25 4
+    Nueva-Serie $g "Gamma" $va.Range("D10:D16") $va.Range("A10:A16") 0xB07F4F 1.25 4
+    Nueva-Serie $g "Weibull" $va.Range("E10:E16") $va.Range("A10:A16") 0x55A55A 1.25 4
+    Nueva-Serie $g "Lognormal" $va.Range("F10:F16") $va.Range("A10:A16") 0x3C6FCF 1.25 4
+    $g.Axes(2).MaximumScale = 1
+    $g.Axes(1).MaximumScale = 270
+    $g.Axes(1).MajorUnit = 30
+    Cerrar-Grafico $g "0%" $true
+
+    Bloque $va 38 1 6 "Duración de la vacancia por estado (gamma)"
+    Cabecera $va 39 1 @("Estado de la economía", "p no renovar", "Media (meses)", "Escala", "Mediana", "P90") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 40 + $k; $o = 16 + $k
+        $va.Cells.Item($r, 1).Formula = "=INM!BC$o"
+        $va.Cells.Item($r, 2).Formula = "=INM!BD$o"
+        $va.Cells.Item($r, 3).Formula = "=INM!BE$o"
+        $va.Cells.Item($r, 4).Formula = "=INM!BG$o"
+        $va.Cells.Item($r, 5).Formula = "=INM!BH$o"
+        $va.Cells.Item($r, 6).Formula = "=INM!BI$o"
+    }
+    $va.Range("B40:B42").NumberFormatLocal = "0 %"
+    $va.Range("C40:F42").NumberFormatLocal = "0,0"
+    $va.Range("A43").Value2 = "La probabilidad de no renovar y las medias de expansión y crisis son supuestos."
+    $va.Range("A44").Value2 = "La media normal se calibra con el 86 % de apartamentos de 45 a 60 m² arrendados en 90 días."
+    $va.Range("A43:A44").Font.Size = 9; $va.Range("A43:A44").Font.Color = $gris
+
+    Bloque $va 8 8 10 "Parámetros ajustados"
+    Cabecera $va 9 8 @("Distribución", "Parámetro", "Valor") @(2)
+    $par = @(
+        @("Exponencial", "media (días)", 5, "0,0"), @("Gamma", "forma", 6, "0,00"), @("", "escala (días)", 7, "0,0"),
+        @("Weibull", "forma", 8, "0,00"), @("", "escala (días)", 9, "0,0"), @("Lognormal", "μ", 10, "0,00"), @("", "σ", 11, "0,00")
+    )
+    for ($k = 0; $k -lt $par.Count; $k++) {
+        $r = 10 + $k
+        $va.Cells.Item($r, 8).Value2 = $par[$k][0]
+        $va.Cells.Item($r, 9).Value2 = $par[$k][1]
+        $va.Cells.Item($r, 10).Formula = "=INM!BK" + $par[$k][2]
+        $va.Cells.Item($r, 10).NumberFormatLocal = $par[$k][3]
+    }
+    $va.Range("I9:I16").HorizontalAlignment = -4131
+
+    Bloque $va 19 8 10 "Vacancia implícita por estado"
+    Cabecera $va 20 8 @("Estado", "Tiempo vacío", "") @(1)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 21 + $k; $o = 16 + $k
+        $va.Cells.Item($r, 8).Formula = "=INM!BC$o"
+        $va.Cells.Item($r, 9).Formula = "=INM!BJ$o"
+    }
+    $va.Range("I21:I23").NumberFormatLocal = "0,0 %"
+    $va.Range("H24").Value2 = "Fracción del tiempo que el apartamento queda sin arrendar."
+    $va.Range("H24").Font.Size = 9; $va.Range("H24").Font.Color = $gris
+
+    Bloque $va 26 8 10 "Arrendados en 90 días, por segmento"
+    Cabecera $va 27 8 @("Segmento", "En 90 días", "Media (meses)") @(1, 2)
+    for ($k = 0; $k -lt 12; $k++) {
+        $r = 28 + $k; $o = 25 + $k
+        $va.Cells.Item($r, 8).Formula = "=IF(INM!BC$o=""tamano"",""Tamaño"",IF(INM!BC$o=""canon"",""Canon"",""Canon, menos de 60 m²""))&"": ""&SUBSTITUTE(SUBSTITUTE(INM!BD$o,""Mas de"",""Más de""),""m2"",""m²"")"
+        $va.Cells.Item($r, 9).Formula = "=INM!BE$o"
+        $va.Cells.Item($r, 10).Formula = "=INM!BF$o"
+    }
+    $va.Range("I28:I39").NumberFormatLocal = "0 %"
+    $va.Range("J28:J39").NumberFormatLocal = "0,0"
+    $va.Range("I27:J39").HorizontalAlignment = -4152
+
+    Bloque $va 41 8 10 "Lectura"
+    $lec = $va.Range("H42:J52")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $va.Range("H42").Value2 = "El tiempo hasta arrendar se ajusta bien con una gamma de forma cercana a uno, casi una exponencial: la probabilidad de seguir vacío cae de manera regular. Las cuatro distribuciones reproducen la curva publicada con diferencias pequeñas. Lo que más pesa en la simulación son los supuestos por estado de la economía, no el ajuste, y la vacancia implícita pasa de menos de 1 % en expansión a más de 10 % en crisis."
+    $va.Range("A8:A52").EntireRow.RowHeight = 15
+    $va.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
@@ -1327,6 +1781,7 @@ try {
     $dest.Worksheets.Item("PIB").Visible = 0
     $dest.Worksheets.Item("TPM_Cuenta").Visible = 0
     $dest.Worksheets.Item("TPM_Logit").Visible = 0
+    $dest.Worksheets.Item("INM").Visible = 0
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()

@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "CDT, datos", "CDT, modelo", "INM", "PIB, estados", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "CDT, datos", "CDT, modelo", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "PIB, estados", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -90,7 +90,11 @@ def leeme(ws) -> None:
         ["CDT, modelo", "Pruebas, modelos candidatos, estimación, validación y efecto sobre el inversionista"],
         ["ETF, datos", "Evolución del NAV del ICOLCAP y serie mensual de rendimientos"],
         ["ETF, modelo", "Pruebas, modelos candidatos, estimación, validación y dependencia del ETF"],
-        ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia"],
+        ["Inmueble, datos", "Canon frente a precio de venta (Lonja) y costos de tenencia y venta"],
+        ["Reajuste, modelo", "Reajuste anual del canon frente al IPC: pruebas y modelo"],
+        ["Valorización, datos", "IPVU del Banco de la República: serie anual y variación"],
+        ["Valorización, modelo", "AR(1) de la variación del valor: pruebas, candidatos, validación y sensibilidad"],
+        ["Vacancia, modelo", "Tiempo hasta arrendar: curva publicada, distribuciones ajustadas y duración por estado"],
         ["PIB, estados", "Crecimiento del PIB 1995-2026 y clasificación en estados"],
         ["MARKOV", "Matriz de transición, pruebas y qué cambia con el estado"],
         ["MARKOV_PIB, MARKOV_ETF, MARKOV_Vivienda", "Datos que usa la hoja MARKOV"],
@@ -98,7 +102,7 @@ def leeme(ws) -> None:
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
-        ["INF, ETF, CDT, PIB, TPM_Cuenta y TPM_Logit (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF, CDT, PIB, TPM y Cuenta leen de ellas"],
+        ["INF, ETF, CDT, PIB, TPM_Cuenta, TPM_Logit e INM (ocultas)", "Cálculo completo de las pruebas; las hojas visibles de cada proceso leen de ellas"],
         ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")
@@ -297,7 +301,7 @@ def modelos(ws) -> None:
          "El inmueble es usado y el IPVU mide vivienda usada; los años buenos y malos vienen seguidos. Fuera de muestra "
          "cae en la banda de 90 % los 10 años de 2016 a 2025",
          f"IPVNBR por estado: {_sm('Valorización')}. Media ± 2 puntos: E2 entre {_tor('Valorización')}",
-         ids("val."), "INM, MARKOV_Vivienda"],
+         ids("val."), "Valorización, modelo, MARKOV_Vivienda"],
         ["Reajuste del canon", "IPC de arriendos del DANE, 2010 a 2025 (16 años)",
          "Sube todo el IPC (diagrama) frente a una regresión sobre el IPC del año anterior",
          "El coeficiente sobre el IPC previo es significativo (p < 0,001, errores robustos; R² = 0,71). Los arriendos suben en promedio menos que el IPC "
@@ -305,14 +309,14 @@ def modelos(ws) -> None:
          "Reajuste = 1,68 % + 0,48·IPC previo + ε, sin pasar del IPC previo (Ley 820); canon inicial 0,60 % del valor (Lonja)",
          "Los datos muestran reajustes menores que el IPC; el tope legal se respeta",
          f"Todo el IPC: {_sm('Canon')}. Canon inicial 0,50 % o 0,70 %: E2 entre {_tor('Canon inicial')}",
-         ids("inm.reajuste", "inm.canon"), "INM"],
+         ids("inm.reajuste", "inm.canon"), "Reajuste, modelo"],
         ["Vacancia", "Curva de tiempo en oferta de Palomma (25.084 apartamentos de Medellín, 2025-2026)",
          "Exponencial, gamma, Weibull y lognormal para la duración",
          "La gamma con forma 1,1 reproduce la curva; la probabilidad de no renovar no tiene datos (supuesto)",
          "No renovar con probabilidad 5 % / 10 % / 30 % según el estado; duración gamma con media 1 / 1,5 / 6 meses",
          "Es conservador a propósito: el apartamento pasa 2,5 % del tiempo vacío, frente a 0,6 % que reporta Ciencuadras",
          f"Duración de 4 meses (Lonja): {_sm('Vacancia')}. Probabilidad × 0,5 o × 2: E2 entre {_tor('Probabilidad de no renovar')}",
-         ids("vac."), "INM, MARKOV"],
+         ids("vac."), "Vacancia, modelo, MARKOV"],
         ["Estado de la economía", "PIB trimestral del DANE, 2006 a 2026 (82 trimestres)",
          "Estados independientes frente a una cadena de Markov de 3 estados (crisis si el PIB crece menos de 1 %, "
          "expansión desde 4 %)",
@@ -443,9 +447,10 @@ AUDITORIA = [
     ["A06", "PARAMETROS", "Reparaciones (P160 a P162)", "Sin datos de costo ni frecuencia.", "Dato faltante", "Media", "Salen de la vista y del informe; quedan apagadas en MODELO", "Resuelto"],
     ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
     ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
-    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Faltan inmueble y Markov", "Parcial"],
+    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "Inflación: las hojas Inflación e Inflación, modelo leen de INF con fórmulas, sin mover nada. Falta Markov", "Parcial"],
     ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
     ["A11", "PIB", "Nota de crisis y conteo desde 2011", "Decía que crisis es crecimiento negativo y contaba 4 trimestres de crisis desde 2011, pero los umbrales vigentes son 1 % y 4 % (12 trimestres de crisis desde 2006).", "Inconsistencia", "Media", "La hoja PIB, estados recalcula el conteo con fórmula y describe la regla con los umbrales vigentes; la hoja original queda oculta sin cambios", "Resuelto"],
+    ["A12", "INM", "Costos y canon en pesos fijos", "La hoja original calculaba predial, administración y pintura sobre un apartamento de 300 millones.", "Estructural", "Baja", "La hoja Inmueble, datos expresa los costos como proporción del valor comercial; la original queda oculta sin cambios", "Resuelto"],
 ]
 
 
