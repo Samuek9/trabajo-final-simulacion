@@ -29,3 +29,8 @@ No se verificaron en línea los metadatos (DOI, URL, volúmenes) de las referenc
 
 ## Elementos sin poder comprobarse
 Ver `Lista_de_pendientes.md`.
+
+
+## Corrección de «NaN» en el capital necesario para 80 % (revisión visual del PDF)
+
+Al revisar el PDF a tamaño completo aparecía «NaN millones» en cuatro lugares (sección 17, respuesta 4 de la sección 18 y las conclusiones). La causa: la malla de capital llega a 1.000 millones y con E2 la probabilidad de la meta de 1.000 millones es 75,8 % ahí, así que el capital para 80 % queda fuera de la malla y la interpolación devuelve NaN. No se inventó una cifra: el texto ahora dice que ni 1.000 millones bastan (76 %) y que no se extrapola. Cambio en `tools/construir_informe.py` (función `cap_fuera` y frases condicionales); el informe se regeneró (73 páginas) y no quedan «NaN». Los datos y resultados no cambiaron.

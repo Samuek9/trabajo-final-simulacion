@@ -130,6 +130,11 @@ def cap(esc, e, meta, col="capital_80"):
     return v
 
 
+def cap_fuera(esc, e, meta):
+    """True si el capital para 80 % no se alcanza dentro de la malla de capitales (la interpolación da NaN)."""
+    return bool(pd.isna(cap(esc, e, meta)))
+
+
 def mejor(esc, col, mayor=True):
     s = R.loc[esc][col]
     return s.idxmax() if mayor else s.idxmin()
@@ -757,11 +762,13 @@ def seccion_17(w: Informe):
         f"({pc(pm('base', 'E3', 7e8), 0)} con E3 en esta corrida de 500 réplicas). La curva es empinada cerca del capital de referencia: "
         f"cada 100 millones adicionales suben la probabilidad entre {c(min(saltos) * 100)} y {c(max(saltos) * 100)} puntos con E2 y "
         f"E3. Con E1 hace falta más capital para cualquier meta: con {c(max(caps_cm) / 1e6)} millones llega a la meta de 1.000 millones reales en "
-        f"{pc(pm('base', 'E1', 1e9), 0)} de las réplicas, frente a {pc(pm('base', 'E2', 1e9), 0)} con E2. Para 80 % de probabilidad "
-        f"con E2 se necesitan unos {mm(cap('base', 'E2', 1e9))}. Esa cifra sale de interpolar una malla de 100 millones con 500 "
-        "réplicas por punto, así que tiene su propio error: con los extremos del intervalo de 95 % de cada punto, el capital "
-        f"necesario queda entre {mm(cap('base', 'E2', 1e9, 'capital_80_lo'))} y {mm(cap('base', 'E2', 1e9, 'capital_80_hi'))}. "
-        "En el escenario de estrés ninguna estrategia llega a 80 % para esa meta dentro de la malla.")
+        f"{pc(pm('base', 'E1', 1e9), 0)} de las réplicas, frente a {pc(pm('base', 'E2', 1e9), 0)} con E2. "
+        + (f"Para 80 % de probabilidad con E2, ni siquiera {c(max(caps_cm) / 1e6)} millones bastan ({pc(pm('base', 'E2', 1e9), 0)}): "
+           "ese capital queda por encima de la malla evaluada y no se extrapola. " if cap_fuera('base', 'E2', 1e9) else
+           f"Para 80 % de probabilidad con E2 se necesitan unos {mm(cap('base', 'E2', 1e9))}. Esa cifra sale de interpolar una malla de 100 millones con 500 "
+           "réplicas por punto, así que tiene su propio error: con los extremos del intervalo de 95 % de cada punto, el capital "
+           f"necesario queda entre {mm(cap('base', 'E2', 1e9, 'capital_80_lo'))} y {mm(cap('base', 'E2', 1e9, 'capital_80_hi'))}. ")
+        + "En el escenario de estrés ninguna estrategia llega a 80 % para esa meta dentro de la malla.")
 
 
 def seccion_18(w: Informe):
@@ -823,8 +830,10 @@ def seccion_18(w: Informe):
         f"{pc(1 - P.lista('E2.pesos')[3], 0)}.")
     w.p("**4. ¿Cuál es la probabilidad de alcanzar diferentes metas para distintos capitales iniciales? ",
         "La sección 17 lo responde con la matriz completa. En resumen, con E2 en el escenario base la probabilidad de llegar a 1.000 "
-        f"millones pasa de {pc(pm('base', 'E2', 5e8))} con 500 millones a {pc(pm('base', 'E2', 9e8), 0)} con 900 millones, y 80 % de "
-        f"probabilidad pide unos {mm(cap('base', 'E2', 1e9))}. Para una meta de 800 millones bastan {mm(cap('base', 'E2', 800e6))}.")
+        f"millones pasa de {pc(pm('base', 'E2', 5e8))} con 500 millones a {pc(pm('base', 'E2', 9e8), 0)} con 900 millones, "
+        + ("y 80 % de probabilidad pide más capital del que cubre la malla. " if cap_fuera('base', 'E2', 1e9) else
+           f"y 80 % de probabilidad pide unos {mm(cap('base', 'E2', 1e9))}. ")
+        + f"Para una meta de 800 millones bastan {mm(cap('base', 'E2', 800e6))}.")
     m_adv, m_est = mejor("adverso", "W_real_p50"), mejor("estres", "W_real_p50")
     w.p("**5. ¿Cómo cambia el desempeño bajo escenarios adversos y de estrés? ",
         f"En el adverso todas pierden poder adquisitivo (rentabilidad real media entre {pc(min(r('adverso', e, 'rent_real_media') for e in EST))} "
@@ -916,8 +925,11 @@ def discusion_y_cierre(w: Informe, refs_equipo: list[str]):
     w.h("Conclusiones")
     w.vinetas([
         f"Con la configuración de referencia, la meta tiene a lo sumo {pc(r('base', mejor('base', 'p_meta'), 'p_meta'), 0)} "
-        f"de probabilidad en el escenario base. Para 80 % con E2 hace falta un capital de unos {mm(cap('base', 'E2', 1e9))}, es decir "
-        f"{c(cap('base', 'E2', 1e9) / P.f('inv.capital'), 2)} veces el de referencia.",
+        f"de probabilidad en el escenario base. "
+        + (f"Para 80 % con E2 hace falta más de {c(max(CM.capital.unique()) / 1e6)} millones, que es el máximo de la malla ({pc(pm('base', 'E2', 1e9), 0)} de probabilidad ahí)."
+           if cap_fuera('base', 'E2', 1e9) else
+           f"Para 80 % con E2 hace falta un capital de unos {mm(cap('base', 'E2', 1e9))}, es decir "
+           f"{c(cap('base', 'E2', 1e9) / P.f('inv.capital'), 2)} veces el de referencia."),
         "Las estrategias con inmueble (E2, E3, E4) dan más patrimonio que E1 en el escenario base. E2 tiene una probabilidad de "
         f"iliquidez parecida a la de E1 ({pc(r('base', 'E2', 'p_iliquidez'), 0)} frente a {pc(r('base', 'E1', 'p_iliquidez'), 0)}), "
         f"aunque termina con menos dinero líquido ({mm(r('base', 'E2', 'liquido_final_real_media'))} frente a "
