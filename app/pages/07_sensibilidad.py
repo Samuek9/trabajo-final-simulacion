@@ -67,7 +67,7 @@ with t1:
         cm = cm[cm.escenario == esc_cm]
         e = st.radio("Estrategia", EST, format_func=ui.NOMBRES.get, horizontal=True, key="e_cm")
         st.plotly_chart(charts.mapa_capital_meta(cm, e), width="stretch", config=charts.CONFIG)
-        objetivo = st.slider("Probabilidad objetivo", 0.1, 0.95, 0.8, 0.05)
+        objetivo = st.number_input("Probabilidad objetivo (%)", 10.0, 95.0, 80.0, 5.0) / 100
         filas = []
         for m in sorted(cm.meta.unique()):
             fila = {"Meta real": ui.cop(m)}

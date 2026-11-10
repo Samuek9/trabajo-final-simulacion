@@ -18,8 +18,8 @@ with c1:
     meta = st.number_input("Meta: patrimonio real final (millones de pesos de hoy)", min_value=0.0, max_value=50_000.0,
                            step=50.0, value=p.f("inv.meta_real") / 1e6, help=ui.pie_parametro(T["inv.meta_real"]))
 with c2:
-    liq = st.slider("Liquidez mínima en la cuenta (% del patrimonio)", 0.0, 30.0, p.f("inv.liquidez_min") * 100, 0.5,
-                    help=ui.pie_parametro(T["inv.liquidez_min"]))
+    liq = st.number_input("Liquidez mínima en la cuenta (% del patrimonio)", min_value=0.0, max_value=30.0, step=0.5,
+                          value=p.f("inv.liquidez_min") * 100, help=ui.pie_parametro(T["inv.liquidez_min"]))
     modo = st.radio("Valor del inmueble", ["proporcional", "fijo"],
                     index=0 if p.s("inv.modo_inmueble") == "proporcional" else 1, horizontal=True,
                     format_func=lambda x: "Proporcional al capital" if x == "proporcional" else "Valor fijo",
