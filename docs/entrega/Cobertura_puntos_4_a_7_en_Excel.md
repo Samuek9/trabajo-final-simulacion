@@ -6,7 +6,7 @@ Cotejo del enunciado contra `data/master_datos.xlsx` (hojas visibles).
 Cubierto en la hoja PARAMETROS: capital inicial, horizonte, meta en patrimonio real, liquidez mínima y otros parámetros (réplicas, semilla, plazo del CDT, necesidades de liquidez, pesos de las estrategias, valor del inmueble). Los experimentos que varían capital y meta los ejecuta el simulador y no forman parte del libro.
 
 ## Punto 5. Universo de inversión
-Los cuatro grupos de activos están en las estrategias (PARAMETROS) y en las hojas de cada proceso. **Abierto:** la tabla de reglas financieras por activo (inversión mínima, comisiones, penalizaciones, tiempos de venta, costos) está en el informe (Tablas 2 a 6) y en la hoja oculta MODELO, pero no hay una tabla equivalente visible en el Excel.
+Cubierto en el simulador y el informe. Los cuatro grupos de activos están en las estrategias (PARAMETROS) y en las hojas de cada proceso. Las reglas financieras por activo (inversión mínima, comisiones, penalizaciones, tiempos de venta y costos) las implementa el simulador (hoja oculta MODELO) y se definen y justifican en el informe (Tablas 2 a 6). Por decisión del equipo, el Excel se mantiene con lo esencial y no repite esa tabla.
 
 ## Punto 6. Fuentes de incertidumbre
 Cubierto en MODELOS: diez procesos, con los cinco obligatorios (ETF, inflación, tasas, valorización y vacancia) más cuenta, margen del CDT, reajuste del canon, estado de la economía y necesidades de liquidez.
