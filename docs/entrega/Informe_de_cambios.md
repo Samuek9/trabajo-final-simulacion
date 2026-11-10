@@ -57,3 +57,12 @@ Al revisar el PDF a tamaño completo aparecía «NaN millones» en cuatro lugare
 ## Excel limitado a la modelación de los procesos
 
 Se retiraron del libro las hojas «Validación del simulador», «Resultados, estrategias», «Comparación de estrategias», «Sensibilidad», RESULTADOS (oculta) y AUDITORIA, porque resultados, estrategias y sensibilidad son salidas del simulador y se pueden reproducir y cambiar desde la aplicación; el Excel documenta los procesos aleatorios (PARAMETROS, MODELOS y hojas de la sección 7). VALIDACION (oculta) se conserva porque alimenta la hoja «TPM, modelo». El contenido de AUDITORIA quedó en `docs/entrega/Auditoria_decisiones.md`. La sección 19 del informe ya no dice que el Excel trae resultados.
+
+
+## Intervención puntual en MODELOS y PARAMETROS
+
+- MODELOS: se reescribieron las 40 celdas de contenido, los encabezados y el texto de introducción con redacción académica; se conservaron los cinco componentes, la tabla única y todas las cifras. Ajustes de presentación: anchos de columna, ajuste de texto, alineación superior, altura de filas y línea fina entre procesos; fuente en 11 pt. No se agregaron pruebas, cifras ni argumentos.
+- PARAMETROS: se conservaron IDs, claves, grupos, nombres, valores y unidades (verificado celda por celda contra la copia previa). Cambios solo de presentación: texto superior que distingue lo modificable (esta hoja) de lo estimado y fijo (hoja MODELOS) y explica el orden cuenta; CDT; ETF; inmueble de las estrategias; formatos numéricos (700.000.000; 0,05), anchos, líneas entre grupos y alineación.
+- Comprobación: las demás hojas son idénticas a la versión anterior, el lector de parámetros del simulador carga los 131 parámetros y las 60 pruebas pasan.
+- Observación: P007 (número de réplicas) figura como «Calculado» (fórmula de precisión del punto 14) pero se puede cambiar como los demás valores de la hoja; no se modificó.
+- Nota técnica: estos textos se aplicaron directamente al libro; si se vuelve a generar con `tools/construir_master.py` y `tools/unir_master.ps1`, habría que trasladarlos a esos scripts.
