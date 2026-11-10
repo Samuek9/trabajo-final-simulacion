@@ -1927,8 +1927,263 @@ try {
     $mk2.Range("A8:A54").EntireRow.RowHeight = 15
     $mk2.Range("A1").Select()
 
+    # ------------------------------------------------ Validación y resultados
+    $naranja = 0x3C6FCF
+    function Esc-Txt($ref) { return 'IF(' + $ref + '="base","Base",IF(' + $ref + '="adverso","Adverso","Estrés"))' }
+
+    # ---- Validación
+    $vl = Nueva-Hoja $dest "Validación del simulador"
+    Titulo $vl "Validación del simulador" "500 réplicas con los parámetros de referencia, frente a los datos de cada proceso"
+    foreach ($k in 1..7) { $vl.Columns.Item($k).ColumnWidth = @(14, 46, 20, 14, 14, 34, 70)[$k - 1] }
+    Kpi $vl "A" "Medidas comparadas" '=COUNTA(VALIDACION!B5:B24)' "0" "Seis procesos"
+    Kpi $vl "C" "Reproducen los datos de estimación" '=COUNTIF(VALIDACION!C5:C24,"Reproduce insumos")' "0" "Verifican el generador"
+    Kpi $vl "F" "Contrastes" '=COUNTIF(VALIDACION!C5:C24,"Contraste")' "0" "Con algo que el modelo no usó"
+    Seccion $vl 8 "Simulado frente a observado"
+    Encabezado $vl 9 1 7 @("Proceso", "Medida", "Tipo", "Simulado", "Observado", "Referencia", "Lectura")
+    $fm = @("0,00", "@", "0,000", "0,00", "0,00", "0,00", "0,0 %", "0,00 %", "0,00 %", "0,00 %", "0,00", "0,00", "0,0 %", "0,0 %", "0,0 %", "0,0 %", "0,0", "0,00 %", "0,00 %", "0,0 %")
+    for ($k = 0; $k -lt 20; $k++) {
+        $r = 10 + $k; $o = 5 + $k; $p = $o - 1
+        $vl.Cells.Item($r, 1).Formula = '=IF(VALIDACION!A' + $o + '=VALIDACION!A' + $p + ',"",VALIDACION!A' + $o + ')'
+        $vl.Cells.Item($r, 2).Formula = '=VALIDACION!B' + $o
+        $vl.Cells.Item($r, 3).Formula = '=IF(VALIDACION!C' + $o + '="Contraste","Contraste","Reproduce los datos")'
+        if ($k -eq 1) {
+            $vl.Cells.Item($r, 4).Formula = '=SUBSTITUTE(VALIDACION!D' + $o + ',".",",")'
+            $vl.Cells.Item($r, 5).Formula = '=SUBSTITUTE(VALIDACION!E' + $o + ',".",",")'
+        } else {
+            $vl.Cells.Item($r, 4).Formula = '=VALIDACION!D' + $o
+            $vl.Cells.Item($r, 5).Formula = '=VALIDACION!E' + $o
+            $vl.Range($vl.Cells.Item($r, 4), $vl.Cells.Item($r, 5)).NumberFormatLocal = $fm[$k]
+        }
+        $vl.Cells.Item($r, 6).Formula = '=VALIDACION!F' + $o
+        $vl.Cells.Item($r, 7).Formula = '=IF(VALIDACION!G' + $o + '="","",VALIDACION!G' + $o + ')'
+    }
+    $vl.Range("D9:E29").HorizontalAlignment = -4152
+    $vl.Range("A10:A29").Font.Bold = $true
+    $vl.Range("C9:C29").IndentLevel = 1
+    $vl.Range("F9:G29").IndentLevel = 2
+    $vl.Range("F10:G29").WrapText = $true
+    $vl.Range("A10:G29").VerticalAlignment = -4160
+    $vl.Range("A10:G29").Borders.Item(12).LineStyle = 1
+    $vl.Range("A10:G29").Borders.Item(12).Color = 0xE0E0E0
+    $vl.Range("A10:G29").Borders.Item(9).LineStyle = 1
+    $vl.Range("A10:G29").Borders.Item(9).Color = 0xE0E0E0
+    $vl.Range("A10:G29").Rows.AutoFit() | Out-Null
+    Nota $vl 31 "Reproduce los datos: compara con los mismos datos con que se estimó el proceso. Contraste: compara con algo que el modelo no usó al estimarse."
+    Nota $vl 32 "Inflación y TPM en porcentaje; rendimiento del ETF y valorización, en logaritmo; vacancia, fracción del tiempo desocupado."
+    $vl.Range("A1").Select()
+
+    # ---- Resultados
+    $rs = Nueva-Hoja $dest "Resultados, estrategias"
+    Titulo $rs "Resultados de las estrategias" "1.068 réplicas por estrategia y escenario, con los parámetros de referencia. Montos en millones de pesos de hoy."
+    foreach ($k in 1..12) { $rs.Columns.Item($k).ColumnWidth = @(14, 12, 12, 16, 15, 14, 14, 14, 14, 14, 14, 14)[$k - 1] }
+    Kpi $rs "A" "Mayor P(meta), base" '=MAX(RESULTADOS!C17:C20)' "0,0 %" ""
+    $rs.Range("A6").Formula = '="Estrategia "&INDEX(RESULTADOS!B17:B20,MATCH(A5,RESULTADOS!C17:C20,0))'
+    Kpi $rs "D" "Mayor P(meta), adverso" '=MAX(RESULTADOS!C21:C24)' "0,0 %" ""
+    $rs.Range("D6").Formula = '="Estrategia "&INDEX(RESULTADOS!B21:B24,MATCH(D5,RESULTADOS!C21:C24,0))'
+    Kpi $rs "G" "Mayor P(meta), estrés" '=MAX(RESULTADOS!C25:C28)' "0,0 %" ""
+    $rs.Range("G6").Formula = '="Estrategia "&INDEX(RESULTADOS!B25:B28,MATCH(G5,RESULTADOS!C25:C28,0))'
+    foreach ($z in @("A6", "D6", "G6")) { $rs.Range($z).Font.Size = 9; $rs.Range($z).Font.Color = $gris }
+    Kpi $rs "J" "Réplicas por configuración" "=1068" "#.##0" "4 estrategias en 3 escenarios"
+    $rs.Range("J6").Font.Size = 9; $rs.Range("J6").Font.Color = $gris
+
+    Seccion $rs 8 "Probabilidad de alcanzar la meta"
+    $rs.Range("A9").Value2 = "Con la configuración de referencia, ninguna estrategia pasa de 20 % en el escenario base, y en el adverso y el de estrés queda por debajo de 3 %."
+    $rs.Range("A9").Font.Color = $gris
+    Encabezado $rs 11 1 4 @("Estrategia", "Base", "Adverso", "Estrés")
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 12 + $k; $o = 17 + $k
+        $rs.Cells.Item($r, 1).Formula = "=RESULTADOS!B$o"
+        $rs.Cells.Item($r, 2).Formula = "=RESULTADOS!C$o"
+        $rs.Cells.Item($r, 3).Formula = "=RESULTADOS!C" + ($o + 4)
+        $rs.Cells.Item($r, 4).Formula = "=RESULTADOS!C" + ($o + 8)
+    }
+    $rs.Range("B12:D15").NumberFormatLocal = "0,0 %"
+    $rs.Range("B11:D15").HorizontalAlignment = -4152
+    $g = Nuevo-Grafico $rs 17 33 "A" "H" 51
+    Nueva-Serie $g "Base" $rs.Range("B12:B15") $rs.Range("A12:A15") $azul 0 0
+    Nueva-Serie $g "Adverso" $rs.Range("C12:C15") $rs.Range("A12:A15") 0x808080 0 0
+    Nueva-Serie $g "Estrés" $rs.Range("D12:D15") $rs.Range("A12:A15") $naranja 0 0
+    $g.ChartGroups(1).GapWidth = 80
+    Cerrar-Grafico $g "0%" $true
+
+    Seccion $rs 35 "Indicadores por estrategia y escenario"
+    $rs.Range("A36").Value2 = "Patrimonio real al final del horizonte, en millones de pesos de hoy. CVaR 5 %: promedio del 5 % peor de los casos."
+    $rs.Range("A36").Font.Color = $gris
+    Encabezado $rs 37 1 12 @("Escenario", "Estrategia", "P(meta)", "IC de 95 %", "Patrimonio P5", "Patrimonio P50", "Patrimonio P95", "CVaR 5 %", "P(pérdida real)", "Caída máx. P50", "P(iliquidez)", "Años a la meta")
+    for ($k = 0; $k -lt 12; $k++) {
+        $r = 38 + $k; $o = 17 + $k
+        $rs.Cells.Item($r, 1).Formula = '=' + (Esc-Txt "RESULTADOS!A$o")
+        $rs.Cells.Item($r, 2).Formula = "=RESULTADOS!B$o"
+        $rs.Cells.Item($r, 3).Formula = "=RESULTADOS!C$o"
+        $rs.Cells.Item($r, 4).Formula = '=ROUND(RESULTADOS!D' + $o + '*100,1)&" a "&ROUND(RESULTADOS!E' + $o + '*100,1)&" %"'
+        $rs.Cells.Item($r, 5).Formula = "=RESULTADOS!G$o"
+        $rs.Cells.Item($r, 6).Formula = "=RESULTADOS!I$o"
+        $rs.Cells.Item($r, 7).Formula = "=RESULTADOS!K$o"
+        $rs.Cells.Item($r, 8).Formula = "=RESULTADOS!L$o"
+        $rs.Cells.Item($r, 9).Formula = "=RESULTADOS!N$o"
+        $rs.Cells.Item($r, 10).Formula = "=RESULTADOS!O$o"
+        $rs.Cells.Item($r, 11).Formula = "=RESULTADOS!P$o"
+        $rs.Cells.Item($r, 12).Formula = "=RESULTADOS!T$o"
+    }
+    $rs.Range("C38:C49").NumberFormatLocal = "0,0 %"
+    $rs.Range("E38:H49").NumberFormatLocal = "#.##0"
+    $rs.Range("I38:K49").NumberFormatLocal = "0,0 %"
+    $rs.Range("L38:L49").NumberFormatLocal = "0,0"
+    $rs.Range("C37:L49").HorizontalAlignment = -4152
+    foreach ($k in @(41, 45)) { $rs.Range($rs.Cells.Item($k, 1), $rs.Cells.Item($k, 12)).Borders.Item(9).LineStyle = 1; $rs.Range($rs.Cells.Item($k, 1), $rs.Cells.Item($k, 12)).Borders.Item(9).Color = 0xC0C0C0 }
+    $rs.Range("A38:A49").Font.Bold = $true
+
+    Seccion $rs 52 "Capital necesario para alcanzar la meta"
+    $rs.Range("A53").Value2 = "Capital inicial mínimo, en millones, para llegar a cada probabilidad. «No alcanza» indica que queda fuera del rango de 400 a 1.000 millones."
+    $rs.Range("A53").Font.Color = $gris
+    $rs.Range("C55").Value2 = "Para 80 % de probabilidad"
+    $rs.Range("H55").Value2 = "Para 50 % de probabilidad"
+    $rs.Range("C55").Font.Bold = $true; $rs.Range("H55").Font.Bold = $true
+    Encabezado $rs 56 1 12 @("Escenario", "Estrategia", "", "", "", "", "", "", "", "", "", "")
+    for ($j = 0; $j -lt 5; $j++) {
+        $rs.Cells.Item(56, 3 + $j).Formula = '="Meta "&TEXT(RESULTADOS!C' + (32 + $j) + ',"#.##0")'
+        $rs.Cells.Item(56, 8 + $j).Formula = '="Meta "&TEXT(RESULTADOS!C' + (32 + $j) + ',"#.##0")'
+    }
+    for ($gI = 0; $gI -lt 8; $gI++) {
+        $r = 57 + $gI; $o = 32 + 5 * $gI
+        $rs.Cells.Item($r, 1).Formula = '=' + (Esc-Txt "RESULTADOS!A$o")
+        $rs.Cells.Item($r, 2).Formula = "=RESULTADOS!B$o"
+        for ($j = 0; $j -lt 5; $j++) {
+            $rs.Cells.Item($r, 3 + $j).Formula = '=IF(RESULTADOS!D' + ($o + $j) + '="","no alcanza",RESULTADOS!D' + ($o + $j) + ')'
+            $rs.Cells.Item($r, 8 + $j).Formula = '=IF(RESULTADOS!E' + ($o + $j) + '="","no alcanza",RESULTADOS!E' + ($o + $j) + ')'
+        }
+    }
+    $rs.Range("C57:L64").NumberFormatLocal = "#.##0"
+    $rs.Range("C56:L64").HorizontalAlignment = -4152
+    $rs.Range("A57:A64").Font.Bold = $true
+    $rs.Range($rs.Cells.Item(60, 1), $rs.Cells.Item(60, 12)).Borders.Item(9).LineStyle = 1
+    $rs.Range($rs.Cells.Item(60, 1), $rs.Cells.Item(60, 12)).Borders.Item(9).Color = 0xC0C0C0
+    Nota $rs 65 "No se corrió el escenario adverso en esta malla: 500 réplicas por celda, 7 capitales de 400 a 1.000 millones y 5 metas de 700 a 1.500 millones."
+
+    Seccion $rs 67 "Diseño del experimento"
+    for ($k = 0; $k -lt 8; $k++) {
+        $r = 68 + $k; $o = 6 + $k
+        $rs.Cells.Item($r, 1).Formula = "=RESULTADOS!A$o"
+        $rs.Cells.Item($r, 1).Font.Bold = $true
+        $rs.Range($rs.Cells.Item($r, 3), $rs.Cells.Item($r, 12)).Merge()
+        $rs.Cells.Item($r, 3).Formula = "=RESULTADOS!B$o"
+        $rs.Cells.Item($r, 3).WrapText = $true
+        $rs.Cells.Item($r, 3).VerticalAlignment = -4160
+        $rs.Cells.Item($r, 1).VerticalAlignment = -4160
+        $rs.Rows.Item($r).RowHeight = 30
+    }
+    $rs.Range("A1").Select()
+
+    # ---- Comparación
+    $cp = Nueva-Hoja $dest "Comparación de estrategias"
+    Titulo $cp "Comparación entre estrategias" "Diferencia a − b con los mismos números aleatorios en cada réplica; significancia con corrección de Holm"
+    foreach ($k in 1..8) { $cp.Columns.Item($k).ColumnWidth = @(14, 16, 22, 16, 22, 16, 22, 16)[$k - 1] }
+    Kpi $cp "A" "Comparaciones significativas" '=COUNTIF(RESULTADOS!J82:J153,TRUE)+COUNTIF(RESULTADOS!J82:J153,"True")' "0" "De 72"
+    Seccion $cp 8 "Diferencias por escenario"
+    $cp.Range("A9").Value2 = "Patrimonio real en millones de pesos de hoy; probabilidad de la meta y caída máxima en puntos porcentuales."
+    $cp.Range("A9").Font.Color = $gris
+    Encabezado $cp 10 1 8 @("Escenario", "Comparación", "Dif. patrimonio real", "Significativa", "Dif. P(meta)", "Significativa", "Dif. caída máxima", "Significativa")
+    for ($gI = 0; $gI -lt 18; $gI++) {
+        $r = 11 + $gI; $o = 82 + 4 * $gI
+        $cp.Cells.Item($r, 1).Formula = '=' + (Esc-Txt "RESULTADOS!A$o")
+        $cp.Cells.Item($r, 2).Formula = '=RESULTADOS!B' + $o + '&" − "&RESULTADOS!C' + $o
+        $cp.Cells.Item($r, 3).Formula = '=RESULTADOS!F' + $o + '/1000000'
+        $cp.Cells.Item($r, 4).Formula = '=IF(OR(RESULTADOS!J' + $o + '=TRUE,RESULTADOS!J' + $o + '="True"),"Sí","No")'
+        $cp.Cells.Item($r, 5).Formula = '=RESULTADOS!F' + ($o + 1) + '*100'
+        $cp.Cells.Item($r, 6).Formula = '=IF(OR(RESULTADOS!J' + ($o + 1) + '=TRUE,RESULTADOS!J' + ($o + 1) + '="True"),"Sí","No")'
+        $cp.Cells.Item($r, 7).Formula = '=RESULTADOS!F' + ($o + 3) + '*100'
+        $cp.Cells.Item($r, 8).Formula = '=IF(OR(RESULTADOS!J' + ($o + 3) + '=TRUE,RESULTADOS!J' + ($o + 3) + '="True"),"Sí","No")'
+    }
+    $cp.Range("C11:C28").NumberFormatLocal = '+#.##0,0;-#.##0,0;0,0'
+    $cp.Range("E11:E28").NumberFormatLocal = '+0,0;-0,0;0,0'
+    $cp.Range("G11:G28").NumberFormatLocal = '+0,0;-0,0;0,0'
+    $cp.Range("C10:H28").HorizontalAlignment = -4152
+    $cp.Range("A11:A28").Font.Bold = $true
+    foreach ($k in @(16, 22)) { $cp.Range($cp.Cells.Item($k, 1), $cp.Cells.Item($k, 8)).Borders.Item(9).LineStyle = 1; $cp.Range($cp.Cells.Item($k, 1), $cp.Cells.Item($k, 8)).Borders.Item(9).Color = 0xC0C0C0 }
+    Nota $cp 29 "La primera estrategia de cada comparación es a y la segunda es b. Un signo positivo indica que a supera a b."
+
+    Seccion $cp 31 "Precisión de P(meta) según el número de réplicas"
+    $cp.Range("A32").Value2 = "Estrategia E2, escenario base."
+    $cp.Range("A32").Font.Color = $gris
+    Encabezado $cp 33 1 5 @("Réplicas", "P(meta)", "IC de 95 %", "Semiancho (pp)", "Semiancho máximo (pp)")
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 34 + $k; $o = 75 + $k
+        $cp.Cells.Item($r, 1).Formula = "=RESULTADOS!A$o"
+        $cp.Cells.Item($r, 2).Formula = "=RESULTADOS!B$o"
+        $cp.Cells.Item($r, 3).Formula = '=ROUND(RESULTADOS!C' + $o + '*100,1)&" a "&ROUND(RESULTADOS!D' + $o + '*100,1)&" %"'
+        $cp.Cells.Item($r, 4).Formula = "=RESULTADOS!E$o*100"
+        $cp.Cells.Item($r, 5).Formula = "=RESULTADOS!F$o*100"
+    }
+    $cp.Range("A34:A37").NumberFormatLocal = "#.##0"
+    $cp.Range("A34:A37").HorizontalAlignment = -4131
+    $cp.Range("B34:B37").NumberFormatLocal = "0,0 %"
+    $cp.Range("D34:E37").NumberFormatLocal = "0,0"
+    $cp.Range("B33:E37").HorizontalAlignment = -4152
+    $cp.Range("A1").Select()
+
+    # ---- Sensibilidad
+    $sn = Nueva-Hoja $dest "Sensibilidad"
+    Titulo $sn "Sensibilidad" "Estrategia E2, escenario base: P(meta) al mover un factor a la vez, 400 réplicas por punto"
+    foreach ($k in 1..6) { $sn.Columns.Item($k).ColumnWidth = @(84, 22, 22, 22, 22, 22)[$k - 1] }
+    Kpi $sn "A" "P(meta) de referencia" '=RESULTADOS!C157' "0,0 %" "Con todos los factores en su valor base"
+    Kpi $sn "B" "Mayor rango" '=RESULTADOS!F157' '0,0" puntos"' ""
+    $sn.Range("B6").Formula = '=RESULTADOS!B157'
+    $sn.Range("B6").Font.Size = 9; $sn.Range("B6").Font.Color = $gris
+    Seccion $sn 8 "Factores que más mueven la probabilidad"
+    $sn.Range("A9").Value2 = "Rango de P(meta), en puntos porcentuales, entre el valor bajo y el alto de cada factor. Los doce mayores."
+    $sn.Range("A9").Font.Color = $gris
+    Seccion $sn 32 "Todos los factores"
+    Encabezado $sn 33 1 6 @("Factor", "Fuente de incertidumbre", "P(meta) referencia", "Valor bajo", "Valor alto", "Rango (puntos)")
+    for ($k = 0; $k -lt 20; $k++) {
+        $r = 34 + $k; $o = 157 + $k
+        $sn.Cells.Item($r, 1).Formula = "=RESULTADOS!A$o"
+        $sn.Cells.Item($r, 2).Formula = "=RESULTADOS!B$o"
+        $sn.Cells.Item($r, 3).Formula = "=RESULTADOS!C$o"
+        $sn.Cells.Item($r, 4).Formula = "=RESULTADOS!D$o"
+        $sn.Cells.Item($r, 5).Formula = "=RESULTADOS!E$o"
+        $sn.Cells.Item($r, 6).Formula = "=RESULTADOS!F$o"
+    }
+    $sn.Range("C34:E53").NumberFormatLocal = "0,0 %"
+    $sn.Range("F34:F53").NumberFormatLocal = "0,0"
+    $sn.Range("C33:F53").HorizontalAlignment = -4152
+    $sn.Range("B33:B53").IndentLevel = 1
+    $g = Nuevo-Grafico $sn 10 30 "A" "F" 57
+    Nueva-Serie $g "Rango" $sn.Range("F34:F45") $sn.Range("A34:A45") $azul 0 0
+    $g.Axes(1).ReversePlotOrder = $true
+    $g.ChartGroups(1).GapWidth = 40
+    Cerrar-Grafico $g "0" $false
+
+    Seccion $sn 56 "Sensibilidad a la elección de modelos"
+    $sn.Range("A57").Value2 = "P(meta) con el modelo de referencia y con la alternativa, por estrategia. 400 réplicas."
+    $sn.Range("A57").Font.Color = $gris
+    Encabezado $sn 58 1 5 @("Modelo alternativo", "E1", "E2", "E3", "E4")
+    for ($mI = 0; $mI -lt 8; $mI++) {
+        $r = 59 + $mI; $o = 180 + 4 * $mI
+        $sn.Cells.Item($r, 1).Formula = "=RESULTADOS!A$o"
+        foreach ($j in 0..3) {
+            $q = $o + $j
+            $sn.Cells.Item($r, 2 + $j).Formula = '=ROUND(RESULTADOS!C' + $q + '*100,1)&" a "&ROUND(RESULTADOS!D' + $q + '*100,1)&" %"'
+        }
+    }
+    $sn.Range("B58:E66").HorizontalAlignment = -4152
+    Nota $sn 67 "Cada celda muestra la probabilidad con el modelo de referencia y con la alternativa."
+
+    Seccion $sn 69 "Interacción entre inflación y necesidades de liquidez"
+    $sn.Range("A70").Value2 = "P(meta) con inflación de 3,5 % o 6,5 % y necesidades de liquidez de 0,5 o 1,5 veces la referencia."
+    $sn.Range("A70").Font.Color = $gris
+    Encabezado $sn 71 1 6 @("Estrategia", "", "", "", "", "Interacción (puntos)")
+    foreach ($j in 0..3) { $sn.Cells.Item(71, 2 + $j).Formula = '=RESULTADOS!' + [char](66 + $j) + '214' }
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 72 + $k; $o = 215 + $k
+        foreach ($j in 1..6) { $sn.Cells.Item($r, $j).Formula = '=RESULTADOS!' + [char](64 + $j) + $o }
+    }
+    $sn.Range("B72:E75").NumberFormatLocal = "0,0 %"
+    $sn.Range("F72:F75").NumberFormatLocal = "0,0"
+    $sn.Range("B71:F75").HorizontalAlignment = -4152
+    $sn.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "Markov, modelo", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "Markov, modelo", "INM", "PIB, estados", "PIB", "Validación del simulador", "Resultados, estrategias", "Comparación de estrategias", "Sensibilidad", "AUDITORIA", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
@@ -1940,7 +2195,7 @@ try {
     $dest.Worksheets.Item("TPM_Cuenta").Visible = 0
     $dest.Worksheets.Item("TPM_Logit").Visible = 0
     $dest.Worksheets.Item("INM").Visible = 0
-    foreach ($n in @("MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda")) { $dest.Worksheets.Item($n).Visible = 0 }
+    foreach ($n in @("MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS")) { $dest.Worksheets.Item($n).Visible = 0 }
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     foreach ($n in @("LEEME", "FUENTES", "DICCIONARIO")) { $dest.Worksheets.Item($n).Delete() }
