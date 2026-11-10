@@ -59,7 +59,7 @@ def num(x: float, dec: int = 2) -> str:
 
 def esc(texto: str) -> str:
     """Evita que Streamlit lea los signos de pesos como fórmulas."""
-    return texto.replace("$", "\$")
+    return texto.replace("$", chr(92) + "$")
 
 
 def tarjeta(titulo: str, valor: str, nota: str = "", color: str | None = None) -> None:
