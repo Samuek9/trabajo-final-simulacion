@@ -35,13 +35,12 @@ def editor_pesos(clave: str, etiquetas: tuple[str, ...], k: str) -> None:
         st.rerun()
 
 
-cols = st.columns(2)
-for i, e in enumerate(("E1", "E2", "E3", "E4")):
-    with cols[i % 2]:
-        st.markdown(f"<div class='franja' style='border-color:{ui.COLORES[e]}'><b>{ui.NOMBRES[e]}</b>"
-                    f"{' · dinámica' if e == 'E4' else ''}</div>", unsafe_allow_html=True)
-        ui.barra_composicion(p.lista(f"{e}.pesos"))
-        st.caption(DESC[e])
+for fila in (("E1", "E2"), ("E3", "E4")):
+    for col, e in zip(st.columns(2), fila):
+        with col:
+            st.markdown(f"<div class='franja' style='border-color:{ui.COLORES[e]}'><b>{ui.NOMBRES[e]}</b></div>", unsafe_allow_html=True)
+            ui.barra_composicion(p.lista(f"{e}.pesos"))
+            st.caption(DESC[e])
 
 with st.expander("Editar pesos iniciales"):
     for e in ("E1", "E2", "E3", "E4"):

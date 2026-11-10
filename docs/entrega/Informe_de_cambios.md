@@ -87,3 +87,7 @@ Se retiraron del libro las hojas «Validación del simulador», «Resultados, es
 - Verificación: se quitó el botón que ejecutaba pytest desde la app; se muestra la lista de pruebas por archivo con su número. Se quitó el texto que remitía al Tornado.
 - Eventos discretos: reloj, lista de eventos y variables de estado agrupadas; escenarios en tarjetas.
 - Sin cambios en el motor, parámetros, semillas ni indicadores.
+
+## Inspección visual en navegador (Edge, 1440, 1024 y 390 px)
+
+Corregido tras la revisión: signos de pesos leídos como fórmula en la barra lateral, tabla de modelos con texto cortado, orden de estrategias en pantalla estrecha, columnas de la tabla de eventos y de validación, números sin formato en la tabla de validación, grupo repetido en la tabla de indicadores, espacio entre secciones. Sin desbordamiento horizontal en ninguna página y recorrido completo sin errores. Capturas en `docs/entrega/capturas_app/`.

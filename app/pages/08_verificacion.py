@@ -21,12 +21,14 @@ with t1:
     with c[1]:
         ui.tarjeta("Lista de eventos", "Tiempo y prioridad", "los empates se resuelven por prioridad")
     with c[2]:
-        ui.tarjeta("Estado", "Se actualiza en cada evento", "variables listadas abajo")
+        ui.tarjeta("Estado", "En cada evento", "se actualizan las variables de estado")
     st.write("")
     ev = pd.DataFrame([{"N.°": t.numero, "Evento": t.nombre, "Prioridad en empates": t.prioridad}
                        for t in sorted(Tipo, key=lambda t: t.prioridad)])
     st.markdown("##### Eventos y prioridades")
-    st.dataframe(ev, hide_index=True, width="stretch")
+    st.dataframe(ev, hide_index=True, width="stretch", height=(len(ev) + 1) * 35 + 3,
+                 column_config={"N.°": st.column_config.NumberColumn(width="small", format="%d"),
+                                "Prioridad en empates": st.column_config.NumberColumn(width="small", format="%d")})
     st.caption("La necesidad de liquidez dispara las ventas, la revisión de E4 dispara el rebalanceo y el vencimiento del CDT su renovación.")
     st.markdown("##### Variables de estado")
     VARS = {"Tiempo": ["Tiempo actual", "Estado económico vigente", "TPM e inflación vigentes"],
@@ -85,7 +87,16 @@ with t3:
         ruta = RAIZ / "tests" / f
         n_t = sum(1 for linea in ruta.read_text(encoding="utf-8").splitlines() if linea.startswith("def test")) if ruta.exists() else None
         filas_t.append({"Archivo": f, "Qué verifica": que, "Pruebas": n_t})
-    st.dataframe(pd.DataFrame(filas_t), hide_index=True, width="stretch")
+    st.dataframe(pd.DataFrame(filas_t), hide_index=True, width="stretch",
+                 column_config={"Pruebas": st.column_config.NumberColumn(width="small", format="%d")})
+    with st.expander("Detalle de las pruebas"):
+        for f, _ in TESTS:
+            ruta = RAIZ / "tests" / f
+            if ruta.exists():
+                nombres = [linea[4:].split("(")[0].replace("_", " ").capitalize()
+                           for linea in ruta.read_text(encoding="utf-8").splitlines() if linea.startswith("def test")]
+                st.markdown(f"**{f}**")
+                st.markdown(chr(10).join(f"- {x}" for x in nombres))
     st.markdown("##### Validación")
     st.caption("«Reproduce insumos»: los generadores devuelven los datos con que se estimaron. «Contraste»: se compara con información que el modelo no usó.")
     n_v = st.number_input("Réplicas de validación", 50, 5000, 300, 50)
@@ -95,4 +106,9 @@ with t3:
     if "val" in st.session_state:
         v = st.session_state["val"].rename(columns={"proceso": "Proceso", "medida": "Medida", "tipo": "Tipo", "simulado": "Simulado",
                                                     "observado": "Observado", "referencia": "Referencia", "lectura": "Lectura"})
-        st.dataframe(v.astype(str), hide_index=True, width="stretch")
+        def legible(x):
+            return f"{x:.3f}".replace(".", ",") if isinstance(x, float) else str(x)
+        st.dataframe(v.map(legible), hide_index=True, width="stretch", height=420,
+                     column_config={c: st.column_config.TextColumn(width=w) for c, w in
+                                    {"Proceso": "small", "Medida": "medium", "Tipo": "small", "Simulado": "small",
+                                     "Observado": "small", "Referencia": "small", "Lectura": "large"}.items() if c in v.columns})

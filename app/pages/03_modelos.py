@@ -66,10 +66,7 @@ MODELOS = [
 CORTO = ["Cadena de Markov, 3 estados", "AR(1) en logaritmos", "Logit ordenado", "Proporcional a la TPM", "TPM + margen lineal",
          "t de Student", "AR(1) anual", "Lineal con tope legal", "Bernoulli + gamma", "Poisson + lognormal"]
 filas = [(f[0], f[1], CORTO[i], f[3]) for i, f in enumerate(MODELOS)]
-st.dataframe(pd.DataFrame(filas, columns=["Proceso", "Datos", "Modelo", "Parámetros estimados"]), hide_index=True, width="stretch",
-             column_config={"Proceso": st.column_config.TextColumn(width="medium"), "Datos": st.column_config.TextColumn(width="medium"),
-                            "Modelo": st.column_config.TextColumn(width="small"),
-                            "Parámetros estimados": st.column_config.TextColumn(width="large")})
+st.table(pd.DataFrame(filas, columns=["Proceso", "Datos", "Modelo", "Parámetros estimados"]).set_index("Proceso"))
 st.markdown("##### Especificación de cada modelo")
 for f in MODELOS:
     with st.expander(f[0]):

@@ -36,8 +36,8 @@ paginas = {
 with st.sidebar:
     p = estado.params()
     st.markdown("##### Configuración actual")
-    st.caption(f"Capital {ui.cop(p.f('inv.capital'))} · {p.i('inv.horizonte') // 12} años · "
-               f"meta {ui.cop(p.f('inv.meta_real'))} · liquidez mínima {ui.pct(p.f('inv.liquidez_min'), 0)}")
+    st.caption(ui.esc(f"Capital {ui.cop(p.f('inv.capital'))} · {p.i('inv.horizonte') // 12} años · "
+                      f"meta {ui.cop(p.f('inv.meta_real'))} · liquidez mínima {ui.pct(p.f('inv.liquidez_min'), 0)}"))
     n = len(estado.cambios())
     st.caption(f"{n} parámetro(s) cambiado(s) frente a los valores iniciales" if n else "Todos los parámetros en su valor inicial")
     if n and st.button("Restablecer valores iniciales", width="stretch"):

@@ -19,7 +19,7 @@ d = fuente.datos(esc)
 res = d["resumen"].set_index("estrategia")
 p = d["params"]
 meta = p.f("inv.meta_real")
-st.caption(d["nota"] + f" · capital {ui.cop(p.f('inv.capital'))} · meta real {ui.cop(meta)} · {p.i('inv.horizonte') // 12} años")
+st.caption(ui.esc(d["nota"] + f" · capital {ui.cop(p.f('inv.capital'))} · meta real {ui.cop(meta)} · {p.i('inv.horizonte') // 12} años"))
 
 
 def ic(r, col, f=ui.pct):
@@ -93,8 +93,10 @@ with t4:
              for g, ks in grupos.items() for k, (c, f) in ks.items()}
     tabla = pd.DataFrame(filas).T
     tabla.index = pd.MultiIndex.from_tuples(tabla.index, names=["Grupo", "Indicador"])
-    st.dataframe(tabla, width="stretch", height=640)
     tabla = tabla.reset_index()
+    vista = tabla.copy()
+    vista["Grupo"] = vista["Grupo"].where(vista["Grupo"] != vista["Grupo"].shift(), "")
+    st.dataframe(vista, width="stretch", hide_index=True, height=640)
     with st.expander("Liquidez frente a patrimonio"):
         st.write("Una estrategia puede tener patrimonio alto e iliquidez: el inmueble vale, pero no se vende rápido. Cada necesidad "
                  "extraordinaria se cubre en este orden: cuenta, ETF, CDT (con castigo por venta anticipada) y venta urgente del "

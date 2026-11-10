@@ -14,9 +14,10 @@ CSS = """
 .block-container {padding-top: 2.2rem; max-width: 1200px;}
 h1 {font-size: 1.9rem !important; letter-spacing: -0.01em; margin-bottom: .2rem;}
 h2, h3 {letter-spacing: -0.01em;}
-h5 {text-transform: uppercase; font-size: .78rem !important; letter-spacing: .06em; opacity: .7; margin-top: 1.4rem;}
+h5 {text-transform: uppercase; font-size: .78rem !important; letter-spacing: .06em; opacity: .7;}
+[data-testid="stMarkdownContainer"] h5 {padding-top: 1.6rem !important;}
 .subtitulo {opacity: .75; margin: -.2rem 0 1.2rem 0; font-size: 1rem;}
-.tarjeta {border: 1px solid rgba(128,128,128,.25); border-radius: 8px; padding: 12px 14px; height: 100%; background: rgba(128,128,128,.04);}
+.tarjeta {border: 1px solid rgba(128,128,128,.25); border-radius: 8px; padding: 12px 14px; height: 100%; margin-bottom: .5rem; background: rgba(128,128,128,.04);}
 .tarjeta .titulo {font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; opacity: .7;}
 .tarjeta .valor {font-size: 1.5rem; font-weight: 650; margin-top: 2px; line-height: 1.2;}
 .tarjeta .nota {font-size: .78rem; opacity: .75; margin-top: 2px;}
@@ -56,7 +57,13 @@ def num(x: float, dec: int = 2) -> str:
     return f"{x:,.{dec}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def esc(texto: str) -> str:
+    """Evita que Streamlit lea los signos de pesos como fórmulas."""
+    return texto.replace("$", "\$")
+
+
 def tarjeta(titulo: str, valor: str, nota: str = "", color: str | None = None) -> None:
+    titulo, valor, nota = (t.replace("$", "&#36;") for t in (titulo, valor, nota))
     borde = f"border-left: 4px solid {color};" if color else ""
     st.markdown(f"<div class='tarjeta' style='{borde}'><div class='titulo'>{titulo}</div>"
                 f"<div class='valor'>{valor}</div><div class='nota'>{nota}</div></div>", unsafe_allow_html=True)
@@ -73,7 +80,7 @@ def pie_parametro(t) -> str:
 
 
 def subtitulo(texto: str) -> None:
-    st.markdown(f"<div class='subtitulo'>{texto}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='subtitulo'>{texto.replace('$', '&#36;')}</div>", unsafe_allow_html=True)
 
 
 def barra_composicion(pesos, etiquetas=ACTIVOS, leyenda: bool = True) -> None:
