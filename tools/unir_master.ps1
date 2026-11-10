@@ -1769,8 +1769,166 @@ try {
     $va.Range("A8:A52").EntireRow.RowHeight = 15
     $va.Range("A1").Select()
 
+    # ------------------------------------------------ Markov, modelo
+    $mk2 = Nueva-Hoja $dest "Markov, modelo"
+    Titulo $mk2 "Estados de la economía: cadena de Markov" "PIB real trimestral, 2006-2026, con tres estados: expansión, normal y crisis"
+    foreach ($k in 1..12) { $mk2.Columns.Item($k).ColumnWidth = @(52, 14, 18, 18, 16, 3, 3, 40, 14, 22, 22, 4, 8, 12, 12, 12)[$k - 1] }
+    Kpi $mk2 "H" "Permanencia en crisis" "=MARKOV!D41" "0 %" "Probabilidad de seguir en crisis"
+    Kpi $mk2 "J" "Duración de la crisis" "=MARKOV!E41" "0,0" "Trimestres, en promedio"
+    Kpi $mk2 "K" "Crisis a largo plazo" "=MARKOV!D146" "0 %" "Del tiempo, según la cadena"
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    Bloque $mk2 8 1 5 "Los tres estados"
+    Cabecera $mk2 9 1 @("Estado y definición", "Trimestres", "Proporción", "", "") @(1, 2)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 10 + $k; $o = 11 + $k
+        $mk2.Cells.Item($r, 1).Formula = "=MARKOV!A$o&"": ""&LOWER(MARKOV!B$o)"
+        $mk2.Cells.Item($r, 2).Formula = "=MARKOV!C$o"
+        $mk2.Cells.Item($r, 3).Formula = "=MARKOV!D$o"
+    }
+    $mk2.Range("B10:B12").NumberFormatLocal = "0"
+    $mk2.Range("C10:C12").NumberFormatLocal = "0 %"
+    $mk2.Range("A13").Value2 = "Con tres estados cada uno tiene datos suficientes; con cinco, algunos tendrían dos o tres trimestres."
+    $mk2.Range("A14").Value2 = "La crisis incluye el estancamiento: con un umbral de 0 % solo quedarían cuatro trimestres."
+    $mk2.Range("A13:A14").Font.Size = 9; $mk2.Range("A13:A14").Font.Color = $gris
+
+    Bloque $mk2 16 1 5 "Transiciones observadas"
+    Cabecera $mk2 17 1 @("Desde \ hacia", "Expansión", "Normal", "Crisis", "Total") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 18 + $k; $o = 33 + $k
+        foreach ($j in 1..5) { $mk2.Cells.Item($r, $j).Formula = "=MARKOV!" + [char](64 + $j) + $o }
+    }
+    $mk2.Range("B18:E20").NumberFormatLocal = "0"
+
+    Bloque $mk2 22 1 5 "Matriz de transición"
+    Cabecera $mk2 23 1 @("Desde \ hacia", "Expansión", "Normal", "Crisis", "Duración (trim.)") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 24 + $k; $o = 39 + $k
+        foreach ($j in 1..5) { $mk2.Cells.Item($r, $j).Formula = "=MARKOV!" + [char](64 + $j) + $o }
+    }
+    $mk2.Range("B24:D26").NumberFormatLocal = "0,0 %"
+    $mk2.Range("E24:E26").NumberFormatLocal = "0,0"
+    $mk2.Range("A27").Value2 = "Probabilidad de pasar de un estado a otro en un trimestre. De expansión nunca se pasó directo a crisis."
+    $mk2.Range("A27").Font.Size = 9; $mk2.Range("A27").Font.Color = $gris
+
+    Bloque $mk2 29 1 4 "Evidencia estadística"
+    Cabecera $mk2 30 1 @("Prueba y contraste", "Estadístico", "p", "Decisión") @(1, 2)
+    $pr = @(
+        @("Chi-cuadrado: el estado no depende del trimestre anterior", "=MARKOV!C50", "=MARKOV!C52"),
+        @("ANOVA: el rendimiento del ETF es igual en los tres estados", "=MARKOV!C63", "=MARKOV!C64"),
+        @("F de varianzas: la volatilidad del ETF en crisis no es mayor", "=MARKOV!C67", "=MARKOV!C68"),
+        @("t de Welch: la vivienda nueva no sube más en expansión", "=MARKOV!C80", "=MARKOV!C82")
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 31 + $k
+        $mk2.Cells.Item($r, 1).Value2 = $pr[$k][0]
+        $mk2.Cells.Item($r, 2).Formula = $pr[$k][1]
+        $mk2.Cells.Item($r, 3).Formula = $pr[$k][2]
+        $mk2.Cells.Item($r, 4).Formula = "=IF(C$r<MARKOV!`$C`$7,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $mk2.Range("B31:B34").NumberFormatLocal = "0,000"
+    $mk2.Range("C31:C34").NumberFormatLocal = $pfmt
+    $mk2.Range("D30:D34").IndentLevel = 1
+    $mk2.Range("A35").Value2 = "Significancia de 5 %. Las pruebas de varianza y de vivienda son de una cola."
+    $mk2.Range("A35").Font.Size = 9; $mk2.Range("A35").Font.Color = $gris
+
+    Bloque $mk2 37 1 4 "Efecto del estado en el ETF"
+    Cabecera $mk2 38 1 @("Estado", "Meses", "Rendimiento medio", "Desviación") @(1, 2, 3)
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 39 + $k; $o = 57 + $k
+        $mk2.Cells.Item($r, 1).Formula = "=MARKOV!A$o"
+        $mk2.Cells.Item($r, 2).Formula = "=MARKOV!B$o"
+        $mk2.Cells.Item($r, 3).Formula = "=MARKOV!C$o"
+        $mk2.Cells.Item($r, 4).Formula = "=MARKOV!D$o"
+    }
+    $mk2.Range("B39:B42").NumberFormatLocal = "0"
+    $mk2.Range("C39:D42").NumberFormatLocal = "0,00 %"
+    $mk2.Range("A43").Value2 = "El estado cambia el riesgo del ETF, no su rendimiento esperado."
+    $mk2.Range("A43").Font.Size = 9; $mk2.Range("A43").Font.Color = $gris
+
+    Bloque $mk2 45 1 4 "Efecto del estado en la vivienda nueva de Medellín"
+    Cabecera $mk2 46 1 @("Estado", "Años", "Valorización media", "Desviación") @(1, 2, 3)
+    for ($k = 0; $k -lt 4; $k++) {
+        $r = 47 + $k; $o = 74 + $k
+        $mk2.Cells.Item($r, 1).Formula = "=MARKOV!A$o"
+        $mk2.Cells.Item($r, 2).Formula = "=MARKOV!B$o"
+        $mk2.Cells.Item($r, 3).Formula = "=MARKOV!C$o"
+        $mk2.Cells.Item($r, 4).Formula = "=MARKOV!D$o"
+    }
+    $mk2.Range("B47:B50").NumberFormatLocal = "0"
+    $mk2.Range("C47:D50").NumberFormatLocal = "0,0 %"
+    $mk2.Range("A51").Value2 = "Es vivienda nueva. Con el IPVU, que describe el inmueble del modelo, el estado no cambia la valorización."
+    $mk2.Range("A51").Font.Size = 9; $mk2.Range("A51").Font.Color = $gris
+
+    Bloque $mk2 8 8 11 "Qué cambia en el simulador"
+    Cabecera $mk2 9 8 @("Variable", "Expansión", "Normal", "Crisis") @(1, 2, 3)
+    $cam = @(
+        @("Volatilidad mensual del ETF", 88, "0,00 %"),
+        @("Rendimiento medio mensual del ETF", 89, "0,00 %"),
+        @("Vacancia: probabilidad de no renovar", 92, "0 %"),
+        @("Vacancia: duración media (meses)", 93, "0,0")
+    )
+    for ($k = 0; $k -lt $cam.Count; $k++) {
+        $r = 10 + $k; $o = $cam[$k][1]
+        $mk2.Cells.Item($r, 8).Value2 = $cam[$k][0]
+        foreach ($j in 1..3) {
+            $mk2.Cells.Item($r, 8 + $j).Formula = "=MARKOV!" + [char](66 + $j) + $o
+            $mk2.Cells.Item($r, 8 + $j).NumberFormatLocal = $cam[$k][2]
+        }
+    }
+    $mk2.Range("I10:K13").HorizontalAlignment = -4152
+    $mk2.Range("H14").Value2 = "También cambian la frecuencia de las necesidades de liquidez y el reparto objetivo de E4."
+    $mk2.Range("H15").Value2 = "La valorización, la inflación y la TPM no dependen del estado."
+    $mk2.Range("H14:H15").Font.Size = 9; $mk2.Range("H14:H15").Font.Color = $gris
+
+    Bloque $mk2 17 8 11 "Convergencia de la cadena"
+    $mk2.Range("M17").Value2 = "Trim."
+    $mk2.Range("N17").Value2 = "Expansión"
+    $mk2.Range("O17").Value2 = "Normal"
+    $mk2.Range("P17").Value2 = "Crisis"
+    for ($k = 0; $k -lt 41; $k++) {
+        $r = 18 + $k; $o = 105 + $k
+        $mk2.Cells.Item($r, 13).Formula = "=MARKOV!A$o"
+        $mk2.Cells.Item($r, 14).Formula = "=MARKOV!B$o"
+        $mk2.Cells.Item($r, 15).Formula = "=MARKOV!C$o"
+        $mk2.Cells.Item($r, 16).Formula = "=MARKOV!D$o"
+    }
+    $mk2.Range("M17:P58").Font.Color = $gris
+    $mk2.Range("N18:P58").NumberFormatLocal = "0,0 %"
+    $g = Nuevo-Grafico $mk2 18 33 "H" "K" 4
+    Nueva-Serie $g "Expansión" $mk2.Range("N18:N58") $mk2.Range("M18:M58") $azul 2 1
+    Nueva-Serie $g "Normal" $mk2.Range("O18:O58") $mk2.Range("M18:M58") 0x808080 2 1
+    Nueva-Serie $g "Crisis" $mk2.Range("P18:P58") $mk2.Range("M18:M58") 0x3C6FCF 2 1
+    $g.Axes(1).TickLabelSpacing = 5
+    Cerrar-Grafico $g "0%" $true
+    Cabecera $mk2 34 8 @("Largo plazo", "Expansión", "Normal", "Crisis") @(1, 2, 3)
+    $mk2.Range("H35").Value2 = "Según la cadena"
+    $mk2.Range("H36").Value2 = "Observado 2006–2026"
+    foreach ($j in 1..3) {
+        $mk2.Cells.Item(35, 8 + $j).Formula = "=MARKOV!" + [char](65 + $j) + "146"
+        $mk2.Cells.Item(36, 8 + $j).Formula = "=MARKOV!" + [char](65 + $j) + "147"
+    }
+    $mk2.Range("I35:K36").NumberFormatLocal = "0,0 %"
+    $mk2.Range("I34:K36").HorizontalAlignment = -4152
+
+    Bloque $mk2 38 8 11 "Lectura"
+    $lec = $mk2.Range("H39:K45")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $mk2.Range("H39").Value2 = "Los estados persisten: una economía en crisis tiene tres probabilidades de cuatro de seguir en ella el trimestre siguiente, y por eso se usa una cadena de Markov y no un sorteo independiente cada trimestre. El estado cambia el riesgo del ETF, no su rendimiento esperado, y encarece el arriendo y los gastos imprevistos al mismo tiempo. A largo plazo la cadena reproduce la proporción de tiempo y las duraciones observadas en cada estado."
+
+    Bloque $mk2 47 8 11 "Limitaciones"
+    $lim = $mk2.Range("H48:K54")
+    $lim.Merge()
+    $lim.WrapText = $true
+    $lim.VerticalAlignment = -4160
+    $mk2.Range("H48").Value2 = "Solo hay tres episodios de crisis, 12 trimestres, y las probabilidades de entrar y salir de ella tienen incertidumbre; la sensibilidad duplica la probabilidad de entrar. La vacancia por estado se apoya en supuestos y no en datos históricos. El rebote de 2021 y 2022 cuenta como expansión aunque fue una recuperación de la pandemia."
+    $mk2.Range("A8:A54").EntireRow.RowHeight = 15
+    $mk2.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM, datos", "TPM, modelo", "Cuenta, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "Inmueble, datos", "Reajuste, modelo", "Valorización, datos", "Valorización, modelo", "Vacancia, modelo", "Markov, modelo", "INM", "PIB, estados", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
@@ -1782,6 +1940,7 @@ try {
     $dest.Worksheets.Item("TPM_Cuenta").Visible = 0
     $dest.Worksheets.Item("TPM_Logit").Visible = 0
     $dest.Worksheets.Item("INM").Visible = 0
+    foreach ($n in @("MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda")) { $dest.Worksheets.Item($n).Visible = 0 }
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()
