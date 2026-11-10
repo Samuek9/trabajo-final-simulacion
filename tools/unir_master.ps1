@@ -2218,7 +2218,7 @@ try {
     foreach ($n in @("MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS")) { $dest.Worksheets.Item($n).Visible = 0 }
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
-    foreach ($n in @("LEEME", "FUENTES", "DICCIONARIO")) { $dest.Worksheets.Item($n).Delete() }
+    foreach ($n in @("LEEME", "FUENTES", "DICCIONARIO", "Validación del simulador", "Resultados, estrategias", "Comparación de estrategias", "Sensibilidad", "RESULTADOS", "AUDITORIA")) { $dest.Worksheets.Item($n).Delete() }
     $dest.Worksheets.Item("MODELOS").Activate()
     if (Test-Path $Destino) { Remove-Item $Destino -Force }
     $dest.SaveAs($Destino, 51)

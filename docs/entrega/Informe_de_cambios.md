@@ -52,3 +52,8 @@ Al revisar el PDF a tamaño completo aparecía «NaN millones» en cuatro lugare
 - Cifras de Python de la sección 7: se cotejaron contra los análisis originales del equipo (`insumos_equipo`): de unas 620 cifras con decimales quedaron 32 sin coincidencia directa, y todas tienen respaldo en algún archivo del proyecto. Se recalcularon de forma independiente: Shapiro-Wilk de la inflación (0,057 en nivel; 0,81 en logaritmo), Welch de la valorización del IPVU por estado (0,275 de una cola; 0,550 de dos colas), los parámetros de la t del ETF (ν = 5,42; 0,668 %; 4,132 %) y los AIC del logit de la TPM (336,4 y 331,5).
 - Correcciones: en 7.5.9 «la máxima verosimilitud da 5,34» pasa a 5,42 (valor reproducible, igual al de la Tabla 28); el p de Welch de 0,275 se rotula «de una cola, 0,550 de dos colas» en el informe y en tres celdas del Excel.
 - Siguen sin recalcular a mano (salen de simulaciones de 3.000 trayectorias, no de una hoja): 5,3 %/5,4 % de rendimiento anual y 40,5 %/40,8 % de caída máxima de la sección 7.5.
+
+
+## Excel limitado a la modelación de los procesos
+
+Se retiraron del libro las hojas «Validación del simulador», «Resultados, estrategias», «Comparación de estrategias», «Sensibilidad», RESULTADOS (oculta) y AUDITORIA, porque resultados, estrategias y sensibilidad son salidas del simulador y se pueden reproducir y cambiar desde la aplicación; el Excel documenta los procesos aleatorios (PARAMETROS, MODELOS y hojas de la sección 7). VALIDACION (oculta) se conserva porque alimenta la hoja «TPM, modelo». El contenido de AUDITORIA quedó en `docs/entrega/Auditoria_decisiones.md`. La sección 19 del informe ya no dice que el Excel trae resultados.

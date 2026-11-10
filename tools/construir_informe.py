@@ -883,7 +883,7 @@ def seccion_19(w: Informe):
         ("Simulador:", "repositorio con el motor (src/investment_sim), la aplicación web (app/), las pruebas (tests/), los "
                        "scripts de estimación y de corrida (tools/) y los resultados (outputs/resultados)."),
         ("Excel maestro:", "data/master_datos.xlsx, con los parámetros que se pueden cambiar, el modelo elegido para cada "
-                           "proceso, los datos y las pruebas de la sección 7, la validación y los resultados."),
+                           "proceso, los datos y las pruebas de la sección 7. La validación y los resultados los produce el simulador."),
         ("Registro de decisiones:", "docs/decision_log.md."),
     ])
     w.p("Para reproducir todo: instalar las dependencias (pip install -r requirements-dev.txt), correr pytest para las pruebas, "
