@@ -1217,19 +1217,19 @@ try {
     # ------------------------------------------------ Cuenta, modelo
     $cm = Nueva-Hoja $dest "Cuenta, modelo"
     Titulo $cm "Cuenta digital: tasa en función de la TPM" "La cuenta paga una proporción fija de la TPM: r = α · TPM"
-    foreach ($k in 1..11) { $cm.Columns.Item($k).ColumnWidth = @(46, 12, 12, 16, 22, 3, 28, 11, 13, 13, 17)[$k - 1] }
+    foreach ($k in 1..11) { $cm.Columns.Item($k).ColumnWidth = @(46, 12, 12, 16, 22, 3, 28, 11, 20, 13, 17)[$k - 1] }
     $cm.Range("G4").Value2 = "α, proporción de la TPM"
-    $cm.Range("I4").Value2 = "Margen de error"
+    $cm.Range("I4").Value2 = "IC de 95 % por cuenta"
     $cm.Range("J4").Value2 = "Tasas observadas"
     $cm.Range("G5").Formula = "=TPM_Cuenta!AD7"
-    $cm.Range("I5").Formula = "=TPM_Cuenta!AD13"
+    $cm.Range("I5").Formula = "=B17"
     $cm.Range("J5").Formula = "=TPM_Cuenta!AD6"
     foreach ($z in @("G4", "I4", "J4")) { $cm.Range($z).Font.Color = $gris }
     foreach ($z in @("G5", "I5", "J5")) {
         $x = $cm.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
     }
     $cm.Range("G5").NumberFormatLocal = "0,000"
-    $cm.Range("I5").NumberFormatLocal = "0,000"
+    $cm.Range("I5").Font.Size = 14
     $cm.Range("J5").NumberFormatLocal = "0"
     $cm.Rows.Item(5).RowHeight = 28
     $pfmt = '[<0,001]"<0,001";0,000'
@@ -1242,9 +1242,9 @@ try {
         @("α = promedio de tasa ÷ TPM", "=TPM_Cuenta!AD7", "0,000", "Promedio de las razones individuales"),
         @("Desviación de las razones (s)", "=TPM_Cuenta!AD11", "0,000", "Cuánto varían las cuentas entre sí"),
         @("t crítico (95 %)", "=TPM_Cuenta!AD12", "0,000", "t de Student con n − 1 grados"),
-        @("Margen de error", "=TPM_Cuenta!AD13", "0,000", "t · s ÷ √n"),
-        @("Límite inferior", "=TPM_Cuenta!AD14", "0,000", "α − margen de error"),
-        @("Límite superior", "=TPM_Cuenta!AD15", "0,000", "α + margen de error")
+        @("Margen de error (19 tasas)", "=TPM_Cuenta!AD13", "0,000", "t · s ÷ √n"),
+        @("Límite inferior (19 tasas)", "=TPM_Cuenta!AD14", "0,000", "α − margen de error"),
+        @("Límite superior (19 tasas)", "=TPM_Cuenta!AD15", "0,000", "α + margen de error")
     )
     for ($k = 0; $k -lt $est.Count; $k++) {
         $r = 10 + $k
@@ -1254,6 +1254,26 @@ try {
         $cm.Cells.Item($r, 3).Value2 = $est[$k][3]
     }
     $cm.Range("C10:C16").IndentLevel = 1
+    $cm.Range("A17").Value2 = "IC de 95 % por cuenta"
+    $cm.Range("A17").Font.Bold = $true
+    $cm.Range("B17").Formula = '=ROUND(N14-N15,3)&" a "&ROUND(N14+N15,3)'
+    $cm.Range("B17").HorizontalAlignment = -4152
+    $cm.Range("C17").Value2 = "Promedio de cada cuenta, t con 3 grados de libertad"
+    $cm.Range("C17").IndentLevel = 1
+    $cm.Range("M9").Value2 = "Cuenta"
+    $cm.Range("N9").Value2 = "α medio"
+    $cn = @("Nu", "Pibank", "Lulo", "RappiPay")
+    for ($k = 0; $k -lt 4; $k++) {
+        $cm.Cells.Item(10 + $k, 13).Value2 = $cn[$k]
+        $cm.Cells.Item(10 + $k, 14).Formula = '=AVERAGEIFS(TPM_Cuenta!$AV$5:$AV$28,TPM_Cuenta!$AS$5:$AS$28,M' + (10 + $k) + ')'
+    }
+    $cm.Range("M14").Value2 = "Promedio"
+    $cm.Range("N14").Formula = "=AVERAGE(N10:N13)"
+    $cm.Range("M15").Value2 = "Margen"
+    $cm.Range("N15").Formula = "=STDEV.S(N10:N13)/SQRT(4)*T.INV.2T(0.05,3)"
+    $cm.Range("M9:N15").Font.Color = $gris
+    $cm.Range("M9:N15").Font.Size = 9
+    $cm.Range("N10:N15").NumberFormatLocal = "0,000"
 
     Bloque $cm 19 1 5 "¿Depende α del nivel de la TPM?"
     Cabecera $cm 20 1 @("Concepto", "Valor", "Cómo se calcula", "", "") @(1)
@@ -1311,7 +1331,7 @@ try {
     $lec.Merge()
     $lec.WrapText = $true
     $lec.VerticalAlignment = -4160
-    $cm.Range("A37").Value2 = "Las cuentas digitales pagan en promedio cerca de nueve décimas de la TPM, y la razón de cada cuenta no muestra una relación significativa con el nivel de la tasa, por lo que una proporción fija describe razonablemente los datos. La estimación descansa en pocas observaciones: cuatro cuentas, cinco fechas y una tasa pagada que cada entidad fija a su criterio."
+    $cm.Range("A37").Value2 = "Las cuentas digitales pagan en promedio cerca de nueve décimas de la TPM, y la razón de cada cuenta no muestra una relación significativa con el nivel de la tasa, por lo que una proporción fija describe razonablemente los datos. Como las 19 tasas vienen de cuatro cuentas, el intervalo de confianza se calcula con el promedio de cada cuenta y es más ancho que el de las 19 tasas tratadas como independientes. La estimación descansa en pocas observaciones: cuatro cuentas, cinco fechas y una tasa pagada que cada entidad fija a su criterio."
     $cm.Range("A8:A39").EntireRow.RowHeight = 15
     $cm.Range("A1").Select()
 

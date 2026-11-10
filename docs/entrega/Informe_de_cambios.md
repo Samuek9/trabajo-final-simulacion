@@ -18,6 +18,12 @@ Documento base: `docs/informe_final.docx` (73 páginas, 61 tablas, 16 imágenes)
 - «Crisis forzada»: es un evento real del código (`CRISIS_INICIO` y `CRISIS_FIN`, escenario de estrés); su mención en el informe es correcta.
 - El diseño capital-meta (7 capitales de 400 a 1.000 M, 5 metas de 700 a 1.500 M, 500 réplicas, escenarios base y estrés) coincide con `capital_meta.csv` y con el Excel.
 
+## Cotejo automático de la sección 7
+Se extrajeron las cifras con decimales de cada subsección 7.1 a 7.8 y se buscaron en la hoja de cálculo del proceso. Coincidieron todas las de 7.4 (55 de 55) y casi todas las de 7.1 (40 de 43), 7.2 (48 de 54) y 7.3 (9 de 11). Las que no coinciden son cifras calculadas fuera del Excel (parámetros de modelos candidatos del ETF, correlaciones con rezago, p de pruebas hechas en Python) o rótulos redondeados, y están en la lista de pendientes.
+
+## Corrección en el Excel
+El intervalo de α de la cuenta digital: el informe (7.3) usa el promedio de cada cuenta (0,755 a 1,046, t con 3 grados de libertad), correcto porque las 19 tasas vienen de cuatro cuentas; la hoja original del Excel traía el de las 19 tasas (0,829 a 0,967). La hoja «Cuenta, modelo» ahora calcula y muestra el intervalo por cuenta (fórmulas, reproduce 0,755 a 1,046) y deja el otro rotulado «19 tasas». El informe no cambió.
+
 ## Referencias
 No se verificaron en línea los metadatos (DOI, URL, volúmenes) de las referencias; esa comprobación queda pendiente (ver Pendientes).
 
