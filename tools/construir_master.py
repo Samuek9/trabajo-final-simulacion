@@ -67,7 +67,7 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
-HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT", "INM", "PIB", "MARKOV", "VALIDACION",
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "CDT, datos", "CDT, modelo", "INM", "PIB", "MARKOV", "VALIDACION",
                     "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
 
 
@@ -84,7 +84,8 @@ def leeme(ws) -> None:
         ["Inflación", "Evolución de la inflación frente a la meta y serie mensual"],
         ["Inflación, modelo", "Pruebas, estimación y validación del modelo de la inflación"],
         ["TPM_Cuenta", "TPM y tasa de la cuenta remunerada"],
-        ["CDT", "Margen de los CDT a 360 días sobre la TPM"],
+        ["CDT, datos", "Evolución del CDT a 360 días y la TPM, y serie semanal"],
+        ["CDT, modelo", "Pruebas, modelos candidatos, estimación, validación y efecto sobre el inversionista"],
         ["ETF, datos", "Evolución del NAV del ICOLCAP y serie mensual de rendimientos"],
         ["ETF, modelo", "Pruebas, modelos candidatos, estimación, validación y dependencia del ETF"],
         ["INM", "Canon (Lonja), valorización (IPVU), reajuste del canon y vacancia"],
@@ -95,7 +96,7 @@ def leeme(ws) -> None:
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
-        ["INF y ETF (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación y ETF leen de ellas"],
+        ["INF, ETF y CDT (ocultas)", "Cálculo completo de las pruebas; las hojas de Inflación, ETF y CDT leen de ellas"],
         ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")

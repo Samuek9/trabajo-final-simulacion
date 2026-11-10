@@ -597,14 +597,284 @@ try {
     $f.Rows.Item(33).RowHeight = 17
     $f.Range("A1").Select()
 
+    # ------------------------------------------------ CDT, datos
+    $d = Nueva-Hoja $dest "CDT, datos"
+    Titulo $d "CDT a 360 días y tasa de política monetaria" "Serie semanal, octubre de 2007 – octubre de 2026"
+    $d.Range("A4").Value2 = "CDT a 360 días"
+    $d.Range("B4").Value2 = "TPM"
+    $d.Range("C4").Value2 = "Margen medio"
+    $d.Range("A5").Formula = "=CDT!T999"
+    $d.Range("B5").Formula = "=CDT!U999"
+    $d.Range("C5").Formula = "=CDT!B6"
+    $d.Range("A6").Formula = "=CDT!S999"
+    $d.Range("A6").NumberFormat = '"Último dato: "dd/mm/yyyy'
+    $d.Range("A6").HorizontalAlignment = -4131
+    $d.Range("B6").Value2 = "Misma fecha"
+    $d.Range("C6").Value2 = "CDT menos TPM, 2008-2026"
+    foreach ($c in @("A4", "B4", "C4")) { $d.Range($c).Font.Color = $gris }
+    foreach ($c in @("A5", "B5")) { $d.Range($c).NumberFormatLocal = '0,00" %"' }
+    $d.Range("C5").NumberFormatLocal = '0,00" pp"'
+    foreach ($c in @("A5", "B5", "C5")) {
+        $x = $d.Range($c); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    foreach ($c in @("A6", "B6", "C6")) { $d.Range($c).Font.Size = 9; $d.Range($c).Font.Color = $gris }
+    $d.Rows.Item(5).RowHeight = 28
+    foreach ($k in 1..5) { $d.Columns.Item($k).ColumnWidth = @(26, 26, 26, 22, 4)[$k - 1] }
+
+    Seccion $d 8 "Tasas"
+    $d.Range("A9").Value2 = "CDT a 360 días y TPM, en % efectivo anual."
+    $d.Range("A9").Font.Color = $gris
+    Seccion $d 29 "Margen del CDT sobre la TPM"
+    $d.Range("A30").Value2 = "Diferencia entre el CDT y la TPM vigente, en puntos porcentuales."
+    $d.Range("A30").Font.Color = $gris
+
+    Seccion $d 51 "Serie semanal"
+    Encabezado $d 52 1 4 @("Fecha (viernes)", "CDT a 360 días", "TPM", "Margen (pp)")
+    $d.Range("A53:A1047").Formula = "=CDT!S5"
+    $d.Range("B53:B1047").Formula = "=CDT!T5"
+    $d.Range("C53:C1047").Formula = "=CDT!U5"
+    $d.Range("D53:D1047").Formula = "=CDT!V5"
+    $d.Range("A53:A1047").NumberFormat = "dd-mmm-yyyy"
+    $d.Range("A53:A1047").HorizontalAlignment = -4131
+    $d.Range("B53:C1047").NumberFormatLocal = '0,00" %"'
+    $d.Range("D53:D1047").NumberFormatLocal = "0,00"
+    $d.Range("B53:D1047").HorizontalAlignment = -4152
+    $d.Range("B52:D52").HorizontalAlignment = -4152
+    $d.Range("A52:D1047").AutoFilter() | Out-Null
+    Nota $d 1049 "Fuente: Banco de la República (SUAMECA), CDT a 360 días semanal y TPM diaria, valor del viernes. El margen se calcula con fórmula."
+
+    $izq = $d.Range("A10").Left; $ancho = $d.Range("E10").Left - $izq
+    foreach ($par in @(@(10, 28, 1), @(31, 49, 2))) {
+        $arr = $d.Range("A" + $par[0]).Top; $alto = $d.Range("A" + $par[1]).Top - $arr
+        $co = $d.ChartObjects().Add($izq, $arr, $ancho, $alto)
+        $g = $co.Chart
+        $g.ChartType = 4
+        while ($g.SeriesCollection().Count -gt 0) { $g.SeriesCollection(1).Delete() | Out-Null }
+        if ($par[2] -eq 1) { $series = @(@("CDT a 360 días", "B53:B1047", $azul), @("TPM", "C53:C1047", $gris)) }
+        else { $series = @(,@("Margen (pp)", "D53:D1047", $azul)) }
+        foreach ($s1 in $series) {
+            $a1 = $g.SeriesCollection().NewSeries()
+            $a1.Name = $s1[0]
+            $a1.Values = $d.Range($s1[1])
+            $a1.XValues = $d.Range("A53:A1047")
+            $a1.Format.Line.ForeColor.RGB = $s1[2]
+            $a1.Format.Line.Weight = 1.5
+        }
+        $g.HasLegend = ($par[2] -eq 1)
+        if ($par[2] -eq 1) { $g.Legend.Position = -4107 }
+        $ejeX = $g.Axes(1)
+        $ejeX.CategoryType = 3
+        $ejeX.BaseUnit = 0
+        $ejeX.MajorUnitScale = 2
+        $ejeX.MajorUnit = 2
+        $ejeX.TickLabels.NumberFormat = "yyyy"
+        $ejeX.TickLabelPosition = -4134
+        $ejeY = $g.Axes(2)
+        $ejeY.TickLabels.NumberFormat = '0'
+        $ejeY.MajorGridlines.Format.Line.ForeColor.RGB = 0xE0E0E0
+        $g.HasTitle = $true
+        $g.HasTitle = $false
+        $co.Border.LineStyle = -4142
+    }
+    $d.Range("A1").Select()
+
+    # ------------------------------------------------ CDT, modelo
+    $c = Nueva-Hoja $dest "CDT, modelo"
+    Titulo $c "CDT: modelo probabilístico" "Margen sobre la TPM = CDT a 360 días menos TPM vigente, en puntos porcentuales, 2008-2026"
+    foreach ($k in 1..12) { $c.Columns.Item($k).ColumnWidth = @(52, 13, 12, 16, 22, 16, 3, 28, 11, 13, 13, 17)[$k - 1] }
+    $c.Range("H4").Value2 = "Margen medio"
+    $c.Range("J4").Value2 = "Desviación"
+    $c.Range("K4").Value2 = "R² del modelo"
+    $c.Range("H5").Formula = "=CDT!B6"
+    $c.Range("J5").Formula = "=CDT!B7"
+    $c.Range("K5").Formula = "=CDT!B51"
+    foreach ($z in @("H4", "J4", "K4")) { $c.Range($z).Font.Color = $gris }
+    foreach ($z in @("H5", "J5", "K5")) {
+        $x = $c.Range($z); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    }
+    $c.Range("H5").NumberFormatLocal = '0,00" pp"'
+    $c.Range("J5").NumberFormatLocal = '0,00" pp"'
+    $c.Range("K5").NumberFormatLocal = "0 %"
+    $c.Rows.Item(5).RowHeight = 28
+    $pfmt = '[<0,001]"<0,001";0,000'
+
+    # Evidencia
+    Bloque $c 8 1 4 "Evidencia estadística"
+    Cabecera $c 9 1 @("Prueba y contraste", "Estadístico", "p", "Decisión") @(1, 2)
+    $pr = @(
+        "t de una muestra (n): margen medio igual a 0",
+        "t de una muestra (n efectivo): margen medio igual a 0",
+        "ANOVA: margen igual en las tres fases",
+        "ANOVA con bloques de 13 semanas no solapados",
+        "Kruskal-Wallis: margen igual entre fases",
+        "Coeficiente de ΔTPM a 13 semanas igual a 0 (Newey-West)",
+        "ADF: raíz unitaria en el margen",
+        "Ljung-Box (13 rezagos): sin autocorrelación",
+        "Jarque-Bera: normalidad de los residuos de M5",
+        "Quiebre: margen 1998-2007 frente a 2008-2026 (Welch)"
+    )
+    for ($k = 0; $k -lt $pr.Count; $k++) {
+        $r = 10 + $k; $o = 25 + $k
+        $c.Cells.Item($r, 1).Value2 = $pr[$k]
+        $c.Cells.Item($r, 2).Formula = "=IF(CDT!B$o="""","""",CDT!B$o)"
+        $c.Cells.Item($r, 3).Formula = "=CDT!C$o"
+        $c.Cells.Item($r, 4).Formula = "=IF(C$r<0.05,""Rechaza H₀"",""No rechaza H₀"")"
+    }
+    $c.Range("B10:B19").NumberFormatLocal = "0,000"
+    $c.Range("C10:C19").NumberFormatLocal = $pfmt
+    $c.Range("D9:D19").IndentLevel = 1
+    $c.Range("A20").Value2 = "Significancia de 5 %. La prueba con n ignora la autocorrelación; la de n efectivo la corrige."
+    $c.Range("A21").Value2 = "Hay 90 semanas fuera de los límites de Tukey, casi todas en 2008, 2022, 2023 y 2024. Se conservan."
+    $c.Range("A20:A21").Font.Size = 9; $c.Range("A20:A21").Font.Color = $gris
+
+    # Fases
+    Bloque $c 23 1 5 "Margen por fase del ciclo"
+    Cabecera $c 24 1 @("Fase (cambio de la TPM en 13 semanas)", "Semanas", "Media (pp)", "Desviación (pp)", "Proporción") @(1, 2, 3, 4)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 25 + $k; $o = 19 + $k
+        foreach ($j in 1..5) { $c.Cells.Item($r, $j).Formula = "=CDT!" + [char](64 + $j) + $o }
+    }
+    $c.Range("A25:A27").HorizontalAlignment = -4131
+    $c.Range("B25:B27").NumberFormatLocal = "0"
+    $c.Range("C25:D27").NumberFormatLocal = "0,00"
+    $c.Range("E25:E27").NumberFormatLocal = "0 %"
+
+    # Candidatos
+    Bloque $c 29 1 5 "Modelos candidatos para el margen"
+    Cabecera $c 30 1 @("Modelo", "RMSE dentro", "RMSE fuera", "AIC", "Parámetros") @(1, 2, 3)
+    $c.Range("E30").IndentLevel = 1
+    for ($k = 0; $k -lt 5; $k++) {
+        $r = 31 + $k; $o = 41 + $k
+        $c.Cells.Item($r, 1).Formula = "=CDT!A$o"
+        $c.Cells.Item($r, 2).Formula = "=CDT!E$o"
+        $c.Cells.Item($r, 3).Formula = "=CDT!F$o"
+        $c.Cells.Item($r, 4).Formula = "=CDT!G$o"
+        $c.Cells.Item($r, 5).Formula = "=TEXTJOIN(""; "",TRUE,ROUND(CDT!B$o,3),IF(CDT!C$o="""","""",ROUND(CDT!C$o,3)),IF(CDT!D$o="""","""",ROUND(CDT!D$o,3)))"
+    }
+    $c.Range("B31:C35").NumberFormatLocal = "0,00"
+    $c.Range("D31:D35").NumberFormatLocal = "0,0"
+    $c.Range("E31:E35").IndentLevel = 1
+    $c.Range("A36").Value2 = "RMSE en puntos porcentuales; fuera de la muestra se estima hasta 2019 y se prueba desde 2020."
+    $c.Range("A36").Font.Size = 9; $c.Range("A36").Font.Color = $gris
+
+    # Distribución del error
+    Bloque $c 38 1 6 "Distribución del error de M5"
+    Cabecera $c 39 1 @("Distribución", "Parámetros", "AIC", "BIC", "KS p", "Peso de Akaike") @(1, 2, 3, 4, 5)
+    for ($k = 0; $k -lt 5; $k++) {
+        $r = 40 + $k; $o = 57 + $k
+        foreach ($j in 1..6) { $c.Cells.Item($r, $j).Formula = "=CDT!" + [char](64 + $j) + $o }
+    }
+    $c.Range("B40:B44").NumberFormatLocal = "0"
+    $c.Range("C40:D44").NumberFormatLocal = "0,0"
+    $c.Range("E40:E44").NumberFormatLocal = "0,000"
+    $c.Range("F40:F44").NumberFormatLocal = $pfmt
+    $c.Range("A45").Value2 = "Ninguna distribución pasa la prueba KS: hay dos regímenes, tasas estables y episodios de ajuste."
+    $c.Range("A46").Value2 = "Por eso el simulador remuestrea los residuos observados y usa la t como aproximación."
+    $c.Range("A45:A46").Font.Size = 9; $c.Range("A45:A46").Font.Color = $gris
+
+    # Dependencia
+    Bloque $c 48 1 6 "Dependencia con otras variables"
+    Cabecera $c 49 1 @("Variable", "Resultado", "p", "Lectura", "", "") @(1, 2)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 50 + $k; $o = 71 + $k
+        $c.Cells.Item($r, 1).Formula = "=CDT!A$o"
+        $c.Cells.Item($r, 2).Formula = "=CDT!B$o"
+        $c.Cells.Item($r, 3).Formula = "=IF(CDT!C$o="""","""",CDT!C$o)"
+        $c.Cells.Item($r, 4).Formula = "=CDT!D$o"
+    }
+    $c.Range("B50:B52").NumberFormatLocal = "0,000"
+    $c.Range("C50:C52").NumberFormatLocal = $pfmt
+    $c.Range("D49:D52").IndentLevel = 1
+
+    Bloque $c 54 1 5 "Margen por estado de la economía"
+    Cabecera $c 55 1 @("Estado (PIB)", "Semanas", "Media (pp)", "Desviación (pp)", "") @(1, 2, 3)
+    for ($k = 0; $k -lt 3; $k++) {
+        $r = 56 + $k; $o = 76 + $k
+        foreach ($j in 1..4) { $c.Cells.Item($r, $j).Formula = "=CDT!" + [char](64 + $j) + $o }
+    }
+    $c.Range("A56:A58").HorizontalAlignment = -4131
+    $c.Range("B56:B58").NumberFormatLocal = "0"
+    $c.Range("C56:D58").NumberFormatLocal = "0,00"
+    $c.Range("A59").Value2 = "Son pocos episodios independientes; no entra al modelo y queda como sensibilidad."
+    $c.Range("A59").Font.Size = 9; $c.Range("A59").Font.Color = $gris
+
+    # Especificación
+    Bloque $c 8 8 12 "Especificación (M5)"
+    $c.Range("H9").Value2 = "s = a + b · ΔTPM13 + ε"
+    $c.Range("H9").Font.Italic = $true
+    Cabecera $c 10 8 @("Parámetro", "Estimación", "Significado", "", "") @(1)
+    $c.Range("J10").IndentLevel = 1
+    $par = @(
+        @("a (pp)", "=CDT!B49", "0,000", "Margen cuando la TPM no cambia"),
+        @("b", "=CDT!C49", "0,000", "Puntos de margen por punto de ΔTPM"),
+        @("Error estándar de b", "=CDT!B50", "0,000", "Newey-West, 26 rezagos"),
+        @("R²", "=CDT!B51", "0,000", "Parte del margen que explica"),
+        @("Desviación de ε (pp)", "=CDT!B52", "0,000", "Tamaño del error"),
+        @("Autocorrelación de ε, 1 semana", "=CDT!B53", "0,000", "Muy persistente"),
+        @("Autocorrelación de ε, 52 semanas", "=CDT!C53", "0,000", "Independiente de un año a otro")
+    )
+    for ($k = 0; $k -lt $par.Count; $k++) {
+        $c.Cells.Item(11 + $k, 8).Value2 = $par[$k][0]
+        $c.Cells.Item(11 + $k, 9).Formula = $par[$k][1]
+        $c.Cells.Item(11 + $k, 9).NumberFormatLocal = $par[$k][2]
+        $c.Cells.Item(11 + $k, 10).Value2 = $par[$k][3]
+    }
+    $c.Range("J11:J17").IndentLevel = 1
+    $c.Range("H18").Value2 = "El simulador sortea ε una vez por apertura o renovación del CDT."
+    $c.Range("H18").Font.Size = 9; $c.Range("H18").Font.Color = $gris
+
+    # Validación
+    Bloque $c 23 8 12 "Validación"
+    Cabecera $c 24 8 @("Evaluación", "", "", "Cobertura", "") @(3)
+    $c.Range("H25").Value2 = "Dentro de la muestra"
+    $c.Range("K25").Formula = "=CDT!B65"
+    $c.Range("H26").Value2 = "Estimado hasta 2019, probado desde 2020"
+    $c.Range("K26").Formula = "=CDT!B66"
+    $c.Range("K25:K26").NumberFormatLocal = "0,0 %"
+    $c.Range("H27").Value2 = "Proporción de observaciones dentro de la banda nominal de 90 %."
+    $c.Range("H28").Value2 = "Fuera de la muestra pesa el ajuste de 2022 a 2024, mayor que cualquier episodio anterior."
+    $c.Range("H27:H28").Font.Size = 9; $c.Range("H27:H28").Font.Color = $gris
+
+    # Inversionista
+    Bloque $c 30 8 12 "Qué le pasa al inversionista"
+    Cabecera $c 31 8 @("Medida", "", "", "Valor", "") @(3)
+    $inv = @(
+        @("Rentabilidad real a 12 meses (926 compras)", "=CDT!B83", "0,0 %"),
+        @("Peor rentabilidad real", "=CDT!B84", "0,0 %"),
+        @("Compras con rentabilidad real negativa", "=CDT!B85", "0,0 %"),
+        @("Venta a 6 meses: intereses perdidos (ψ)", "=CDT!B86", "0,000"),
+        @("Ventas a 6 meses con pérdida de intereses", "=CDT!B87", "0,0 %"),
+        @("Ventas a 6 meses con pérdida de capital", "=CDT!B88", "0,0 %"),
+        @("ψ con la TPM subiendo", "=CDT!B89", "0,000"),
+        @("ψ con la TPM bajando", "=CDT!B90", "0,000")
+    )
+    for ($k = 0; $k -lt $inv.Count; $k++) {
+        $c.Cells.Item(32 + $k, 8).Value2 = $inv[$k][0]
+        $c.Cells.Item(32 + $k, 11).Formula = $inv[$k][1]
+        $c.Cells.Item(32 + $k, 11).NumberFormatLocal = $inv[$k][2]
+    }
+    $c.Range("H40").Value2 = "Compras de 2008 a 2025 con la inflación realizada; 956 casos de venta a 6 meses."
+    $c.Range("H40").Font.Size = 9; $c.Range("H40").Font.Color = $gris
+
+    # Lectura
+    Bloque $c 42 8 12 "Lectura"
+    $lec = $c.Range("H43:L57")
+    $lec.Merge()
+    $lec.WrapText = $true
+    $lec.VerticalAlignment = -4160
+    $c.Range("H43").Value2 = "El margen del CDT sobre la TPM es persistente y asimétrico, y cambia con el ciclo: es mayor cuando la TPM sube. M5 lo explica con el cambio de la TPM en las últimas trece semanas y es el mejor candidato dentro de la muestra, pero fuera de ella ningún modelo supera al margen fijo. El error es muy persistente de una semana a otra e independiente de un año a otro, y por eso se sortea una vez por apertura. Con solo tres ciclos de tasas completos, el episodio de 2022 a 2024 domina los extremos y la banda de 90 % fuera de la muestra cubre apenas la mitad de las observaciones. El modelo se usa con esa advertencia y con una sensibilidad que duplica la desviación del error."
+    $c.Range("A8:A59").EntireRow.RowHeight = 15
+    $c.Range("A1").Select()
+
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
-    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "ETF, datos", "ETF, modelo", "TPM_Cuenta", "TPM_Logit", "CDT", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
+    $orden = @("LEEME", "MODELOS", "PARAMETROS", "MODELO", "INF", "Inflación", "Inflación, modelo", "TPM_Cuenta", "TPM_Logit", "CDT, datos", "CDT, modelo", "CDT", "ETF, datos", "ETF, modelo", "ETF", "INM", "PIB", "MARKOV", "MARKOV_PIB", "MARKOV_ETF", "MARKOV_Vivienda", "VALIDACION", "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA")
     $dest.Worksheets.Item($orden[0]).Move($dest.Worksheets.Item(1))
     for ($k = 1; $k -lt $orden.Count; $k++) { $dest.Worksheets.Item($orden[$k]).Move($falta, $dest.Worksheets.Item($orden[$k - 1])) }
 
     $dest.Worksheets.Item("MODELO").Visible = 0
     $dest.Worksheets.Item("INF").Visible = 0
     $dest.Worksheets.Item("ETF").Visible = 0
+    $dest.Worksheets.Item("CDT").Visible = 0
     # Las hojas copiadas dejan un vínculo vacío al libro de Markov; ninguna fórmula lo usa.
     try { $dest.LinkSources(1) | ForEach-Object { $dest.BreakLink([string]$_, 1) } } catch { Write-Output "sin vinculos para romper" }
     $dest.Worksheets.Item("LEEME").Activate()
