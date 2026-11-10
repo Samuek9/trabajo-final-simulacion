@@ -67,6 +67,10 @@ def tabla(ws, fila: int, encabezado: list[str], filas: list[list], anchos: list[
     return fila + len(filas) + 2
 
 
+HOJAS_ENLAZABLES = {"LEEME", "MODELOS", "PARAMETROS", "INF", "TPM_Cuenta", "CDT", "ETF", "INM", "PIB", "MARKOV", "VALIDACION",
+                    "RESULTADOS", "FUENTES", "DICCIONARIO", "AUDITORIA"}
+
+
 def leeme(ws) -> None:
     corrida = json.loads((RES / "corrida.json").read_text(encoding="utf-8"))
     f = titulo(ws, "Simulación de estrategias de inversión bajo incertidumbre: datos, modelos y resultados",
@@ -89,8 +93,14 @@ def leeme(ws) -> None:
         ["RESULTADOS", "Diseño del experimento, indicadores por estrategia y escenario, capital necesario, comparaciones y sensibilidad"],
         ["FUENTES", "Fuentes de datos"],
         ["DICCIONARIO", "Qué significa cada columna de los resultados por réplica"],
+        ["AUDITORIA", "Hallazgos y cambios de organización del libro, con su estado"],
     ]
     f = tabla(ws, f, ["Hoja", "Contenido"], hojas, [34, 110], "Hojas")
+    for fila in range(1, ws.max_row + 1):
+        v = ws.cell(fila, 1).value
+        if v in HOJAS_ENLAZABLES:
+            ws.cell(fila, 1).hyperlink = f"#'{v}'!A1"
+            ws.cell(fila, 1).font = Font(color="1F4E78", underline="single")
     archivos = []
     for p in sorted((RAIZ / "data" / "raw").glob("*.csv")):
         archivos.append([f"data/raw/{p.name}", sum(1 for _ in p.open(encoding="utf-8")) - 1, "Serie de entrada"])
@@ -418,10 +428,32 @@ def resultados(ws) -> None:
            for x in it.itertuples()], None, "Interacción de inflación y necesidades de liquidez: P(meta)")
 
 
+AUDITORIA = [
+    ["A01", "INF", "Serie mensual y anual", "El 6,29 % de 2026 es la inflación de septiembre, no de diciembre; el modelo lo usa solo como inflación inicial (P033).", "Aclaración temporal", "Media", "Se conserva el dato; no se trata como inflación de diciembre", "Resuelto"],
+    ["A02", "PARAMETROS", "Hoja completa", "Mezclaba valores de inversionista con valores estimados de los procesos aleatorios.", "Estructural", "Alta", "PARAMETROS solo trae lo editable; los valores estimados pasaron a la hoja oculta MODELO con las mismas claves", "Resuelto"],
+    ["A03", "PARAMETROS", "Columnas Fuente y Soporte", "Citaban secciones del informe y no aportaban a quien edita.", "Visual", "Baja", "Se quitaron de la hoja visible; siguen en MODELO", "Resuelto"],
+    ["A04", "MODELOS", "Columnas de alternativa y parámetros", "Mostraban más de un modelo por proceso.", "Estructural", "Media", "Queda solo el modelo elegido y la prueba que lo respalda", "Resuelto"],
+    ["A05", "PARAMETROS", "P153 (necesidades de liquidez)", "El monto mediano era 20 millones fijos, sin relación con el capital.", "Metodológico", "Alta", "Pasa a ser 3 % del capital inicial (liq.mediana_pct); se corrieron de nuevo los experimentos", "Resuelto, con autorización del usuario"],
+    ["A06", "PARAMETROS", "Reparaciones (P160 a P162)", "Sin datos de costo ni frecuencia.", "Dato faltante", "Media", "Salen de la vista y del informe; quedan apagadas en MODELO", "Resuelto"],
+    ["A07", "RESULTADOS", "Capital-meta", "La malla de capitales y metas estaba fija en el código.", "Compatibilidad", "Media", "Se calcula como múltiplos del capital y la meta configurados; con la referencia da la misma malla", "Resuelto"],
+    ["A08", "Todas", "Hojas del equipo", "Algunas notas mencionaban el enunciado o al equipo.", "Visual", "Baja", "Se reescribieron en la copia del libro; los originales no se tocan", "Resuelto"],
+    ["A09", "Todas", "Datos originales y procesados", "Conviven en la misma hoja con pruebas y texto, en bloques horizontales.", "Estructural", "Media", "No se separaron: exigiría mover fórmulas y gráficos de las hojas del equipo", "Pendiente"],
+    ["A10", "VALIDACION", "Autocorrelación de la inflación", "La simulada (0,19) queda por debajo de la observada (0,42) porque se mide con 10 años por réplica.", "Posible limitación estadística", "Baja", "Se documenta en el informe; no se cambia el modelo", "Documentado"],
+]
+
+
+def auditoria(ws) -> None:
+    f = titulo(ws, "Auditoría y cambios del libro",
+               "Registro de los hallazgos de organización y de los cambios hechos. Las correcciones metodológicas se hicieron solo con autorización.")
+    tabla(ws, f, ["ID", "Hoja", "Ubicación", "Hallazgo", "Tipo", "Gravedad", "Acción", "Estado"], AUDITORIA,
+          [6, 14, 28, 60, 22, 10, 60, 24])
+    ws.freeze_panes = "A6"
+
+
 def main(salida: Path) -> None:
     wb = Workbook()
     hojas = [("LEEME", leeme), ("MODELOS", modelos), ("PARAMETROS", escribir_parametros), ("MODELO", escribir_modelo), ("FUENTES", fuentes),
-             ("DICCIONARIO", diccionario), ("TPM_Logit", tpm_logit),
+             ("DICCIONARIO", diccionario), ("AUDITORIA", auditoria), ("TPM_Logit", tpm_logit),
              ("VALIDACION", validacion), ("RESULTADOS", resultados)]
     wb.remove(wb.active)
     for nombre, fn in hojas:
