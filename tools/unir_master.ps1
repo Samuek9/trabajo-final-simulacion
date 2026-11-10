@@ -163,8 +163,6 @@ try {
     # ------------------------------------------------ Inflación
     $s = Nueva-Hoja $dest "Inflación"
     Titulo $s "Inflación en Colombia" "Evolución de los precios al consumidor, enero de 2001 – septiembre de 2026"
-    [void]$s.Hyperlinks.Add($s.Range("F1"), "", "'LEEME'!A1", "", "Índice")
-    $s.Range("F1").HorizontalAlignment = -4152
 
     $s.Range("A4").Value2 = "Promedio histórico"
     $s.Range("C4").Value2 = "Máximo"
@@ -269,97 +267,104 @@ try {
     }
     $m = Nueva-Hoja $dest "Inflación, modelo"
     Titulo $m "Inflación: modelo probabilístico" "AR(1) en logaritmos · inflación de diciembre, 2001–2025"
-    [void]$m.Hyperlinks.Add($m.Range("H1"), "", "'LEEME'!A1", "", "Índice")
-    $m.Range("H1").HorizontalAlignment = -4152
-    $m.Columns.Item(1).ColumnWidth = 28
-    $m.Columns.Item(2).ColumnWidth = 13
-    $m.Columns.Item(3).ColumnWidth = 11
-    $m.Columns.Item(4).ColumnWidth = 17
-    $m.Columns.Item(5).ColumnWidth = 4
-    $m.Columns.Item(6).ColumnWidth = 24
-    $m.Columns.Item(7).ColumnWidth = 14
-    $m.Columns.Item(8).ColumnWidth = 18
+    foreach ($k in 1..9) { $m.Columns.Item($k).ColumnWidth = @(28, 48, 12, 9, 16, 3, 24, 14, 28)[$k - 1] }
 
-    # Cifras principales
-    $m.Range("A4").Value2 = "Nivel de largo plazo"
-    $m.Range("C4").Value2 = "Memoria (φ)"
-    $m.Range("F4").Value2 = "Volatilidad (σ)"
-    $m.Range("A5").Formula = "=INF!C105"
-    $m.Range("C5").Formula = "=INF!C102"
-    $m.Range("F5").Formula = "=INF!C104"
-    foreach ($c in @("A4", "C4", "F4")) { $m.Range($c).Font.Color = $gris }
-    foreach ($c in @("A5", "C5", "F5")) {
-        $x = $m.Range($c); $x.Font.Size = 20; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
+    # Cifras principales, juntas
+    $m.Range("G4").Value2 = "Nivel de largo plazo"
+    $m.Range("H4").Value2 = "Memoria (φ)"
+    $m.Range("I4").Value2 = "Volatilidad (σ)"
+    $m.Range("G5").Formula = "=INF!C105"
+    $m.Range("H5").Formula = "=INF!C102"
+    $m.Range("I5").Formula = "=INF!C104"
+    foreach ($c in @("G4", "H4", "I4")) { $m.Range($c).Font.Color = $gris }
+    foreach ($c in @("G5", "H5", "I5")) {
+        $x = $m.Range($c); $x.Font.Size = 18; $x.Font.Bold = $true; $x.HorizontalAlignment = -4131
     }
-    $m.Range("A5").NumberFormatLocal = '0,00" %"'
-    $m.Range("C5").NumberFormatLocal = "0,000"
-    $m.Range("F5").NumberFormatLocal = "0,000"
-    $m.Rows.Item(5).RowHeight = 30
+    $m.Range("G5").NumberFormatLocal = '0,00" %"'
+    $m.Range("H5").NumberFormatLocal = "0,000"
+    $m.Range("I5").NumberFormatLocal = "0,000"
+    $m.Rows.Item(5).RowHeight = 28
 
     # Panel izquierdo: evidencia
-    Bloque $m 8 1 4 "Evidencia estadística"
-    Cabecera $m 9 1 @("Prueba", "Estadístico", "p", "Resultado") @(1, 2)
+    Bloque $m 8 1 5 "Evidencia estadística"
+    Cabecera $m 9 1 @("Prueba", "Qué se contrasta", "Estadístico", "p", "Decisión") @(2, 3)
     $pr = @(
-        @("t de una muestra", "=INF!C62", "=INF!C63"),
-        @("Jarque-Bera: inflación", "=INF!C73", "=INF!C74"),
-        @("Jarque-Bera: logaritmo", "=INF!D73", "=INF!D74"),
-        @("Chi-cuadrado: normal", "=INF!G85", "=INF!G86"),
-        @("Chi-cuadrado: lognormal", "=INF!H85", "=INF!H86")
+        @("t de una muestra", "Promedio de diciembre 2010–2025 frente a la meta de 3 %", "=INF!C62", "=INF!C63"),
+        @("Jarque-Bera", "Normalidad de la inflación en %", "=INF!C73", "=INF!C74"),
+        @("Jarque-Bera", "Normalidad del logaritmo de la inflación", "=INF!D73", "=INF!D74"),
+        @("Chi-cuadrado", "Ajuste de la normal, por rangos", "=INF!G85", "=INF!G86"),
+        @("Chi-cuadrado", "Ajuste de la lognormal, por rangos", "=INF!H85", "=INF!H86")
     )
     for ($k = 0; $k -lt $pr.Count; $k++) {
         $r = 10 + $k
         $m.Cells.Item($r, 1).Value2 = $pr[$k][0]
-        $m.Cells.Item($r, 2).Formula = $pr[$k][1]
+        $m.Cells.Item($r, 2).Value2 = $pr[$k][1]
         $m.Cells.Item($r, 3).Formula = $pr[$k][2]
-        $m.Cells.Item($r, 4).Formula = "=IF(C$r<INF!`$C`$4,""Rechaza H₀"",""No rechaza H₀"")"
+        $m.Cells.Item($r, 4).Formula = $pr[$k][3]
+        $m.Cells.Item($r, 5).Formula = "=IF(D$r<INF!`$C`$4,""Rechaza H₀"",""No rechaza H₀"")"
     }
-    $m.Range("B10:C14").NumberFormatLocal = "0,000"
-    $m.Range("D9:D14").IndentLevel = 1
+    $m.Range("C10:D14").NumberFormatLocal = "0,000"
+    $m.Range("E9:E14").IndentLevel = 1
     $m.Range("A15").Value2 = "Significancia de 5 %. No rechazar H₀ no demuestra que sea cierta."
     $m.Range("A15").Font.Size = 9; $m.Range("A15").Font.Color = $gris
 
-    Bloque $m 17 1 4 "Dependencia entre años consecutivos"
-    $dep = @(@("Correlación (r)", "=INF!C91", "0,000"), @("Estadístico t", "=INF!C93", "0,000"), @("Valor p", "=INF!C94", "0,000"))
+    Bloque $m 17 1 5 "Dependencia entre años consecutivos"
+    Cabecera $m 18 1 @("Medida", "Qué mide", "Valor", "", "") @(2)
+    $dep = @(
+        @("Correlación de Pearson (r)", "Entre ln πₜ y ln πₜ₋₁", "=INF!C91", "0,000"),
+        @("Estadístico t", "Contraste de H₀: r = 0", "=INF!C93", "0,000"),
+        @("Valor p", "Del contraste anterior", "=INF!C94", "0,000"),
+        @("Observaciones", "Pares de años consecutivos", "=INF!C92", "0")
+    )
     for ($k = 0; $k -lt $dep.Count; $k++) {
-        $m.Cells.Item(18 + $k, 1).Value2 = $dep[$k][0]
-        $m.Cells.Item(18 + $k, 2).Formula = $dep[$k][1]
-        $m.Cells.Item(18 + $k, 2).NumberFormatLocal = $dep[$k][2]
+        $r = 19 + $k
+        $m.Cells.Item($r, 1).Value2 = $dep[$k][0]
+        $m.Cells.Item($r, 2).Value2 = $dep[$k][1]
+        $m.Cells.Item($r, 3).Formula = $dep[$k][2]
+        $m.Cells.Item($r, 3).NumberFormatLocal = $dep[$k][3]
     }
-    $m.Range("A21").Value2 = "Observaciones"
-    $m.Range("B21").Formula = '=INF!C92&" pares"'
-    $m.Range("B21").HorizontalAlignment = -4152
 
     # Panel derecho: especificación y validación
-    Bloque $m 8 6 8 "Especificación"
-    $m.Range("F9").Value2 = "ln π(t) = a + φ · ln π(t−1) + σ · Z"
-    $m.Range("F9").Font.Italic = $true
-    Cabecera $m 10 6 @("Parámetro", "Estimación") @(1)
-    $par = @(@("Constante (a)", "=INF!C103", "0,000"), @("Memoria (φ)", "=INF!C102", "0,000"), @("Sorpresa (σ)", "=INF!C104", "0,000"), @("Nivel de largo plazo", "=INF!C105", "0,00"" %"""))
+    Bloque $m 8 7 9 "Especificación"
+    $m.Range("G9").Value2 = "ln πₜ = a + φ · ln πₜ₋₁ + σ · Zₜ"
+    $m.Range("G9").Font.Italic = $true
+    Cabecera $m 10 7 @("Parámetro", "Estimación", "Significado") @(1)
+    $m.Range("I10").IndentLevel = 1
+    $par = @(
+        @("Constante (a)", "=INF!C103", "0,000", "Intercepto en logaritmos"),
+        @("Memoria (φ)", "=INF!C102", "0,000", "Peso del año anterior"),
+        @("Volatilidad (σ)", "=INF!C104", "0,000", "Escala de la perturbación Z"),
+        @("Largo plazo", "=INF!C105", "0,00"" %""", "Nivel al que tiende el proceso")
+    )
     for ($k = 0; $k -lt $par.Count; $k++) {
-        $m.Cells.Item(11 + $k, 6).Value2 = $par[$k][0]
-        $m.Cells.Item(11 + $k, 7).Formula = $par[$k][1]
-        $m.Cells.Item(11 + $k, 7).NumberFormatLocal = $par[$k][2]
+        $m.Cells.Item(11 + $k, 7).Value2 = $par[$k][0]
+        $m.Cells.Item(11 + $k, 8).Formula = $par[$k][1]
+        $m.Cells.Item(11 + $k, 8).NumberFormatLocal = $par[$k][2]
+        $m.Cells.Item(11 + $k, 9).Value2 = $par[$k][3]
     }
+    $m.Range("I11:I14").IndentLevel = 1
 
-    Bloque $m 17 6 8 "Validación"
-    Cabecera $m 18 6 @("Evaluación", "Periodo", "Cobertura") @(2)
-    $m.Range("F19").Value2 = "Año a año"
-    $m.Range("G19").Value2 = "2002–2025"
-    $m.Range("H19").Formula = '=INF!C124&"/"&INF!D124&" · "&ROUND(INF!E124*100,1)&" %"'
-    $m.Range("F20").Value2 = "Fuera de muestra"
-    $m.Range("G20").Value2 = "2016–2025"
-    $m.Range("H20").Formula = '=INF!C129&"/"&INF!D129&" · "&ROUND(INF!E129*100,1)&" %"'
-    $m.Range("H19:H20").HorizontalAlignment = -4152
-    $m.Range("F21").Value2 = "Acierto: dato dentro del intervalo de 90 %."
-    $m.Range("F21").Font.Size = 9; $m.Range("F21").Font.Color = $gris
+    Bloque $m 17 7 9 "Validación"
+    Cabecera $m 18 7 @("Evaluación", "Periodo", "Dentro del 90 %") @(2)
+    $m.Range("G19").Value2 = "Año a año"
+    $m.Range("H19").Value2 = "2002–2025"
+    $m.Range("I19").Formula = '=INF!C124&" de "&INF!D124&" · "&TEXT(INF!E124*100,"0,0")&" %"'
+    $m.Range("G20").Value2 = "Fuera de muestra"
+    $m.Range("H20").Value2 = "2016–2025"
+    $m.Range("I20").Formula = '=INF!C129&" de "&INF!D129&" · "&TEXT(INF!E129*100,"0,0")&" %"'
+    $m.Range("I19:I20").HorizontalAlignment = -4152
+    $m.Range("G21").Value2 = "Proporción de observaciones dentro del intervalo predictivo nominal de 90 %."
+    $m.Range("G22").Value2 = "Fuera de muestra: parámetros estimados con 2001–2015."
+    $m.Range("G23").Value2 = "La cobertura observada no garantiza la precisión futura."
+    $m.Range("G21:G23").Font.Size = 9; $m.Range("G21:G23").Font.Color = $gris
 
     # Lectura
-    Bloque $m 23 1 8 "Lectura"
-    $lec = $m.Range("A24:H26")
+    Bloque $m 25 1 9 "Lectura"
+    $lec = $m.Range("A26:I28")
     $lec.Merge()
     $lec.WrapText = $true
     $lec.VerticalAlignment = -4160
-    $m.Range("A24").Value2 = "En niveles la inflación es asimétrica y rechaza la normalidad; su logaritmo no la rechaza. Un año depende del anterior (r = 0,417), por eso se modela con un AR(1) sobre el logaritmo, que además mantiene la inflación positiva. En la evaluación fuera de muestra, 8 de las 10 observaciones quedaron dentro del intervalo de 90 %."
+    $m.Range("A26").Value2 = "Los logaritmos de la inflación son compatibles con una distribución normal, y modelar sobre ellos mantiene positiva la inflación simulada. La dependencia significativa entre años consecutivos justifica incluir memoria en el proceso. Con una muestra anual tan corta, los parámetros se estiman con incertidumbre, y la cobertura observada no garantiza el desempeño en un régimen distinto al de estos años."
     $m.Range("A1").Select()
 
     # Orden de lectura: resumen, parámetros, procesos en el orden del informe, estados, validación, resultados y referencia.
