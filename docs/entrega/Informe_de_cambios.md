@@ -102,3 +102,7 @@ Corregido tras la revisión: signos de pesos leídos como fórmula en la barra l
 ## Retiro del resultado de pruebas de la app
 
 Se quitó de la app el bloque de verificación con pruebas (y `tools/registrar_pruebas.py` con su JSON): la app es un simulador, no un reporte de una corrida. La pestaña queda como «Validación». Los scripts `tools/construir_master.py` y `tools/unir_master.ps1` llevan un aviso: el Excel se editó directamente y no debe regenerarse con ellos.
+
+## Verificación en vivo (reemplaza el resultado de pruebas guardado)
+
+`src/investment_sim/experiments/verification.py` corre 31 comprobaciones sobre la implementación con los parámetros vigentes (capital, horizonte, pesos, liquidez) y la app las muestra con el botón «Verificar»: reloj y eventos, estados y contabilidad, cálculos financieros, generadores aleatorios y reglas de decisión. Cada fila muestra lo esperado (calculado a partir de la configuración), lo obtenido y si cumple. Se probó con cuatro configuraciones distintas (capital de 300 a 2.000 M, horizontes de 1 a 10 años, inmueble fijo y proporcional, liquidez cambiada): 31 de 31 en todas. Tarda de 7 a 14 s.

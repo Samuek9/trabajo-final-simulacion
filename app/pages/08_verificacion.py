@@ -5,11 +5,12 @@ from components import estado, ui
 from investment_sim.engine.events import Tipo
 from investment_sim.experiments.runner import una_replica
 from investment_sim.experiments.validation import validar
+from investment_sim.experiments.verification import verificar
 
 p = estado.params()
 
 st.title("Simulación, escenarios y validación")
-t1, t2, t3 = st.tabs(["Eventos discretos", "Escenarios", "Validación"])
+t1, t2, t3 = st.tabs(["Eventos discretos", "Escenarios", "Verificación y validación"])
 
 with t1:
     c = st.columns(3)
@@ -72,6 +73,28 @@ with t2:
     st.caption("«Igual»: usa el valor base. En estrés, los valores propios rigen solo mientras dura la crisis.")
 
 with t3:
+    st.markdown("##### Verificación")
+    st.caption("Comprueba la implementación con la configuración actual: capital, horizonte, pesos y liquidez del inversionista.")
+    if st.button("Verificar"):
+        with st.spinner("Verificando..."):
+            st.session_state["verif"] = verificar(estado.params())
+    if "verif" in st.session_state:
+        vf = st.session_state["verif"]
+        cumplen = int((vf["Resultado"] == "Cumple").sum())
+        c = st.columns(3)
+        with c[0]:
+            ui.tarjeta("Comprobaciones que cumplen", f"{cumplen} de {len(vf)}")
+        with c[1]:
+            ui.tarjeta("Que no cumplen", str(len(vf) - cumplen))
+        with c[2]:
+            ui.tarjeta("Componentes", str(vf["Componente"].nunique()))
+        st.write("")
+        vista = vf[["Componente", "Comprobación", "Resultado", "Esperado", "Obtenido"]].copy()
+        vista["Componente"] = vista["Componente"].where(vista["Componente"] != vista["Componente"].shift(), "")
+        st.dataframe(vista, hide_index=True, width="stretch", height=(len(vista) + 1) * 35 + 3,
+                     column_config={"Componente": st.column_config.TextColumn(width=150), "Comprobación": st.column_config.TextColumn(width=280),
+                                    "Resultado": st.column_config.TextColumn(width=90), "Esperado": st.column_config.TextColumn(width=240),
+                                    "Obtenido": st.column_config.TextColumn(width=220)})
     st.markdown("##### Validación")
     st.caption("«Reproduce insumos»: los generadores devuelven los datos con que se estimaron. «Contraste»: se compara con información que el modelo no usó.")
     n_v = st.number_input("Réplicas de validación", 50, 5000, 300, 50)
