@@ -98,3 +98,7 @@ Corregido tras la revisión: signos de pesos leídos como fórmula en la barra l
 - Gráficos de Resultados revisados en 390 px: sin desbordamiento; el título del gráfico de riesgo se acortó y el tamaño de los puntos se explica debajo.
 - Indicadores completos: los 31 indicadores existen en el resumen del simulador; la tabla muestra los cinco grupos completos, con columnas anchas.
 - Capital-meta: se midió el tiempo (7 capitales × 4 estrategias, 4 procesos: 38 s con 500 réplicas y 72 s con 1.000) y la página muestra una estimación antes de calcular, con aviso si pasa de 10 minutos.
+
+## Retiro del resultado de pruebas de la app
+
+Se quitó de la app el bloque de verificación con pruebas (y `tools/registrar_pruebas.py` con su JSON): la app es un simulador, no un reporte de una corrida. La pestaña queda como «Validación». Los scripts `tools/construir_master.py` y `tools/unir_master.ps1` llevan un aviso: el Excel se editó directamente y no debe regenerarse con ellos.

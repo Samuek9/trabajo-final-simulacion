@@ -1,3 +1,5 @@
+# ATENCIÓN: data/master_datos.xlsx se editó directamente después de generarse (hojas MODELOS y PARAMETROS, limitaciones, comparación de
+# vacancia). Este script no reproduce esos cambios: el libro es la fuente vigente y no debe regenerarse.
 """Hojas nuevas del Excel maestro (las que no vienen del consolidado ni del Markov del equipo).
 
   python tools/construir_master.py SALIDA.xlsx

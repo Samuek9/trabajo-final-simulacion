@@ -1,4 +1,6 @@
-﻿# Junta en data/master_datos.xlsx:
+﻿# ATENCIÓN: data/master_datos.xlsx se editó directamente después de generarse (hojas MODELOS y PARAMETROS, limitaciones, comparación de
+# vacancia). Este script NO reproduce esos cambios: volver a correrlo los sobrescribe. El libro es la fuente vigente.
+# Junta en data/master_datos.xlsx:
 #   - las hojas nuevas que arma tools/construir_master.py,
 #   - las hojas del consolidado de los puntos 1 a 7 (sin la vieja Parametros_simulador),
 #   - las hojas del análisis de Markov del equipo, renombradas MARKOV*.
